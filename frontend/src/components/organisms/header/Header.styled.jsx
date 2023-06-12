@@ -1,10 +1,15 @@
 import styled from '@emotion/styled'
 
 export const StyledHeader = styled.div`
+  width: 80vw;
+  height: 60px;
   display: flex;
   flex-direction: row;
-  margin: 0 0 0 auto;
-  
+  justify-content: space-between;
+  align-items: center;
+
+
+
   ul {
     display: flex;
     width: 60vw;
@@ -14,8 +19,16 @@ export const StyledHeader = styled.div`
     margin: 0;
     padding: 0;
   }
-
-  li {
-    margin-right: 10px;
-  }
 `
+
+//   li {
+//     margin-right: 10px;
+//   }
+
+//   .home-btn {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     margin: 0 auto;
+//   }
+// `

@@ -11,11 +11,18 @@ const Header = () => {
 
   return (
     <StyledHeader>
-      <ul>
-        <li className={'/'}onClick={onClickHandler}>Home</li>
-        <li className={'/test'} onClick={onClickHandler}>Test</li>
-        <li className={'/mypage'} onClick={onClickHandler}>My page</li>
-      </ul>
+      <div>
+        <button onClick={()=>navigate('/')}className="home-btn">
+          KT
+        </button>
+      </div>
+      <div>
+        <ul>
+          <li className={'/'}onClick={onClickHandler}>Home</li>
+          <li className={'/test'} onClick={onClickHandler}>Test</li>
+          <li className={'/mypage'} onClick={onClickHandler}>My page</li>
+        </ul>
+      </div>
     </StyledHeader>
   );
 };
