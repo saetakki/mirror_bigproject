@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "@templates";
-import { Home, Test } from "@pages/client";
+import { Home, MyPage, Test } from "@pages/client";
 
 const routerList = [
   {
@@ -12,6 +12,11 @@ const routerList = [
     id: 1,
     path: '/test',
     element: <Test/>,
+  },
+  {
+    id: 2,
+    path: '/mypage',
+    element: <MyPage/>,
   }
 ]
 
