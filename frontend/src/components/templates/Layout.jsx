@@ -1,8 +1,11 @@
 import styled from '@emotion/styled'
-
+import Header from './Header'
 
 const Layout = ({ children }) => {
-  return <Main>{children}</Main>
+  return <Main>
+    <Header/>
+    {children}
+    </Main>
 }
 
 const Main = styled.main`
