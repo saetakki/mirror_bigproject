@@ -1,4 +1,11 @@
 import { Layout } from "@templates"
+import {
+  Home,
+  Test
+} from '@pages/client'
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+
+
 
 function App() {
   const router = createBrowserRouter([
