@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'exp1',
+    'user',
     "rest_framework",
     'corsheaders',
 ]
