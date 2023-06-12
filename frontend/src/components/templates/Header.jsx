@@ -2,19 +2,18 @@ import { useNavigate } from "react-router-dom"
 
 const Header = () => {
   const navigate = useNavigate()
-  const pathList = ['/', '/test']
   const onClickHandler = (e) => {
     const whereTo = e.target.textContent
-    navigate(`${whereTo}`)
+    const path = whereTo === "Home" ? "/" : `/${whereTo.toLowerCase()}`
+    navigate(`${path}`)
   }
 
 
   return (
     <div>
       <ul>
-        {pathList.map((path) => {
-          return <li key={path} onClick={onClickHandler}>{path}</li>
-        })}
+        <li onClick={onClickHandler}>Home</li>
+        <li onClick={onClickHandler}>Test</li>
       </ul>
     </div>
   )
