@@ -25,7 +25,8 @@ def convert_text_to_speech(message):
   try:
     response = requests.post(endpoint, json=body, headers=headers)
   except Exception as e:
-     return
+    print(e)
+    return
 
   if response.status_code == 200:
       # with open("output.wav", "wb") as f:

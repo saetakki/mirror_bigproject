@@ -36,7 +36,7 @@ origins = [
 # CORS - Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -72,6 +72,7 @@ async def post_audio(file: UploadFile = File(...)):
 
     # Guard: Ensure output
     if not message_decoded:
+        print("Failed to decode audio")
         raise HTTPException(status_code=400, detail="Failed to decode audio")
 
     # Get chat response
@@ -82,6 +83,7 @@ async def post_audio(file: UploadFile = File(...)):
 
     # Guard: Ensure output
     if not chat_response:
+        print("Failed chat response")
         raise HTTPException(status_code=400, detail="Failed chat response")
 
     # Convert chat response to audio
@@ -89,6 +91,7 @@ async def post_audio(file: UploadFile = File(...)):
 
     # Guard: Ensure output
     if not audio_output:
+        print("Failed audio output")
         raise HTTPException(status_code=400, detail="Failed audio output")
 
     # Create a generator that yields chunks of data
