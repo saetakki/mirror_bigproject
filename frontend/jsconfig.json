@@ -6,6 +6,7 @@
       "@templates": ["components/templates"],
 			"@pages/*": ["pages"],
       "@organisms/*": ["components/organisms"],
+      "@assets/*": ["assets"],
 		},
   }
 }

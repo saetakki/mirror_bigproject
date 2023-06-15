@@ -1,14 +1,8 @@
 .home-container{
-  width: 100vw;
+  width: 80vw;
+  border: 1px solid black;
 }
 
-.home-wrapper{
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
 
 .user-info{
   width: 45vw;

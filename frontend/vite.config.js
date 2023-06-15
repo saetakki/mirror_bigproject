@@ -28,6 +28,10 @@ export default defineConfig({
           new URL('./src/components/organisms', import.meta.url)
         ),
       },
+      {
+        find: '@assets',
+        replacement: fileURLToPath(new URL('./src/assets', import.meta.url)),
+      },
     ],
   },
 });

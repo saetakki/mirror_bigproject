@@ -19,6 +19,20 @@ export const StyledHeader = styled.div`
     margin: 0;
     padding: 0;
   }
+
+  img  {
+    width: 20px;
+    height: 20px;
+  }
+
+  .home-btn {
+    width: 100px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+  }
+
+
 `
 
 //   li {

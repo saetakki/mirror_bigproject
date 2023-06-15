@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { StyledHeader } from "./Header.styled";
+import logo from '../../../assets/logo.png'
 
 const Header = () => {
   const navigate = useNavigate();
@@ -12,8 +13,8 @@ const Header = () => {
   return (
     <StyledHeader>
       <div>
-        <button onClick={()=>navigate('/')}className="home-btn">
-          KT
+        <button onClick={()=>navigate('/')} className="home-btn">
+          <img src={logo} alt='logo' />
         </button>
       </div>
       <div>
