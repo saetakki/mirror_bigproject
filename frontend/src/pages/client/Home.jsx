@@ -7,17 +7,23 @@ const Home = () => {
   return(
     <div className='home-container'>
         <HomeWrapper>
-          <section className="user-info container">
-            <ProfileImg src={testImage} alt ="profile-image"/>
-              <Greeting>
-                안녕하세요<br/>
-                <span>username 님</span>
-              </Greeting>            
-            오늘도 연습을 시작해볼까요?
-            <PracticeButton>
-              연습 시작하기
-            </PracticeButton>
-          </section>
+            <UserInfo>
+              <Left className="Left">
+                <ProfileImg src={testImage} alt ="profile-image"/>
+                <Greeting>
+                  안녕하세요<br/>
+                  <span>username 님</span>
+                </Greeting>
+              </Left>
+              <Right>
+                <PracticeButtonContainer>
+                  오늘도 연습을 시작해볼까요?
+                  <PracticeButton>
+                    연습 시작하기
+                  </PracticeButton>
+                </PracticeButtonContainer>            
+              </Right>
+            </UserInfo>
 
           <UserChatListContainer>
             username 님의 연습 기록
@@ -71,11 +77,18 @@ const Home = () => {
 }
 
 const HomeWrapper = styled.div`
-  width: 80vw;
+  width: 100%;
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+`
+
+const UserInfo = styled.section`
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: row;
 `
 
 
@@ -89,15 +102,39 @@ const ProfileImg = styled.img`
   object-fit: cover;
   object-position: center;
   `
+  const Greeting = styled.div`
+    width: 300px;
+    font-weight: regular;
+    font-size: 1.5rem;
+    line-height: 125%;
+    text-align: left;
+    letter-spacing: -0.03em;
+    color: #000;
+    margin: 1rem 0 0;
+  
+    & span {
+      font-weight: bold;
+    }
+  `
 
-const Greeting = styled.p`
-  font-weight: bold;
-  font-size: 1.5rem;
-  line-height: 125%;
-  text-align: center;
-  letter-spacing: -0.03em;
-  color: #000;
-  margin: 1rem 0 0;
+
+  const Left = styled.div` {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+  `
+
+  const Right = styled.div`{
+    width: 50%;
+  }`
+
+
+const PracticeButtonContainer = styled.div`
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `
 
 const PracticeButton = styled.button`
@@ -113,8 +150,6 @@ const UserChatListContainer = styled.section`
   height: 520px;
   background-color: tan
 `
-
-
 
 const Quotes = styled.div`
   font-size: 12px;
