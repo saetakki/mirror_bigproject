@@ -1,7 +1,7 @@
 from django.db import models
 
 # 유저
-class User(models.Model):
+class Users(models.Model):
     name = models.CharField(max_length=100)
     ID = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
@@ -24,10 +24,10 @@ class Persona(models.Model):
         return self.persona_name
     
 # 히스토리
-class history(models.Model):
+class History(models.Model):
     # 유저와 히스토리는 1:N 관계
     # 히스토리와 페르소나는 1:1 관계
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     bookmark = models.BooleanField(default=False)
