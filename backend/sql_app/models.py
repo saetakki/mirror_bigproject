@@ -12,11 +12,11 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
 
-    items = relationship("Item", back_populates="owner")
+    items = relationship("Persona", back_populates="owner", cascade='all, delete')
 
 
 class Persona(Base):
-    __tablename__ = "persona"
+    __tablename__ = "personas"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)

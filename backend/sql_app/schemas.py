@@ -1,17 +1,31 @@
-from typing import Union
-
+from typing import Union, Optional
 from pydantic import BaseModel
 
 
 class PersonaBase(BaseModel):
     title: str
-    description: Union[str, None] = None
+    name : str
+    age : int
+    gender : str
+    title : str
+    department : str
+    status : Union[str, None] = None
 
 
 class PersonaCreate(PersonaBase):
     pass
 
+class PersonaUpdate(PersonaBase):
+    title: Optional[str]
+    name : Optional[str]
+    age : Optional[int]
+    gender : Optional[str]
+    title : Optional[str]
+    department : Optional[str]
+    status : Optional[str]
 
+class PersonaDelete(PersonaBase):
+    pass
 class Persona(PersonaBase):
     id: int
     owner_id: int
@@ -21,6 +35,7 @@ class Persona(PersonaBase):
         orm_mode = True
 
 
+
 class UserBase(BaseModel):
     email: str
 
@@ -28,7 +43,12 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class UserUpdate(UserBase):
+    email: Optional[str]
+    password: Optional[str]
 
+class UserDelete(UserBase):
+    pass
 class User(UserBase):
     id: int
     is_active: bool
