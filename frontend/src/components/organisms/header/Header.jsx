@@ -1,12 +1,21 @@
 import styled from "@emotion/styled";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mobile, Desktop} from "@hooks"
 import { RxHamburgerMenu } from "react-icons/rx";
 import logo from '../../../assets/logo.png'
+import { useMediaQuery } from "react-responsive";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isMobile = useMediaQuery({query: "(max-width: 767px)"});
+
+  useEffect(() => {
+    if (!isMobile) {
+      setIsMenuOpen(false);
+    }
+  }, [isMobile]);
+
 
   const navigate = useNavigate();
   const onClickHandler = (e) => {
@@ -16,11 +25,9 @@ const Header = () => {
 
   const onTouchHandler = () => {
     setIsMenuOpen(!isMenuOpen);
-    console.log(isMenuOpen)
   }
 
-
-  console.log(isMenuOpen)
+  console.log(Mobile)
 
 
   return (
@@ -39,24 +46,24 @@ const Header = () => {
               <li className={'/mypage'} onClick={onClickHandler}>My page</li>
             </ul>
           </Desktop>
-          {Mobile && (
-            <MobileIconWrapper>
-              <RxHamburgerMenu
-                size={30}
-                onClick={onTouchHandler}
-                isOpen={isMenuOpen}
-              />
-              {isMenuOpen && (
-                <MobileDropdownMenu>
-                  <ul>
-                    <li className={'/'}onClick={onClickHandler}>Home</li>
-                    <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-                    <li className={'/mypage'} onClick={onClickHandler}>My page</li>
-                  </ul>
-                </MobileDropdownMenu>
-              )}
-            </MobileIconWrapper>
-          )}
+          <Mobile>
+              <MobileIconWrapper>
+                <RxHamburgerMenu
+                  size={30}
+                  onClick={onTouchHandler}
+                  isOpen={isMenuOpen}
+                />
+                {isMenuOpen && (
+                  <MobileDropdownMenu>
+                    <ul>
+                      <li className={'/'}onClick={onClickHandler}>Home</li>
+                      <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
+                      <li className={'/mypage'} onClick={onClickHandler}>My page</li>
+                    </ul>
+                  </MobileDropdownMenu>
+                )}
+              </MobileIconWrapper>
+          </Mobile>
         </BtnContainer>
       </div>
     </StyledHeader>
@@ -92,6 +99,7 @@ const StyledHeader = styled.nav`
 
 const BtnContainer = styled.div`
   width: 60vw;
+  height: 60px;
   margin-right: 2rem;
 
   display: ${Mobile ? 'flex' : 'none'};
@@ -99,9 +107,11 @@ const BtnContainer = styled.div`
 
 
   ul {
+    width: 40vw;
     display: flex;
     justify-content: space-between;
-    font-size: 18px;
+    align-items: center;
+    font-size: 20px;
   }
 `
 

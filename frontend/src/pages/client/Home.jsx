@@ -1,10 +1,15 @@
 import styled from '@emotion/styled'
 import testImage from '../../assets/test.jpeg'
-import { Mobile, Desktop } from "@hooks"
+import { useNavigate } from 'react-router-dom'
+import { Desktop } from "@hooks"
 import { IndexRow } from "@organisms";
 import { Container } from "../../styles"
 
+
 const Home = () => {
+
+  const navigate = useNavigate();
+
   return(
     <Container className="Base">
       <HomeWrapper>
@@ -20,8 +25,8 @@ const Home = () => {
             </Left>
             <Desktop>
               <Right>
-                오늘도 연습을 시작해볼까요?
-                <PracticeBtn>연습 시작</PracticeBtn>
+                <span>오늘도 연습을 시작해볼까요?</span>
+                  <PracticeBtn onClick={()=>navigate('/history')}> 연습 시작</PracticeBtn>
               </Right>
             </Desktop>
           </GNB>
@@ -107,8 +112,26 @@ justify-content: center;
 strong{
   font-size: 1.5em;
 }
-
 `
+
+const PracticeBtn = styled.button`
+  margin-top: 10px;
+  width: 140px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #000000;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  onClick = {() => {console.log("hi")}}
+  &:hover {
+    background-color: #000000;
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+`
+
 
 
 const ProfileImg = styled.img`
@@ -132,6 +155,13 @@ display: flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
+
+span{
+  font-size: 14px;
+  color: 9a9a9a
+  margin-bottom: 20px;
+}
+
 `
 const UserChatListContainer = styled.section`
   width: 100%;
@@ -146,12 +176,6 @@ const BoardContainer = styled.div`
   width: 100%;
   height: 50%;
   margin: 0 auto 42px auto;
-`
-
-const PracticeBtn = styled.button`
-  width: 120px;
-  height: 40px;
-  border-radius: 5px;
 `
 
 
