@@ -7,24 +7,23 @@ const Home = () => {
   return(
     <div className='home-container'>
         <HomeWrapper>
-            <UserInfo>
-              <Left className="Left">
-                <ProfileImg src={testImage} alt ="profile-image"/>
-                <Greeting>
-                  안녕하세요<br/>
-                  <span>username 님</span>
-                </Greeting>
-              </Left>
-              <Right>
-                <PracticeButtonContainer>
-                  오늘도 연습을 시작해볼까요?
-                  <PracticeButton>
-                    연습 시작하기
-                  </PracticeButton>
-                </PracticeButtonContainer>            
-              </Right>
-            </UserInfo>
+          <GNB>
+            <Left>
+              <ImgContainer>
+                <ProfileImg src={testImage} alt="profile image"/>
+              </ImgContainer>
+              <TextContainer>
+                안녕하세요<br/>
+                <span>username님</span>
+              </TextContainer>
+            </Left>
+            <Right>
+              오늘도 연습을 시작해볼까요?
+              <PracticeBtn>연습 시작</PracticeBtn>
+            </Right>
 
+
+          </GNB>
           <UserChatListContainer>
             username 님의 연습 기록
             <Quotes>
@@ -40,7 +39,14 @@ const Home = () => {
                 </BoardHead>
                 <GridLine/>
                 <ItemListContainer>
-                    <ItemContainer>
+                {[1, 2, 3, 4].map((_, idx) => (
+                    <ItemContainer key={idx}>
+                      <Column width="120px" height="42px">CHAT ID</Column>
+                      <Column width="240px" height="42px">DATE</Column>
+                      <Column flex="1" height="42px">PERSONA</Column>
+                    </ItemContainer>
+                  ))}
+                    {/* <ItemContainer>
                       <Column width="120px" height="42px">CHAT ID</Column>
                       <Column width="240px" height="42px">DATE</Column>
                       <Column flex="1" height="42px">PERSONA</Column>
@@ -59,7 +65,7 @@ const Home = () => {
                       <Column width="120px" height="42px">CHAT ID</Column>
                       <Column width="240px" height="42px">DATE</Column>
                       <Column flex="1" height="42px">PERSONA</Column>
-                    </ItemContainer>
+                    </ItemContainer> */}
                     <ItemContainer>
                       <Column width="120px" height="42px">CHAT ID</Column>
                       <BookMarked width="24px" height="24px">
@@ -84,64 +90,61 @@ const HomeWrapper = styled.div`
   align-items: center;
 `
 
-const UserInfo = styled.section`
+const GNB = styled.div`
   width: 100%;
-  height: 200px;
+  height: 300px;
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`
+
+
+const TextContainer = styled.div`
+width: 200px;
+height: 300px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+font-size: 16px;
+
+span{
+  font-size: 24px;
+  font-weight: bold;
+}
 `
 
 
 const ProfileImg = styled.img`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #000;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  object-fit: cover;
-  object-position: center;
-  `
-  const Greeting = styled.div`
-    width: 300px;
-    font-weight: regular;
-    font-size: 1.5rem;
-    line-height: 125%;
-    text-align: left;
-    letter-spacing: -0.03em;
-    color: #000;
-    margin: 1rem 0 0;
-  
-    & span {
-      font-weight: bold;
-    }
-  `
+width: 180px;
+height: 180px;
+border-radius: 5px;
+background-color: #000;
+object-fit: cover;
+object-position: center;
+`
 
-
-  const Left = styled.div` {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-  }
-  `
-
-  const Right = styled.div`{
-    width: 50%;
-  }`
-
-
-const PracticeButtonContainer = styled.div`
+const ImgContainer = styled.div`
   display:flex;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  height: 300px;
+`
+const Left = styled.div`
+  display: flex;
+`
+
+const Right = styled.div`
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-`
+  margin-right: 40px;
+  `
 
-const PracticeButton = styled.button`
-  width: 140px;
-  height: 36px;
-  background-color: #000;
-  color: #fff;
+const PracticeBtn = styled.button`
+  width: 120px;
+  height: 40px;
   border-radius: 5px;
 `
 
