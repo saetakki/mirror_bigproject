@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import testImage from '../../assets/test.jpeg'
+import Profile from '@assets/profile.png'
 import { useNavigate } from 'react-router-dom'
 import { Desktop } from "@hooks"
 import { IndexRow } from "@organisms";
-import { Container } from "../../styles"
+import { Container } from "@styles"
 
 
 const Home = () => {
@@ -15,8 +15,8 @@ const Home = () => {
       <HomeWrapper>
           <GNB>
             <Left>
-              <ImgContainer>
-                <ProfileImg src={testImage} alt="profile image"/>
+              <ImgContainer onClick={()=>navigate("/Profile")}>
+                <ProfileImg src={Profile} alt="profile image"/>
               </ImgContainer>
               <TextContainer>
                 안녕하세요<br/>
