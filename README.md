@@ -21,7 +21,7 @@ ChatGPT 와 함께하는 리더 코칭 훈련
 - **Language** : HTML, CSS, JavaScript, Python
 - **Framework** : DJango
 - **Database** : Oracle DB
-- **Library** : React
+- **Library** : React, emotion
 
 ## 📌 주요 기능
 #### 로그인
