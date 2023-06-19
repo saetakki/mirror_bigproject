@@ -6,12 +6,12 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from decouple import config
-import openai
+import openai, json
 
 
 # Custom function imports
 from functions.text_to_speech import convert_text_to_speech
-from functions.openai_requests import convert_audio_to_text, get_chat_response
+from functions.openai_requests import convert_audio_to_text, get_chat_response, make_report
 from functions.database import store_messages, reset_messages
 
 
@@ -56,7 +56,27 @@ async def reset_conversation():
     return {"response": "conversation reset"}
 
 
+@app.post("/get-recorded-text")
+async def get_recorded_text(file: UploadFile = File(...)):
+    with open(file.filename, "wb") as buffer:
+        buffer.write(file.file.read())
+    
+    audio_input = open(file.filename, "rb")    
+    # Decode audio
+    message_decoded = convert_audio_to_text(audio_input)
+    
+    chat_response = get_chat_response(message_decoded)  
+    
+    if not chat_response:
+        print("Failed chat response")
+        raise HTTPException(status_code=400, detail="Failed chat response")
+    return {"recorded_q": message_decoded, 'recorded_a' : chat_response}
 
+@app.post('/make-report')
+async def get_report():
+    report = make_report()
+    json_report = json.dumps(report.split('\n\n'), ensure_ascii=False)
+    return json_report
 
 # Post bot response
 # Note: Not playing back in browser when using post request.
@@ -67,10 +87,12 @@ async def post_audio(file: UploadFile = File(...)):
     # Save the file temporarily
     with open(file.filename, "wb") as buffer:
         buffer.write(file.file.read())
-    audio_input = open(file.filename, "rb")
+    
+    audio_input = open(file.filename, "rb")    
 
     # Decode audio
     message_decoded = convert_audio_to_text(audio_input)
+    
 
     # Guard: Ensure output
     if not message_decoded:
