@@ -27,7 +27,10 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:
         for field, value in user_update.dict(exclude_unset=True).items():
-            setattr(db_user, field, value)
+            if field == 'file' and value is not None:
+                db_user.file = value
+            else:
+                setattr(db_user, field, value)
         db.commit()
         db.refresh(db_user)
     return db_user

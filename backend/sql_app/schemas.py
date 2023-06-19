@@ -8,7 +8,7 @@ class PersonaBase(BaseModel):
     age : int
     gender : str
     title : str
-    department : str
+    department : str    
     status : Union[str, None] = None
 
 
@@ -42,10 +42,12 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    file : Union[str, None] = None
 
 class UserUpdate(UserBase):
     email: Optional[str]
     password: Optional[str]
+    file : Optional[bytes]
 
 class UserDelete(UserBase):
     pass
