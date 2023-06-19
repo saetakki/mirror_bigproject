@@ -46,26 +46,6 @@ const Home = () => {
                       <Column flex="1" height="42px">PERSONA</Column>
                     </ItemContainer>
                   ))}
-                    {/* <ItemContainer>
-                      <Column width="120px" height="42px">CHAT ID</Column>
-                      <Column width="240px" height="42px">DATE</Column>
-                      <Column flex="1" height="42px">PERSONA</Column>
-                    </ItemContainer>
-                    <ItemContainer>
-                      <Column width="120px" height="42px">CHAT ID</Column>
-                      <Column width="240px" height="42px">DATE</Column>
-                      <Column flex="1" height="42px">PERSONA</Column>
-                    </ItemContainer>
-                    <ItemContainer>
-                      <Column width="120px" height="42px">CHAT ID</Column>
-                      <Column width="240px" height="42px">DATE</Column>
-                      <Column flex="1" height="42px">PERSONA</Column>
-                    </ItemContainer>
-                    <ItemContainer>
-                      <Column width="120px" height="42px">CHAT ID</Column>
-                      <Column width="240px" height="42px">DATE</Column>
-                      <Column flex="1" height="42px">PERSONA</Column>
-                    </ItemContainer> */}
                     <ItemContainer>
                       <Column width="120px" height="42px">CHAT ID</Column>
                       <BookMarked width="24px" height="24px">
