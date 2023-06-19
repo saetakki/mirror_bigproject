@@ -1,6 +1,13 @@
 import styled from "@emotion/styled";
 
-export const Column = styled.div`
+const Column = (props) => {
+  const { width, height, flex, color, children } = props;
+  return <Col width={width} height={height} flex={flex} color={color}>
+      {children}
+    </Col> 
+}
+
+const Col = styled.div`
   display: flex;
   height: ${props => props.height};
   width: ${props => props.width};
@@ -10,3 +17,5 @@ export const Column = styled.div`
   align-items: center;
   font-size: 12px;
 `;
+
+export default Column;

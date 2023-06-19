@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import './Home.css'
 import testImage from '../../assets/test.jpeg'
+import { IndexRow } from "@organisms";
 import { CiStar } from 'react-icons/ci'
 
 const Home = () => {
@@ -21,8 +22,6 @@ const Home = () => {
               오늘도 연습을 시작해볼까요?
               <PracticeBtn>연습 시작</PracticeBtn>
             </Right>
-
-
           </GNB>
           <UserChatListContainer>
             username 님의 연습 기록
@@ -31,19 +30,17 @@ const Home = () => {
               이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
               <br/><br/>-토머스 에디슨</p>
             </Quotes>
+
+            {/* 전체 메세지 기록 중 최근 5개 */}
             <BoardContainer>
                 <BoardHead>
-                  <Column width="120px" height="28px">CHAT ID</Column>
-                  <Column width="240px" height="28px">DATE</Column>
-                  <Column flex="1" height="28px">PERSONA</Column>
+                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
                 </BoardHead>
                 <GridLine/>
                 <ItemListContainer>
-                {[1, 2, 3, 4].map((_, idx) => (
+                {[false, false, true, false, true].map((booked, idx) => (
                     <ItemContainer key={idx}>
-                      <Column width="120px" height="42px">CHAT ID</Column>
-                      <Column width="240px" height="42px">DATE</Column>
-                      <Column flex="1" height="42px">PERSONA</Column>
+                      <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} />
                     </ItemContainer>
                   ))}
                     <ItemContainer>
@@ -56,6 +53,33 @@ const Home = () => {
                     </ItemContainer>
                 </ItemListContainer>
             </BoardContainer>
+
+            {/* 전체 북마크 기록 중 최근 5개 */}
+            <BoardContainer>
+              username 님의 북마크 기록
+              <Quotes>
+                <p>1만가지 방법이 효과가 없어도 실패한 게 아니다.<br/>
+                이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
+                <br/><br/>-토머스 에디슨</p>
+              </Quotes>
+                <BoardHead>
+                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
+                </BoardHead>
+                <GridLine/>
+
+
+                 {/* 전체 북마크 기록 중 최근 5개 */}
+                <ItemListContainer>
+                {[1, 2, 3, 4,5].map((_, idx) => (
+                    <ItemContainer key={idx}>
+                      <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={true} />
+                    </ItemContainer>
+                  ))}
+                </ItemListContainer>
+            </BoardContainer>
+
+
+
           </UserChatListContainer>
       </HomeWrapper>
     </div>
@@ -130,8 +154,7 @@ const PracticeBtn = styled.button`
 
 const UserChatListContainer = styled.section`
   width: 100%;
-  height: 520px;
-  background-color: tan
+  hegith: 100vh;
 `
 
 const Quotes = styled.div`
@@ -161,6 +184,7 @@ const Column = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 12px;
+  border: 1px solid #d9d9d9;
 `;
 
 
@@ -168,7 +192,8 @@ const GridLine = styled.div`
   width: 100%;
   height: 1px;
   background-color: #d9d9d9;
-  margin-bottom: 24px;
+  margin-top: 12px;
+  margin-bottom: 12px;
   `
 
 const ItemListContainer = styled.div`
@@ -201,7 +226,6 @@ const BookMarked = styled.div`
   display:flex;
   justify-content: center;
   align-items: center;
-
 `
 
 export default Home

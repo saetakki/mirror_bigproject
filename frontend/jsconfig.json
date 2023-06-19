@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    // "baseUrl": "src",
+    // "paths": {
+		// 	"@/*": ["*"],
+    //   "@templates": ["components/templates"],
+    //   "@organisms": ["components/organisms"],
+    //   "@atoms": ["components/atoms"],
+		// 	"@pages": ["pages"],
+    //   "@assets": ["assets"],
+    "baseUrl": ".",
     "paths": {
-			"@/*": ["*"],
-      "@templates": ["components/templates"],
-			"@pages/*": ["pages"],
-      "@organisms/*": ["components/organisms"],
-      "@assets/*": ["assets"],
+      "@src/*": ["./src/*"],
+      }
 		},
-  }
+  "include": ["src"]
 }
