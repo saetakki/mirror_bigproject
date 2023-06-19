@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import testImage from '../../assets/test.jpeg'
+import { Mobile, Desktop } from "@hooks"
 import { IndexRow } from "@organisms";
 import { Container } from "../../styles"
 
@@ -17,10 +18,12 @@ const Home = () => {
                 <strong>username님</strong>
               </TextContainer>
             </Left>
-            <Right>
-              오늘도 연습을 시작해볼까요?
-              <PracticeBtn>연습 시작</PracticeBtn>
-            </Right>
+            <Desktop>
+              <Right>
+                오늘도 연습을 시작해볼까요?
+                <PracticeBtn>연습 시작</PracticeBtn>
+              </Right>
+            </Desktop>
           </GNB>
           <UserChatListContainer>
             <strong>username 님의 연습 기록</strong>
@@ -82,25 +85,29 @@ const HomeWrapper = styled.div`
 
 const GNB = styled.div`
   width: 100%;
-  height: 300px;
+  height: 200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `
+const Left = styled.div`
+display: flex;
+justify-content: center;
+align-items: center;
+`
 
 
 const TextContainer = styled.div`
-width: 200px;
-height: 300px;
+height: 200px;
+width: 140px;
 display: flex;
 flex-direction: column;
 justify-content: center;
-font-size: 16px;
 
 strong{
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 1.5em;
 }
+
 `
 
 
@@ -108,7 +115,6 @@ const ProfileImg = styled.img`
 width: 180px;
 height: 180px;
 border-radius: 5px;
-background-color: #000;
 object-fit: cover;
 object-position: center;
 `
@@ -118,9 +124,6 @@ display:flex;
 align-items: center;
 width: 220px;
 height: 300px;
-`
-const Left = styled.div`
-display: flex;
 `
 
 const Right = styled.div`

@@ -12,18 +12,18 @@ const History = () => {
           <GridLine/>
         </Quotes>
         <BoardContainer>
-                <BoardHead>
-                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
-                </BoardHead>
-                <GridLine/>
-                <ItemListContainer>
-                {[false, false, true, false, true].map((booked, idx) => (
-                    <ItemContainer key={idx}>
-                      <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} />
-                    </ItemContainer>
-                  ))}
-                </ItemListContainer>
-            </BoardContainer>
+          <BoardHead>
+            <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
+          </BoardHead>
+          <GridLine/>
+          <ItemListContainer>
+          {[false, false, true, false, true].map((booked, idx) => (
+              <ItemContainer key={idx}>
+                <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} />
+              </ItemContainer>
+            ))}
+          </ItemListContainer>
+        </BoardContainer>
       </Head>
     </Container>
   )

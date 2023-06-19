@@ -2,7 +2,8 @@ html {
   font-size: 16px;
 }
 html, body, #___gatsby, #___gatsby > div:first-child, .___gatsby {
-  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
 }
 body {
   margin: 0;
