@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import testImage from '../../assets/test.jpeg'
 import { IndexRow } from "@organisms";
+import { Container } from "../../styles"
 
 const Home = () => {
   return(
-    <Container>
+    <Container className="Base">
       <HomeWrapper>
           <GNB>
             <Left>
@@ -70,10 +71,6 @@ const Home = () => {
   )
 }
 
-const Container = styled.div`
-  width: 80vw;
-  height: 100%;
-  `
 
 const HomeWrapper = styled.div`
   width: 100%;
