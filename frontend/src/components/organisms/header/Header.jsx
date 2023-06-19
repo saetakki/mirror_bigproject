@@ -20,7 +20,7 @@ const Header = () => {
       <div>
         <ul>
           <li className={'/'}onClick={onClickHandler}>Home</li>
-          <li className={'/test'} onClick={onClickHandler}>Test</li>
+          <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
           <li className={'/mypage'} onClick={onClickHandler}>My page</li>
         </ul>
       </div>
