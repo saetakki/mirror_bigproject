@@ -4,7 +4,7 @@ import { IndexRow } from "@organisms";
 
 const Home = () => {
   return(
-    <HomeContainer>
+    <Container>
       <HomeWrapper>
           <GNB>
             <Left>
@@ -66,11 +66,11 @@ const Home = () => {
             </BoardContainer>
           </UserChatListContainer>
       </HomeWrapper>
-    </HomeContainer>
+    </Container>
   )
 }
 
-const HomeContainer = styled.div`
+const Container = styled.div`
   width: 80vw;
   height: 100%;
   `
