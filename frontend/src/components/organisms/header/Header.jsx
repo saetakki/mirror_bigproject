@@ -1,14 +1,17 @@
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
+import { Mobile, Desktop, Tablet } from "@hooks"
+import { RxHamburgerMenu } from "react-icons/rx";
 import logo from '../../../assets/logo.png'
 
 const Header = () => {
   const navigate = useNavigate();
   const onClickHandler = (e) => {
     const whereTo = e.target.className
-    console.log(whereTo)
     navigate(whereTo);
   };
+
+  console.log(Mobile, Desktop, Tablet)
 
   return (
     <StyledHeader>
@@ -19,9 +22,14 @@ const Header = () => {
       </div>
       <div>
         <ul>
-          <li className={'/'}onClick={onClickHandler}>Home</li>
-          <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-          <li className={'/mypage'} onClick={onClickHandler}>My page</li>
+          <Desktop>
+            <li className={'/'}onClick={onClickHandler}>Home</li>
+            <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
+            <li className={'/mypage'} onClick={onClickHandler}>My page</li>
+          </Desktop>
+          <Mobile>
+            <RxHamburgerMenu/>
+          </Mobile>
         </ul>
       </div>
     </StyledHeader>
@@ -30,7 +38,7 @@ const Header = () => {
 
 const StyledHeader = styled.div`
   width: 80vw;
-  height: 60px;
+  height: 5rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

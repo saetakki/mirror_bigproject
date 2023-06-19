@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'url';
-
 // https://vitejs.dev/config/
 
 const PATH_DATA = [
@@ -36,6 +35,10 @@ const PATH_DATA = [
   {
     find: '@styles',
     url: './src/styles',
+  },
+  {
+    find: '@hooks',
+    url: './src/hooks',
   },
 ];
 
