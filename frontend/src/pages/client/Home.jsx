@@ -37,6 +37,7 @@ const Home = () => {
               이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
               <br/><br/>-토머스 에디슨</p>
             </Quotes>
+
             {/* 전체 메세지 기록 중 최근 5개 */}
             <BoardContainer>
                 <BoardHead>
@@ -51,7 +52,7 @@ const Home = () => {
                   ))}
                 </ItemListContainer>
             </BoardContainer>
-
+            
             {/* 전체 북마크 기록 중 최근 5개 */}
             <strong>username 님의 북마크 기록</strong>
             <Quotes>
@@ -140,6 +141,7 @@ height: 180px;
 border-radius: 5px;
 object-fit: cover;
 object-position: center;
+background-color: aqua
 `
 
 const ImgContainer = styled.div`

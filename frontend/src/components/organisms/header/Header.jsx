@@ -43,7 +43,8 @@ const Header = () => {
             <ul>
               <li className={'/'}onClick={onClickHandler}>Home</li>
               <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-              <li className={'/mypage'} onClick={onClickHandler}>My page</li>
+              <li className={'/bookmark'} onClick={onClickHandler}>북마크</li>
+              <li className={'/profile'} onClick={onClickHandler}>Profile</li>
             </ul>
           </Desktop>
           <Mobile>
@@ -58,7 +59,8 @@ const Header = () => {
                     <ul>
                       <li className={'/'}onClick={onClickHandler}>Home</li>
                       <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-                      <li className={'/mypage'} onClick={onClickHandler}>My page</li>
+                      <li className={'/bookmark'} onClick={onClickHandler}>북마크</li>
+                      <li className={'/profile'} onClick={onClickHandler}>Profile</li>
                     </ul>
                   </MobileDropdownMenu>
                 )}
@@ -123,18 +125,29 @@ const MobileDropdownMenu = styled.div`
   position: absolute;
   top: 40px;
   right: 0;
-  width: 180px;
+  width: 150px;
+  height: 150px;
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 
   ul {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: 10px;
+    widht: 100%;
     list-style-type: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: space-evenly;
 
     li {
-      padding: 10px;
+      padding: 10px 0;
       cursor: pointer;
 
       &:hover {
