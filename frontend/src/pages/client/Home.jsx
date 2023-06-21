@@ -22,14 +22,6 @@ const Home = () => {
   const navigate = useNavigate();
   const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
 
-
-  useEffect(() => {
-    console.log("login")
-    isLogin 
-    ? null 
-    : requestLogin().then(res => console.log(res)).catch(err => console.log(err))
-    setIsLogin(true)
-
   useEffect(() => {
     getHistoryPagination(1)
     .then(res => setHistory(res))
