@@ -27,8 +27,6 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   }
 
-  console.log(Mobile)
-
 
   return (
     <StyledHeader className="navigation">
@@ -87,7 +85,6 @@ const StyledHeader = styled.nav`
   }
 
   .home-btn {
-    margin-left: 2rem;
     width: 100px;
     height: 60px;
     background-color: transparent;
@@ -119,6 +116,9 @@ const BtnContainer = styled.div`
 
 const MobileIconWrapper = styled.div`
   position: relative;
+  display:flex;
+  justify-context: center;
+  align-items: center;
 `;
 
 const MobileDropdownMenu = styled.div`

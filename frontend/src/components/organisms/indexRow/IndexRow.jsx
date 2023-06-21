@@ -3,17 +3,22 @@ import { Column } from "../../atoms";
 import { CiStar } from 'react-icons/ci'
 
 
-const IndexRow = ({ id, date, persona, isBooked }) => {
+const IndexRow = ({ id, date, persona, isBooked, isMobile }) => {
+
     return(
       <ColumnContainer>
-        <Column width="120px" height="42px">{id}</Column>
+        {isMobile ?
+        null
+      :
+        <Column width="120px" height="50px">{id}</Column>
+        }
           {isBooked ? (
           <BookMarked width="24px" height="24px">
             <CiStar/>
           </BookMarked>
           ) : null}
-        <Column width="240px" height="42px">{date}</Column>
-        <Column flex="1" height="42px">{persona}</Column>
+        <Column width="240px" height="50px">{date}</Column>
+        <Column flex="1" height="50px">{persona}</Column>
       </ColumnContainer>
     )
   }

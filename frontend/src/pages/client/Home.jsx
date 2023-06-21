@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import Profile from '@assets/profile.png'
 import { useNavigate } from 'react-router-dom'
 import { Desktop } from "@hooks"
+import { useMediaQuery } from 'react-responsive'
 import { IndexRow } from "@organisms";
 import { Container } from "@styles"
 
@@ -9,9 +10,10 @@ import { Container } from "@styles"
 const Home = () => {
 
   const navigate = useNavigate();
+  const isMobile = useMediaQuery({query: "(max-width: 767px)"});
 
   return(
-    <Container className="Base">
+    <Container>
       <HomeWrapper>
           <GNB>
             <Left>
@@ -31,49 +33,58 @@ const Home = () => {
             </Desktop>
           </GNB>
           <UserChatListContainer>
-            <strong>username 님의 연습 기록</strong>
-            <Quotes>
-              <p>1만가지 방법이 효과가 없어도 실패한 게 아니다.<br/>
-              이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
-              <br/><br/>-토머스 에디슨</p>
-            </Quotes>
+            <BackgroundContainer>
+              <strong>username 님의 연습 기록</strong>
+              {!isMobile 
+              ? (
+              <Quotes>
+                <p>1만가지 방법이 효과가 없어도 실패한 게 아니다.<br/>
+                이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
+                <br/><br/>-토머스 에디슨</p>
+              </Quotes>)
+              : null}
 
-            {/* 전체 메세지 기록 중 최근 5개 */}
-            <BoardContainer>
-                <BoardHead>
-                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
-                </BoardHead>
-                <GridLine/>
-                <ItemListContainer>
-                {[false, false, true, false, true].map((booked, idx) => (
-                    <ItemContainer key={idx}>
-                      <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} />
-                    </ItemContainer>
-                  ))}
-                </ItemListContainer>
-            </BoardContainer>
+              {/* 전체 메세지 기록 중 최근 5개 */}
+              <BoardContainer>
+                  {/* <BoardHead>
+                    <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isMobile={isMobile} />
+                  </BoardHead> 
+                  <GridLine/>  */}
+                  <ItemListContainer>
+                  {[false, false, true, false, true].map((booked, idx) => (
+                      <ItemContainer key={idx}>
+                        <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} isMobile={isMobile} />
+                      </ItemContainer>
+                    ))}
+                  </ItemListContainer>
+              </BoardContainer>
+            </BackgroundContainer>
             
             {/* 전체 북마크 기록 중 최근 5개 */}
+            <BackgroundContainer>
             <strong>username 님의 북마크 기록</strong>
-            <Quotes>
+            {!isMobile 
+            ? (<Quotes>
               <p>1만가지 방법이 효과가 없어도 실패한 게 아니다.<br/>
               이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
               <br/><br/>-토머스 에디슨</p>
-            </Quotes>
+            </Quotes>)
+            : null}
             <BoardContainer>
-                <BoardHead>
-                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
+                {/* <BoardHead>
+                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isMobile={isMobile}/>
                 </BoardHead>
-                <GridLine/>
-                 {/* 전체 북마크 기록 중 최근 5개 */}
+                <GridLine/> */}
+                {/* 전체 북마크 기록 중 최근 5개 */}
                 <ItemListContainer>
                 {[1, 2, 3, 4,5].map((_, idx) => (
                     <ItemContainer key={idx}>
-                      <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={true} />
+                      <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={true} isMobile={isMobile} />
                     </ItemContainer>
                   ))}
                 </ItemListContainer>
-            </BoardContainer>
+              </BoardContainer>
+            </BackgroundContainer>
           </UserChatListContainer>
       </HomeWrapper>
     </Container>
@@ -113,6 +124,19 @@ justify-content: center;
 strong{
   font-size: 1.5em;
 }
+`
+
+const BackgroundContainer = styled.section`
+  width: 100%;
+  background-color: aqua;
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 24px 0;
+
+  & strong {
+    maring-bottom: 10px;
+  }
+
 `
 
 const PracticeBtn = styled.button`
@@ -177,7 +201,7 @@ const UserChatListContainer = styled.section`
 const BoardContainer = styled.div`
   width: 100%;
   height: 50%;
-  margin: 0 auto 42px auto;
+  margin: 0 auto 24px auto;
 `
 
 
@@ -188,22 +212,23 @@ const Quotes = styled.div`
 `
 
 
-const BoardHead = styled.div`
-  width: 100%;
-  height:28px;
-  display: flex;
-  flex-direction: row;
-  `
+// const BoardHead = styled.div`
+//   width: 100%;
+//   height:28px;
+//   display: flex;
+//   flex-direction: row;
+//   `
 
-const GridLine = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #d9d9d9;
-  margin-top: 12px;
-  margin-bottom: 12px;
-  `
+// const GridLine = styled.div`
+//   width: 100%;
+//   height: 1px;
+//   background-color: #d9d9d9;
+//   margin-top: 12px;
+//   margin-bottom: 12px;
+//   `
 
 const ItemListContainer = styled.div`
+  margin-top: 21px;
   width: 100%;
   `
 

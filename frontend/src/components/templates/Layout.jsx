@@ -10,7 +10,12 @@ const Layout = ({ children }) => {
 }
 
 const Main = styled.main`
-  width: 100vw;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 1em;
+  margin: 0 auto;
+  max-width: 1980px;
   height: 100vh;
   display: flex;
   flex-direction: column;
