@@ -97,7 +97,7 @@ def continue_text(chat_log = None, persona = None, question = None):
         department = persona.department
         state = persona.state
         txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
-    	{department}의 {position}이고 {state}를 원하는 역할을 해줘 + {txt}""".replace("\n", '').replace("    ", "")    	    
+    	{department}의 {position}이고 {state}를 원하는 역할을 해줘.  {txt}""".replace("\n", '').replace("    ", "")    	    
     print(txt)
     try:
         response = openai.ChatCompletion.create(
