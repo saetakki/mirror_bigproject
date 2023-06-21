@@ -1,14 +1,19 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.http import JsonResponse, Http404
-from .models import History
+from .models import History, UserProfile, Persona
 from .serializers import HistorySerializer, ChatLogReportSerializer, UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate
+from django.contrib.auth import logout as logout_django
+from django.contrib.auth import login as login_django
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import check_password
+import json
+import re
 
 #### 히스토리페이지에서 사용되는 API#### -> 서준호
 
@@ -88,35 +93,6 @@ def bookmark_history(request, history_id):
         history.save()
         
         return JsonResponse({}, status=200)
-    
-
-
-#### 메인페이지에서 사용되는 API ####
-
-# 1. GET /loginsuccess/
-# 로그인 시 메인페이지에 표시될 
-#   히스토리 리스트, 북마크 히스토리 리스트 5개씩 로드
-#   유저 프로필 정보 로드
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def loginsuccess(request):
-    # 히스토리 리스트
-    history_items = History.objects.filter(user=request.user).order_by('-date')[:5]
-    history_serializer = HistorySerializer(history_items, many=True)
-    
-    # 북마크 히스토리 리스트
-    bookmarked_history_items = History.objects.filter(user=request.user, bookmark=True).order_by('-date')[:5]
-    bookmarked_history_serializer = HistorySerializer(bookmarked_history_items, many=True)
-    
-    # 유저 프로필 정보
-    user_profile = request.user.userprofile
-    user_profile_serializer = UserProfileSerializer(user_profile)
-    
-    return JsonResponse({
-        'history': history_serializer.data,
-        'bookmarked_history': bookmarked_history_serializer.data,
-        'user_profile': user_profile_serializer.data,
-    }, safe=False)
     
     
 #### 프로필 페이지에서 사용되는 API ####
@@ -215,8 +191,11 @@ def signup(request):
     if len(password) < 8 or len(password) > 16:
         return JsonResponse({"error": "Password must be between 8 and 16 characters."}, status=400)
 
-    if not re.search('[a-z]', password) or not re.search('[A-Z]', password) or not re.search('[0-9]', password):
-        return JsonResponse({"error": "Password must include uppercase, lowercase, and numbers."}, status=400)
+    if not re.search('[a-z]', password) or not re.search('[0-9]', password):
+        return JsonResponse({"error": "Password must include uppercase or lowercase, and numbers."}, status=400)
+    
+    if not (username and password and email and real_name):
+        return JsonResponse({"error": "All blanks must be filled completely."}, status=400)
     
     # 회원가입
     user = User.objects.create_user(username=username, password=password, email=email)
@@ -233,16 +212,32 @@ def signup(request):
 def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
-    
+
     # username, password 검사
     user = authenticate(username=username, password=password)
     if user is None:
         return JsonResponse({"error": "Invalid username or password."}, status=400)
-    
+
     # 로그인
     login_django(request, user)
     
-    return JsonResponse({}, status=200)
+    # 히스토리 리스트
+    history_items = History.objects.filter(user=request.user).order_by('-date')[:5]
+    history_serializer = HistorySerializer(history_items, many=True)
+    
+    # 북마크 히스토리 리스트
+    bookmarked_history_items = History.objects.filter(user=request.user, bookmark=True).order_by('-date')[:5]
+    bookmarked_history_serializer = HistorySerializer(bookmarked_history_items, many=True)
+    
+    # 유저 프로필 정보
+    user_profile = request.user.userprofile
+    user_profile_serializer = UserProfileSerializer(user_profile)
+    
+    return JsonResponse({
+        'history': history_serializer.data,
+        'bookmarked_history': bookmarked_history_serializer.data,
+        'user_profile': user_profile_serializer.data,
+    }, status=200)
 
 # 3. POST /logout/
 # 로그아웃
@@ -267,13 +262,19 @@ def find_id(request):
     except ValidationError:
         return JsonResponse({"error": "Invalid email format."}, status=400)
     
-    # email과 password가 일치하는 유저 검사
-    user = User.objects.filter(email=email, password=password)
+    # email에 해당하는 유저 검사
+    user = User.objects.filter(email=email)
     if not user.exists():
-        return JsonResponse({"error": "이메일과 비밀번호를 다시 확인해주세요"}, status=400)
+        return JsonResponse({"error": "이메일을 다시 확인해주세요"}, status=400)
+
+    user = user.first()
+    
+    # 비밀번호 검사
+    if not check_password(password, user.password):
+        return JsonResponse({"error": "비밀번호를 다시 확인해주세요"}, status=400)
     
     # 유저 아이디 반환
-    return JsonResponse({"username": user[0].username}, status=200)
+    return JsonResponse({"username": user.username}, status=200)
 
 # 5. POST /find_password/
 # 비밀번호 찾기
@@ -293,3 +294,24 @@ def find_password(request):
     user[0].save()
     
     return JsonResponse({"temp_password": temp_password}, status=200)
+
+
+# test 더미 데이터 생성API
+@api_view(['POST'])
+def create_dummy_data(request):
+    if request.method == "POST":
+        for i in range(1, 151):
+            user = User.objects.get(pk=2)  
+            persona = Persona.objects.get(pk=1)  
+
+            bookmark = True if i % 3 == 0 else False
+
+            chat_log = [{"role": f"str{i}", "content": f"str{i}"}, {"role": f"str{i+1}", "content": f"str{i+1}"}]
+            report = {"summary": f"str{i}","good": f"str{i+1}", "bad": f"str{i+2}","overall": f"str{i+3}"}
+
+            History.objects.create(user=user, persona=persona, chat_log=chat_log, report=report, bookmark=bookmark)
+
+        return JsonResponse({"message": "Dummy data created!"}, status=201)
+
+    else:
+        return JsonResponse({"error": "Invalid method"}, status=400)           

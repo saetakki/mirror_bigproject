@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     real_name = models.CharField(max_length=100)
-    profile_image = models.ImageField(upload_to='images', blank=True, null=True)
+    profile_image = models.ImageField(upload_to='images', default='images/Default-Profile-Image.png')
 
     def __str__(self):
         return self.real_name
