@@ -4,6 +4,7 @@ import { CiStar } from 'react-icons/ci'
 
 
 const IndexRow = ({ id, date, persona, isBooked, isMobile }) => {
+  console.log(persona)
 
   return(
     <ColumnContainer>

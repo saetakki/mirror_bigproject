@@ -14,6 +14,7 @@ import {
   requestSignIn
 } from '@apis'
 
+
 const Home = () => {
   const [history, setHistory] = useState([])
   const [bookMark, setBookMark] = useState([])
@@ -29,6 +30,7 @@ const Home = () => {
     : requestLogin().then(res => console.log(res)).catch(err => console.log(err))
     setIsLogin(true)
 
+  useEffect(() => {
     getHistoryPagination(1)
     .then(res => setHistory(res))
     .catch(err => console.log(err))
@@ -37,9 +39,6 @@ const Home = () => {
     .then(res => setBookMark(res))
     .catch(err => console.log(err))
   }, [])
-
-
-
 
   return(
     <Container>
@@ -109,7 +108,7 @@ const Home = () => {
       </HomeWrapper>
     </Container>
   )
-}
+}}
 
 
 const HomeWrapper = styled.div`
