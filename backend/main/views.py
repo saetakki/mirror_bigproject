@@ -133,14 +133,14 @@ def profile(request):
         if password:
             user_profile.user.set_password(password)
             user_profile.user.save()
-            logout(request) 
+            logout_django(request) 
 
         user_profile.save()
         return JsonResponse({}, status=200)
     
     # 1-3 DELETE request: 유저 계정 삭제
     elif request.method == 'DELETE':
-        logout(request)
+        logout_django(request)
         user_profile.user.delete()
         return JsonResponse({}, status=204)
 
@@ -283,17 +283,20 @@ def find_password(request):
     username = request.data.get('username')
     email = request.data.get('email')
     
-    # username과 email이 일치하는 유저 검사
-    user = User.objects.filter(username=username, email=email)
-    if not user.exists():
+    try:
+        # username과 email이 일치하는 유저 검사
+        user = User.objects.get(username=username, email=email)
+        
+        # 임시 비밀번호 생성
+        temp_password = User.objects.make_random_password()
+        
+        user.set_password(temp_password)
+        user.save()
+        
+        return JsonResponse({"temp_password": temp_password}, status=200)
+    except User.DoesNotExist:
         return JsonResponse({"error": "아이디와 이메일을 다시 확인해주세요"}, status=400)
-    
-    # 임시 비밀번호 생성
-    temp_password = User.objects.make_random_password()
-    user[0].set_password(temp_password)
-    user[0].save()
-    
-    return JsonResponse({"temp_password": temp_password}, status=200)
+
 
 
 # test 더미 데이터 생성API
