@@ -46,10 +46,6 @@ const Home = () => {
 
               {/* 전체 메세지 기록 중 최근 5개 */}
               <BoardContainer>
-                  {/* <BoardHead>
-                    <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isMobile={isMobile} />
-                  </BoardHead> 
-                  <GridLine/>  */}
                   <ItemListContainer>
                   {[false, false, true, false, true].map((booked, idx) => (
                       <ItemContainer key={idx}>
@@ -68,14 +64,9 @@ const Home = () => {
               <p>1만가지 방법이 효과가 없어도 실패한 게 아니다.<br/>
               이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
               <br/><br/>-토머스 에디슨</p>
-              <p>test</p>
             </Quotes>)
             : null}
             <BoardContainer>
-                {/* <BoardHead>
-                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isMobile={isMobile}/>
-                </BoardHead>
-                <GridLine/> */}
                 {/* 전체 북마크 기록 중 최근 5개 */}
                 <ItemListContainer>
                 {[1, 2, 3, 4,5].map((_, idx) => (
