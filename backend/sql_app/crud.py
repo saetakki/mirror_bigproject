@@ -47,10 +47,10 @@ def get_Personas(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Persona).offset(skip).limit(limit).all()
 
 def get_Persona(db: Session, user_id: int):
-    return db.query(models.Persona).filter(models.User.id == user_id).first()
+    return db.query(models.Persona).filter(models.Persona.owner_id == user_id).first()
 
 def get_Persona_by_col(db: Session, name: str, age:int, department:int):
-    return db.query(models.Persona).filter(models.Persona.name == name, models.Persona.age == age, models.Persona.department == department).first()
+    return db.query(models.Persona).filter(models.Persona.persona_name  == name, models.Persona.age == age, models.Persona.department == department).first()
 
 def create_Persona_item(db: Session, item: schemas.PersonaCreate, user_id: int):
     db_item = models.Persona(**item.dict(), owner_id=user_id)
@@ -60,7 +60,7 @@ def create_Persona_item(db: Session, item: schemas.PersonaCreate, user_id: int):
     return db_item
 
 def update_Persona(db: Session, user_id: int, user_update: schemas.PersonaUpdate):
-    db_Persona = db.query(models.Persona).filter(models.Persona.id == user_id).first()
+    db_Persona = db.query(models.Persona).filter(models.Persona.owner_id == user_id).first()
     if db_Persona:
         for field, value in user_update.dict(exclude_unset=True).items():
             setattr(db_Persona, field, value)
@@ -69,8 +69,11 @@ def update_Persona(db: Session, user_id: int, user_update: schemas.PersonaUpdate
     return db_Persona
 
 def delete_Persona(db: Session, user_id: int):
-    db_Persona = db.query(models.Persona).filter(models.Persona.id == user_id).first()
+    db_Persona = db.query(models.Persona).filter(models.Persona.owner_id == user_id).first()
     if db_Persona:
         db.delete(db_Persona)
         db.commit()
     return db_Persona
+
+def get_Personas_by_id(db: Session, user_id: int):
+    return db.query(models.Persona).filter(models.Persona.owner_id == user_id).all()

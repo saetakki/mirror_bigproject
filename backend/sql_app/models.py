@@ -19,12 +19,12 @@ class Persona(Base):
     __tablename__ = "personas"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    persona_name = Column(String, index=True)
     age = Column(Integer, index=True)
     gender = Column(String, index=True)
-    title = Column(String, index=True)
+    position = Column(String, index=True)
     department = Column(String, index=True)
-    status = Column(String, index=True)
+    state = Column(String, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="items")

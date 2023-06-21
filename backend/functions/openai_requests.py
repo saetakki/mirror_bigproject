@@ -52,13 +52,35 @@ def make_report(filename='output.json'):
 	try:
 		response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo",
-			messages=[{"role": "user", "content": f'다음의 상담내용을 user입장에서 개요, 잘한 점, 보완할 점의 3항목으로 보고서 형식으로 나타내줘 : "{json_data}"'}]
+			messages=[{"role": "user", "content": f' "{json_data}" 다음의 상담내용을 user입장에서 개요, 잘한 점, 보완할 점의 3항목으로 json 형태의 보고서로 작성해줘 '}]
    		)
 		message_text = response["choices"][0]["message"]['content']
 		print(message_text)
 		return message_text
 	except Exception as e:
 		return print(e)
+
+def set_persona(selected_persona):
+    persona_name = selected_persona.persona_name
+    age = selected_persona.age
+    gender = selected_persona.gender
+    position = selected_persona.position
+    department = selected_persona.department
+    state = selected_persona.state
+    
+    txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
+    {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")
+    print(txt)
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+			messages=[{"role": "user", "content": txt}]
+   		)
+        message_text = response["choices"][0]["message"]['content']
+        print(message_text)
+        return message_text
+    except Exception as e:
+        return print(e)
 
 import pickle
 

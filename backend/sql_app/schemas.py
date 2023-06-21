@@ -3,26 +3,24 @@ from pydantic import BaseModel
 
 
 class PersonaBase(BaseModel):
-    title: str
-    name : str
+    persona_name : str
     age : int
     gender : str
-    title : str
+    position : str
     department : str    
-    status : Union[str, None] = None
+    state : Union[str, None] = None
 
 
 class PersonaCreate(PersonaBase):
     pass
 
 class PersonaUpdate(PersonaBase):
-    title: Optional[str]
-    name : Optional[str]
+    persona_name : Optional[str]
     age : Optional[int]
     gender : Optional[str]
-    title : Optional[str]
+    position : Optional[str]
     department : Optional[str]
-    status : Optional[str]
+    state : Optional[str]
 
 class PersonaDelete(PersonaBase):
     pass

@@ -11,7 +11,7 @@ import openai, json
 
 # Custom function imports
 from functions.text_to_speech import convert_text_to_speech
-from functions.openai_requests import convert_audio_to_text, get_chat_response, make_report
+from functions.openai_requests import convert_audio_to_text, get_chat_response, make_report, set_persona
 from functions.database import store_messages, reset_messages
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -82,7 +82,7 @@ async def get_recorded_text(file: UploadFile = File(...)):
 @app.post('/make-report')
 async def get_report():
     report = make_report()
-    json_report = json.dumps(report.split('\n\n'), ensure_ascii=False)
+    json_report = json.loads(report)
     return json_report
 
 # Post bot response
@@ -226,3 +226,15 @@ async def delete_Persona(user_id:int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     deleted_Persona = crud.delete_Persona(db, user_id)
     return deleted_Persona
+
+@app.get('/personas/{user_id}/{order_num}', response_model = str)
+async def setting_persona(user_id : int, order_num : int, db : Session = Depends(get_db)):
+    items = crud.get_Personas_by_id(db, user_id = user_id)
+    if items is None:
+        raise HTTPException(status_code=404, detail='Persona not found')
+    try:
+        selected_persona = items[order_num]
+        txt = set_persona(selected_persona)
+        return txt
+    except IndexError:
+    	raise HTTPException(status_code=400, detail='해당 순번의 페르소나가 없습니다. 다시 확인해주세요')
