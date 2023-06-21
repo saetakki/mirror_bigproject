@@ -79,6 +79,7 @@ const StyledHeader = styled.nav`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding: 0 1.5rem;
 
 
   img  {
@@ -102,7 +103,7 @@ const StyledHeader = styled.nav`
 const BtnContainer = styled.div`
   width: 60vw;
   height: 60px;
-  margin-right: 2rem;
+
 
   display: ${Mobile ? 'flex' : 'none'};
   justify-content: flex-end;

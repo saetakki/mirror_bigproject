@@ -43,13 +43,8 @@ const Home = () => {
                 <br/><br/>-토머스 에디슨</p>
               </Quotes>)
               : null}
-
               {/* 전체 메세지 기록 중 최근 5개 */}
               <BoardContainer>
-                  {/* <BoardHead>
-                    <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isMobile={isMobile} />
-                  </BoardHead> 
-                  <GridLine/>  */}
                   <ItemListContainer>
                   {[false, false, true, false, true].map((booked, idx) => (
                       <ItemContainer key={idx}>
@@ -71,10 +66,6 @@ const Home = () => {
             </Quotes>)
             : null}
             <BoardContainer>
-                {/* <BoardHead>
-                  <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isMobile={isMobile}/>
-                </BoardHead>
-                <GridLine/> */}
                 {/* 전체 북마크 기록 중 최근 5개 */}
                 <ItemListContainer>
                 {[1, 2, 3, 4,5].map((_, idx) => (
@@ -157,8 +148,6 @@ const PracticeBtn = styled.button`
   }
 `
 
-
-
 const ProfileImg = styled.img`
 width: 180px;
 height: 180px;
@@ -211,21 +200,6 @@ const Quotes = styled.div`
   margin-bottom: 24px;
 `
 
-
-// const BoardHead = styled.div`
-//   width: 100%;
-//   height:28px;
-//   display: flex;
-//   flex-direction: row;
-//   `
-
-// const GridLine = styled.div`
-//   width: 100%;
-//   height: 1px;
-//   background-color: #d9d9d9;
-//   margin-top: 12px;
-//   margin-bottom: 12px;
-//   `
 
 const ItemListContainer = styled.div`
   margin-top: 21px;
