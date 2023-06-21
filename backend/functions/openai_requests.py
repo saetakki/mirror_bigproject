@@ -81,7 +81,27 @@ def set_persona(selected_persona):
         return message_text
     except Exception as e:
         return print(e)
-
+    
+def continue_text(chat_log = None, question = None):
+    if chat_log is None:
+        with open('output.json', 'r', encoding='utf-8') as f:
+            txt = json.load(f)
+    if question is None:
+        question = '오늘 기분은 어떻세요?'
+    txt = json.dumps(txt, ensure_ascii=False, indent = 4)
+    print(txt)
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+			messages=[{"role": "user", "content": f"{txt} 위의 대화에 이어서 나는 user고 너는 assistant역할로 상담역할극을 다시 시작하자. 내 질문 : {question}"}]
+   		)
+        message_text = response["choices"][0]["message"]['content']
+        print(message_text)
+        return message_text
+    except Exception as e:
+        return print(e)
+    
+    
 import pickle
 
 if __name__ == "__main__":

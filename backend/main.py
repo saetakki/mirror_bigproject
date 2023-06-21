@@ -11,7 +11,7 @@ import openai, json
 
 # Custom function imports
 from functions.text_to_speech import convert_text_to_speech
-from functions.openai_requests import convert_audio_to_text, get_chat_response, make_report, set_persona
+from functions.openai_requests import convert_audio_to_text, get_chat_response, make_report, set_persona, continue_text
 from functions.database import store_messages, reset_messages
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -238,3 +238,9 @@ async def setting_persona(user_id : int, order_num : int, db : Session = Depends
         return txt
     except IndexError:
     	raise HTTPException(status_code=400, detail='해당 순번의 페르소나가 없습니다. 다시 확인해주세요')
+ 
+@app.post('/history_id/{history_id}', response_model = str)
+async def continue_converstation(chat_log=None, question=None):
+    txt = continue_text(chat_log=None, question=None)
+    print(txt)
+    return txt
