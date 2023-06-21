@@ -25,6 +25,9 @@ const Header = () => {
 
   const onTouchHandler = () => {
     setIsMenuOpen(!isMenuOpen);
+    if(isMenuOpen){
+      setIsMenuOpen(false)
+    }
   }
 
 
