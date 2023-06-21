@@ -68,6 +68,7 @@ const Home = () => {
               <p>1만가지 방법이 효과가 없어도 실패한 게 아니다.<br/>
               이런 시도는 모두 전진을 위한 전 단계일 뿐이다.
               <br/><br/>-토머스 에디슨</p>
+              <p>test</p>
             </Quotes>)
             : null}
             <BoardContainer>
