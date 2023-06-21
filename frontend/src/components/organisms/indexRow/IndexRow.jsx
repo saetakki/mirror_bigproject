@@ -4,24 +4,25 @@ import { CiStar } from 'react-icons/ci'
 
 
 const IndexRow = ({ id, date, persona, isBooked, isMobile }) => {
+  console.log(persona)
 
-    return(
-      <ColumnContainer>
-        {isMobile ?
-        null
-      :
-        <Column width="120px" height="50px">{id}</Column>
-        }
-          {isBooked ? (
-          <BookMarked width="24px" height="24px">
-            <CiStar/>
-          </BookMarked>
-          ) : null}
-        <Column width="240px" height="50px">{date}</Column>
-        <Column flex="1" height="50px">{persona}</Column>
-      </ColumnContainer>
-    )
-  }
+  return(
+    <ColumnContainer>
+      {isMobile ?
+      null
+    :
+      <Column width="120px" height="50px">{id}</Column>
+      }
+        {isBooked ? (
+        <BookMarked width="24px" height="24px">
+          <CiStar/>
+        </BookMarked>
+        ) : null}
+      <Column width="240px" height="50px">{date}</Column>
+      <Column flex="1" height="50px">PERSONA</Column>
+    </ColumnContainer>
+  )
+}
 
 
 const ColumnContainer = styled.div`

@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+
 import styled from '@emotion/styled'
 import Profile from '@assets/profile.png'
 import { useNavigate } from 'react-router-dom'
@@ -5,12 +7,25 @@ import { Desktop } from "@hooks"
 import { useMediaQuery } from 'react-responsive'
 import { IndexRow } from "@organisms";
 import { Container } from "@styles"
-
+import { 
+  getHistoryPagination,
+  getBookMarkPagination } from '@apis'
 
 const Home = () => {
-
+  const [history, setHistory] = useState([])
+  const [bookMark, setBookMark] = useState([])
   const navigate = useNavigate();
   const isMobile = useMediaQuery({query: "(max-width: 767px)"});
+  
+  useEffect(() => {
+    getHistoryPagination(1)
+    .then(res => setHistory(res))
+    .catch(err => console.log(err))
+
+    getBookMarkPagination(1)
+    .then(res => setBookMark(res))
+    .catch(err => console.log(err))
+  }, [])
 
   return(
     <Container>
@@ -46,9 +61,9 @@ const Home = () => {
               {/* 전체 메세지 기록 중 최근 5개 */}
               <BoardContainer>
                   <ItemListContainer>
-                  {[false, false, true, false, true].map((booked, idx) => (
+                  {history.slice(0,5).map((data, idx) => (
                       <ItemContainer key={idx}>
-                        <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} isMobile={isMobile} />
+                        <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
                       </ItemContainer>
                     ))}
                   </ItemListContainer>
@@ -68,9 +83,9 @@ const Home = () => {
             <BoardContainer>
                 {/* 전체 북마크 기록 중 최근 5개 */}
                 <ItemListContainer>
-                {[1, 2, 3, 4,5].map((_, idx) => (
+                {bookMark.slice(0,5).map((data, idx) => (
                     <ItemContainer key={idx}>
-                      <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={true} isMobile={isMobile} />
+                        <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
                     </ItemContainer>
                   ))}
                 </ItemListContainer>

@@ -25,9 +25,6 @@ const Header = () => {
 
   const onTouchHandler = () => {
     setIsMenuOpen(!isMenuOpen);
-    if(isMenuOpen){
-      setIsMenuOpen(false)
-    }
   }
 
 
@@ -53,7 +50,6 @@ const Header = () => {
                 <RxHamburgerMenu
                   size={30}
                   onClick={onTouchHandler}
-                  isOpen={isMenuOpen}
                 />
                 {isMenuOpen && (
                   <MobileDropdownMenu>
