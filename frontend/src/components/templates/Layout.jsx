@@ -4,21 +4,12 @@ import { Header } from '@organisms'
 
 const Layout = ({ children }) => {
   return(
-      <>
-        <Layer>
-          <Main>
-            <Header/>
-            {children}
-          </Main>
-        </Layer>
-      </>
+        <Main>
+          <Header/>
+          {children}
+        </Main>
     )
 }
-
-const Layer = styled.nav`
-  width: 100%;
-  height:100vh;
-`
 
 
 const Main = styled.main`
@@ -26,7 +17,6 @@ const Main = styled.main`
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   margin: 0 auto;
-  padding: 0 1.5rem;
   max-width: 1980px;
   height: 100vh;
   display: flex;
