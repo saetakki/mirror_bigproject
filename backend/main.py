@@ -239,8 +239,9 @@ async def setting_persona(user_id : int, order_num : int, db : Session = Depends
     except IndexError:
     	raise HTTPException(status_code=400, detail='해당 순번의 페르소나가 없습니다. 다시 확인해주세요')
  
-@app.post('/history_id/{history_id}', response_model = str)
-async def continue_converstation(chat_log=None, question=None):
-    txt = continue_text(chat_log=None, question=None)
+@app.post('/history/{user}/{history_id}/', response_model = str)
+async def continue_converstation(chat_log = None, question : str = None):
+    # persona = db.query(models.History).filter(models.History.user == user).first()['persona']
+    txt = continue_text(chat_log=None, persona = None, question=None)
     print(txt)
     return txt

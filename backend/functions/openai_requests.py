@@ -82,13 +82,22 @@ def set_persona(selected_persona):
     except Exception as e:
         return print(e)
     
-def continue_text(chat_log = None, question = None):
-    if chat_log is None:
+def continue_text(chat_log = None, persona = None, question = None):
+    if not chat_log:
         with open('output.json', 'r', encoding='utf-8') as f:
             txt = json.load(f)
-    if question is None:
+    if not question:
         question = '오늘 기분은 어떻세요?'
     txt = json.dumps(txt, ensure_ascii=False, indent = 4)
+    if persona:
+        persona_name = persona.persona_name
+        age = persona.age
+        gender = persona.gender
+        position = persona.position
+        department = persona.department
+        state = persona.state
+        txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
+    	{department}의 {position}이고 {state}를 원하는 역할을 해줘 + {txt}""".replace("\n", '').replace("    ", "")    	    
     print(txt)
     try:
         response = openai.ChatCompletion.create(
