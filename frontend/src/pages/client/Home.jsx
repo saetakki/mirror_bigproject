@@ -43,7 +43,6 @@ const Home = () => {
                 <br/><br/>-토머스 에디슨</p>
               </Quotes>)
               : null}
-
               {/* 전체 메세지 기록 중 최근 5개 */}
               <BoardContainer>
                   <ItemListContainer>
@@ -149,8 +148,6 @@ const PracticeBtn = styled.button`
   }
 `
 
-
-
 const ProfileImg = styled.img`
 width: 180px;
 height: 180px;
@@ -203,21 +200,6 @@ const Quotes = styled.div`
   margin-bottom: 24px;
 `
 
-
-// const BoardHead = styled.div`
-//   width: 100%;
-//   height:28px;
-//   display: flex;
-//   flex-direction: row;
-//   `
-
-// const GridLine = styled.div`
-//   width: 100%;
-//   height: 1px;
-//   background-color: #d9d9d9;
-//   margin-top: 12px;
-//   margin-bottom: 12px;
-//   `
 
 const ItemListContainer = styled.div`
   margin-top: 21px;
