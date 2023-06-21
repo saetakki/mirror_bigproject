@@ -1,14 +1,17 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.http import JsonResponse, Http404
-from .models import History
+from .models import History, UserProfile
 from .serializers import HistorySerializer, ChatLogReportSerializer, UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate
+from django.contrib.auth import logout as logout_django
+from django.contrib.auth import login as login_django
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-
+from django.contrib.auth.models import User
+import re
 
 #### 히스토리페이지에서 사용되는 API#### -> 서준호
 
