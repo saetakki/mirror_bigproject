@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "rest_framework",
     'corsheaders',
     'main',
-    'chatapi'
+    'chatapi',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
