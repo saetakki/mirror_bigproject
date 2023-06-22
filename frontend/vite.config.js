@@ -40,6 +40,10 @@ const PATH_DATA = [
     find: '@hooks',
     url: './src/hooks',
   },
+  {
+    find: '@apis',
+    url: './src/apis',
+  },
 ];
 
 export default defineConfig({
@@ -51,5 +55,10 @@ export default defineConfig({
         replacement: fileURLToPath(new URL(path.url, import.meta.url)),
       })),
     ],
+  },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8000',
+    },
   },
 });

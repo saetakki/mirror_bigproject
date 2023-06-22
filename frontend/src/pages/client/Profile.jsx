@@ -121,7 +121,7 @@ function ProfilePage() {
           <ProfileImg src={profileImage} alt="Profile" />
           <label htmlFor="inputimgid"><EditSaveDiv>{isImgEditing ? 'Save' : 'Edit'}</EditSaveDiv></label>
           <ImageUploadBtn id="inputimgid" type="file" onClick={handleImgEditClick} onChange={profileChange} />
-          <RealName>{profileData.current.real_name}</RealName>
+          <ID>{profileData.current.username}</ID>
         </ProfileImgDiv>) :
         (<MProfileImgDiv>
           <MProfileImg src={profileImage} alt="Profile" />
@@ -136,7 +136,6 @@ function ProfilePage() {
             <>
               <InfoText>이름 :{' '}<ChangeInfo type="text" name="real_name" defaultValue={profileData.current.real_name} onChange={handleInputChange} /></InfoText>
               <InfoText>이메일 :{' '}<ChangeInfo type="email" name="email" defaultValue={profileData.current.email} onChange={handleInputChange} /></InfoText>
-              <InfoText>아이디 :{' '}<ChangeInfo type="text" name="username" defaultValue={profileData.current.username} onChange={handleInputChange} /></InfoText>
               <InfoText>비밀번호 :{' '}<ChangeInfo type="text" name="password" defaultValue={profileData.current.password} onChange={handleInputChange} /></InfoText>
             </>
           ) : (
@@ -144,7 +143,6 @@ function ProfilePage() {
             <>
               <InfoText>이름 : {profileData.current.real_name}</InfoText>
               <InfoText>이메일 : {profileData.current.email}</InfoText>
-              <InfoText>아이디 : {profileData.current.username}</InfoText>
               <InfoText>비밀번호 : {profileData.current.password}</InfoText>
             </>
           )}
@@ -156,7 +154,6 @@ function ProfilePage() {
             <>
               <InfoText>이름 :{' '}<ChangeInfo type="text" name="real_name" defaultValue={profileData.current.real_name} onChange={handleInputChange} /></InfoText>
               <InfoText>이메일 :{' '}<ChangeInfo type="email" name="email" defaultValue={profileData.current.email} onChange={handleInputChange} /></InfoText>
-              <InfoText>아이디 :{' '}<ChangeInfo type="text" name="username" defaultValue={profileData.current.username} onChange={handleInputChange} /></InfoText>
               <InfoText>비밀번호 :{' '}<ChangeInfo type="text" name="password" defaultValue={profileData.current.password} onChange={handleInputChange} /></InfoText>
             </>
           ) : (
@@ -164,22 +161,25 @@ function ProfilePage() {
             <>
               <InfoText>이름 : {profileData.current.real_name}</InfoText>
               <InfoText>이메일 : {profileData.current.email}</InfoText>
-              <InfoText>아이디 : {profileData.current.username}</InfoText>
-              <InfoText>비밀번호 : {profileData.current.password.slice(0, Math.floor(profileData.current.password.length / 2))}</InfoText>
+              <InfoText>비밀번호 : {profileData.current.password}</InfoText>
             </>
           )}
           <MEditSaveBtn onClick={handleEditClick}>{isEditing ? 'Save' : 'Edit'}</MEditSaveBtn>
         </MInformation>)}
-      <DeleteDiv>
+      {!isMobile
+      ? (<DeleteDiv>
         <DeleteButton>회원탈퇴</DeleteButton>
-      </DeleteDiv>
+      </DeleteDiv>):(<MDeleteDiv>
+        <MDeleteButton>회원탈퇴</MDeleteButton>
+      </MDeleteDiv>)}
     </ProfileWrapper>
   );
 }
 
 
-const RealName = styled.p`
-  margin-bottom: 5px;
+const ID = styled.p`
+  margin: 0px;
+  font-size: 30px;
   align-items: center;
   justify-content: center;
   text-align: left;
@@ -198,9 +198,8 @@ const InfoText = styled.p`
 
 const ProfileWrapper = styled.div`
   width: 50%;
-  border: 3px solid rgba(207, 255, 229);
   padding: 20px;   
-  border-radius: 10px; 
+  
 `
 
 const EditSaveDiv = styled.div`
@@ -256,28 +255,24 @@ const ImageUploadBtn = styled.input`
 const ProfileImg = styled.img`
   height: 200px;
   width: 200px;
-  border: 3px solid rgba(207, 255, 229);
   border-radius: 50%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `
 
 const ProfileImgDiv = styled.div`
-  border: 3px solid rgba(207, 255, 229);
-  border-radius: 10px;
+  border-bottom: 1px solid black;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 20px;
   position: relative;
 `
 
 const Information = styled.div`
   position: relative;
-  border: 3px solid rgba(207, 255, 229);
-  border-radius: 10px;
+  border-bottom: 1px solid black;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -289,8 +284,11 @@ const ChangeInfo = styled.input`
 `
 
 const DeleteButton = styled.button`
-  margin-top: 15px;
+  margin-top: 0px;
   font-size: 12px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
   cursor: pointer;
   width: 150px;
   height: 30px;
@@ -308,15 +306,18 @@ const DeleteButton = styled.button`
 `
 
 const DeleteDiv = styled.div`
+  position: relative;
+  height: 50px;
+  
+  padding: 20px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 `
 // 반응형
 const MProfileImg = styled.img`
   height: 100px;
   width: 100px;
-  border: 3px solid rgba(207, 255, 229);
+  
   border-radius: 50%;
 `
 const MImageUploadBtn = styled.input`
@@ -324,15 +325,13 @@ const MImageUploadBtn = styled.input`
   display: none;
 `
 const MProfileImgDiv = styled.div`
-  border: 3px solid rgba(207, 255, 229);
-  border-radius: 10px;
+  border-bottom: 1px solid black;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 20px;
 `
 
 const MEditSaveDiv = styled.div`
@@ -358,7 +357,7 @@ const MEditSaveBtn = styled.button`
   margin-top: 15px;
   font-size: 12px;
   cursor: pointer;
-  width: 100%;
+  width: 90px;
   height: 30px;
   background: #fff;
   border: 1px solid rgb(77,77,77);
@@ -374,15 +373,41 @@ const MEditSaveBtn = styled.button`
 `
 
 const MInformation = styled.div`
-  border: 3px solid rgba(207, 255, 229);
-  border-radius: 10px;
+  border-bottom: 1px solid black;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 20px;
+`
+
+const MDeleteButton = styled.button`
+  font-size: 12px;
+  cursor: pointer;
+  width: 90px;
+  height: 30px;
+  background: #fff;
+  border: 1px solid rgb(77,77,77);
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    background: rgb(77,77,77);
+    color: #fff;
+  }
+`
+
+const MDeleteDiv = styled.div`
+  
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 `
 
 

@@ -3,6 +3,8 @@ import { Container } from "@styles"
 import { IndexRow } from "@organisms"
 
 const History = () => {
+
+
   return (
     <Container>
       <Head>
