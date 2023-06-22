@@ -277,6 +277,16 @@ def store_messages(request_message, response_message):
   with open(file_name, "w") as f:
     json.dump(messages, f)
 
+def store_messages_to_db(history_id):
+    file_name = 'stored_data.json'
+    with open(file_name, 'r') as f:
+        chat_log = json.load(f)
+    try:
+        history = History.objects.get(id=history_id)
+    except History.DoesNotExist:
+        raise Http404('History does not exist')
+    history.chat_log = chat_log
+    return JsonResponse({'message' : '저장 완료'}, status=200)
 
 # Save messages for retrieval later on
 def reset_messages():
