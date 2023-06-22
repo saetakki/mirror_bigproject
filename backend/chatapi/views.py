@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import requests
 from django.http import JsonResponse, Http404
+from rest_framework.permissions import IsAuthenticated
 # Retrieve Enviornment Variables
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
@@ -21,11 +22,13 @@ ELEVEN_LABS_API_KEY = config("ELEVEN_LABS_API_KEY")
 # Setting Persona
 # 필요 없는듯? 삭제 고려
 @api_view(['POST'])
-def set_persona(request, history_id, selected_persona):
+@permission_classes([IsAuthenticated])
+def set_persona(request, history_id):
     try:
         history = History.objects.get(id=history_id, user=request.user)
     except History.DoesNotExist:
         raise Http404('History does not exist')
+    selected_persona = request.data.get('selected_persona')
     persona_name = selected_persona['persona_name']
     age = selected_persona['age']
     gender = selected_persona['gender']
@@ -150,11 +153,12 @@ def get_chat_response(request, history_id, message_input):
     return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #해결됨
-from rest_framework.permissions import IsAuthenticated
+
+@permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def make_report(request, history_id, filename='output.json'):
     try:
-        history = History.objects.get(id=history_id)
+        history = History.objects.get(id=history_id, user=request.user)
     except History.DoesNotExist:
         raise Http404('History does not exist')
     # stored_data.json
@@ -189,12 +193,15 @@ def make_report(request, history_id, filename='output.json'):
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def continue_text(request, history_id, question = None):
     try:
         history = History.objects.get(id=history_id, user=request.user)
     except History.DoesNotExist:
         raise Http404('History does not exist')
-        
+    
+    #question = request.data.get("question")
+    
     # if history.chat_log is None:
     #     raise Http404('History does not exist')
     with open('output.json', 'r', encoding='utf-8') as f:
