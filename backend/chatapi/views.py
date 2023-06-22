@@ -20,22 +20,16 @@ openai.api_key = config("OPEN_AI_KEY")
 ELEVEN_LABS_API_KEY = config("ELEVEN_LABS_API_KEY")
 
 # Setting Persona
-# 필요 없는듯? 삭제 고려
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def set_persona(request, history_id):
-    try:
-        history = History.objects.get(id=history_id, user=request.user)
-    except History.DoesNotExist:
-        raise Http404('History does not exist')
-    selected_persona = request.data.get('selected_persona')
-    persona_name = selected_persona['persona_name']
-    age = selected_persona['age']
-    gender = selected_persona['gender']
-    position = selected_persona['position']
-    department = selected_persona['department']
-    state = selected_persona['state']
-    
+def set_persona(request):
+
+    persona_name = request.data.get('persona_name')
+    age = request.data.get('age')
+    gender = request.data.get('gender')
+    position = request.data.get('position')
+    department = request.data.get('department')
+    state = request.data.get('state')    
     persona = Persona(
         persona_name=persona_name,
         age=age,
@@ -45,7 +39,15 @@ def set_persona(request, history_id):
         state=state
     )
     persona.save()
-    return JsonResponse({}, status=200)
+
+    # 히스토리 생성
+    history = History(
+        user=request.user,
+        persona=persona,
+    )
+    history.save()
+        
+    return JsonResponse({'history_id': history.id}, status=200)
     
 
 
@@ -127,25 +129,25 @@ def get_recent_messages(history_id):
 # Open AI - Chat GPT
 # 해결됨
 @api_view(["POST"])
-def get_chat_response(request, history_id, message_input):
+def get_chat_response(request, history_id):
+	message_input = request.data.get('message_input')
+	messages = get_recent_messages(history_id)
+	user_message = {"role": "user", "content": message_input }
+	messages.append(user_message)
+	print(messages)
 
-  messages = get_recent_messages(history_id)
-  user_message = {"role": "user", "content": message_input }
-  messages.append(user_message)
-  print(messages)
+	try:
+		response = openai.ChatCompletion.create(
+		model="gpt-3.5-turbo",
+		messages=messages
+		)
+		message_text = response["choices"][0]["message"]["content"]
+		return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
+	except Exception as e:
+		return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-  try:
-    response = openai.ChatCompletion.create(
-      model="gpt-3.5-turbo",
-      messages=messages
-    )
-    message_text = response["choices"][0]["message"]["content"]
-    return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
-  except Exception as e:
-    return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-#해결됨
-
+# 종료버튼 눌렀을 때 기능
 @permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def make_report(request, history_id, filename='output.json'):
@@ -171,6 +173,7 @@ def make_report(request, history_id, filename='output.json'):
     with open(filename, 'r', encoding='utf-8') as f:
         chat_log = json.load(f) 
     print(chat_log)
+    history.chat_log = chat_log
     try:
         response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo",
@@ -185,30 +188,7 @@ def make_report(request, history_id, filename='output.json'):
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# def start_roleplay(history_id):
-#     try:
-#         history = History.objects.get(id=history_id)
-#         if history.persona:
-#             persona_name = history.persona.persona_name
-#             age = history.persona.age
-#             gender = history.persona.gender
-#             position = history.persona.position
-#             department = history.persona.department
-#             state = history.persona.state
-            
-#             txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
-#             {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")
-#             print(txt)
-#             response = openai.ChatCompletion.create(
-#             model="gpt-3.5-turbo",
-#             messages=[{"role": "user", "content": txt}]
-#         )
-#         message_text = response["choices"][0]["message"]['content']
-#         print(message_text)
-        
-#         return message_text
-#     except Exception as e:
-#             return e
+# 작동 확인
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def continue_text(request, history_id):
@@ -296,16 +276,17 @@ def store_messages(request_message, response_message):
   with open(file_name, "w") as f:
     json.dump(messages, f)
 
-def store_messages_to_db(history_id):
-    file_name = 'stored_data.json'
-    with open(file_name, 'r') as f:
-        chat_log = json.load(f)
-    try:
-        history = History.objects.get(id=history_id)
-    except History.DoesNotExist:
-        raise Http404('History does not exist')
-    history.chat_log = chat_log
-    return JsonResponse({'message' : '저장 완료'}, status=200)
+# 위에서 구현
+# def store_messages_to_db(history_id):
+#     file_name = 'stored_data.json'
+#     with open(file_name, 'r') as f:
+#         chat_log = json.load(f)
+#     try:
+#         history = History.objects.get(id=history_id)
+#     except History.DoesNotExist:
+#         raise Http404('History does not exist')
+#     history.chat_log = chat_log
+#     return JsonResponse({'message' : '저장 완료'}, status=200)
 
 # Save messages for retrieval later on
 def reset_messages():	
