@@ -13,14 +13,12 @@ import {
   requestLogin,
   requestSignIn
 } from '@apis'
-
 const Home = () => {
   const [history, setHistory] = useState([])
   const [bookMark, setBookMark] = useState([])
   const [isLogin, setIsLogin] = useState(false)
   const navigate = useNavigate();
   const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
-
 
   useEffect(() => {
     console.log("login")
@@ -109,7 +107,7 @@ const Home = () => {
       </HomeWrapper>
     </Container>
   )
-}
+}}
 
 
 const HomeWrapper = styled.div`
