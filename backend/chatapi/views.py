@@ -1,5 +1,5 @@
 from django.shortcuts import render
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from main.models import Persona, History, UserProfile
 from django.http import JsonResponse, HttpResponse
 import openai
@@ -7,6 +7,7 @@ from decouple import config
 import json, random
 import pickle
 import sys
+from main.serializers import HistorySerializer, ChatLogReportSerializer, UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -53,6 +54,7 @@ def start_roleplay(request, persona_id):
         )
         message_text = response["choices"][0]["message"]['content']
         print(message_text)
+        
         return Response(message_text, status=status.HTTP_200_OK)
     except Exception as e:
             return JsonResponse({'error': 'Persona not found'})
@@ -135,26 +137,40 @@ def get_chat_response(request, message_input):
 
 #해결됨
 @api_view(['POST'])
-def make_report(request, filename='output.json'):
+def make_report(request, history_id, filename='output.json'):
+    try:
+        history = History.objects.get(id=history_id, user=request.user)
+    except History.DoesNotExist:
+        raise Http404('History does not exist')
     # stored_data.json
-	with open(filename, 'r', encoding='utf-8') as f:
-		json_data = json.load(f) 
-	print(json_data)
-	# print('='*100)
-	# with open('stored_data.json', encoding='utf-8') as f:
-	# 	json_data = json.load(f)
-	# json_data = json_data[1:]
- 	# print(json_data[1:])
-	try:
-		response = openai.ChatCompletion.create(
+    # chat log 받아오기
+    # chat_log = history.chat_log
+    # if chat_log is None:
+    #     raise Http404('대화 기록이 없습니다')
+    if history.chat_log is None:
+        raise Http404('대화 기록이 없습니다')
+    
+    # if history.report:
+    #     raise Http404( "이미 보고서가 존재합니다")
+    
+    # chat log 받아오기
+    # json_data = history.chat_log
+	
+    with open(filename, 'r', encoding='utf-8') as f:
+        chat_log = json.load(f) 
+    print(chat_log)
+    try:
+        response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo",
-			messages=[{"role": "user", "content": f' "{json_data}" 다음의 상담내용을 user입장에서 개요, 잘한 점, 보완할 점의 3항목으로 json 형태의 보고서로 작성해줘 '}]
-   		)
-		message_text = response["choices"][0]["message"]['content']
-		print(message_text)
-		return Response(message_text, status=status.HTTP_200_OK)
-	except Exception as e:
-		return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+			messages=[{"role": "user", "content": f' "{chat_log}" 다음의 상담내용을 user입장에서 개요, 잘한 점, 보완할 점의 3항목으로 json 형태의 보고서로 작성해줘 '}])
+        message_text = response["choices"][0]["message"]['content']      
+        print(message_text)
+        history.report = message_text
+        history.save()
+        serializer = ChatLogReportSerializer(history)
+        return JsonResponse({"report" : serializer.data.get('report')}, status=status.HTTP_200_OK, safe=False)
+    except Exception as e:
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def continue_text(reqeust, chat_log = None, persona_id = None, question = None):
