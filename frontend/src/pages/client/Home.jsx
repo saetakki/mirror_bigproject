@@ -11,7 +11,6 @@ import {
   getHistoryPagination,
   getBookMarkPagination,
   requestLogin,
-  requestSignIn
 } from '@apis'
 const Home = () => {
   const [history, setHistory] = useState([])
@@ -107,7 +106,7 @@ const Home = () => {
       </HomeWrapper>
     </Container>
   )
-}}
+}
 
 
 const HomeWrapper = styled.div`
