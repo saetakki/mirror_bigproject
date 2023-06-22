@@ -8,3 +8,4 @@ export * from './Home';
 export * from './History';
 export * from './BookMark';
 export * from './Profile';
+export * from './LogIn';
