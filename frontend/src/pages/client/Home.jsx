@@ -13,8 +13,6 @@ import {
   requestLogin,
   requestSignIn
 } from '@apis'
-
-
 const Home = () => {
   const [history, setHistory] = useState([])
   const [bookMark, setBookMark] = useState([])
@@ -23,6 +21,12 @@ const Home = () => {
   const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
 
   useEffect(() => {
+    console.log("login")
+    isLogin 
+    ? null 
+    : requestLogin().then(res => console.log(res)).catch(err => console.log(err))
+    setIsLogin(true)
+
     getHistoryPagination(1)
     .then(res => setHistory(res))
     .catch(err => console.log(err))
@@ -31,6 +35,9 @@ const Home = () => {
     .then(res => setBookMark(res))
     .catch(err => console.log(err))
   }, [])
+
+
+
 
   return(
     <Container>
