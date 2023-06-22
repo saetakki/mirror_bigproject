@@ -132,9 +132,9 @@ def get_recent_messages(history_id):
 # Open AI - Chat GPT
 # 해결됨
 @api_view(["POST"])
-def get_chat_response(request, message_input):
+def get_chat_response(request, history_id, message_input):
 
-  messages = get_recent_messages()
+  messages = get_recent_messages(history_id)
   user_message = {"role": "user", "content": message_input }
   messages.append(user_message)
   print(messages)
@@ -145,15 +145,16 @@ def get_chat_response(request, message_input):
       messages=messages
     )
     message_text = response["choices"][0]["message"]["content"]
-    return JsonResponse({'message':message_text}, status=status.HTTP_200_OK)
+    return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
   except Exception as e:
     return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #해결됨
+from rest_framework.permissions import IsAuthenticated
 @api_view(['POST'])
 def make_report(request, history_id, filename='output.json'):
     try:
-        history = History.objects.get(id=history_id, user=request.user)
+        history = History.objects.get(id=history_id)
     except History.DoesNotExist:
         raise Http404('History does not exist')
     # stored_data.json
@@ -161,8 +162,8 @@ def make_report(request, history_id, filename='output.json'):
     # chat_log = history.chat_log
     # if chat_log is None:
     #     raise Http404('대화 기록이 없습니다')
-    if history.chat_log is None:
-        raise Http404('대화 기록이 없습니다')
+    # if history.chat_log is None:
+    #     raise Http404('대화 기록이 없습니다')
     
     # if history.report:
     #     raise Http404( "이미 보고서가 존재합니다")
@@ -289,7 +290,7 @@ def store_messages_to_db(history_id):
     return JsonResponse({'message' : '저장 완료'}, status=200)
 
 # Save messages for retrieval later on
-def reset_messages():
+def reset_messages():	
 
   # Define the file name
   file_name = "stored_data.json"
