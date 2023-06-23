@@ -2,7 +2,6 @@ import { requestLogin } from "@apis"
 import { useRecoilState } from "recoil";
 import { isAuthAtom } from "../../atoms";
 import { useNavigate } from "react-router-dom";
-
 const LogIn = () => {
   const [, setIsAuth] = useRecoilState(isAuthAtom);
   const navigate = useNavigate();

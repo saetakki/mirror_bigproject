@@ -2,17 +2,18 @@ import axios from 'axios';
 
 const { VITE_API_URL } = import.meta.env;
 
-const getCookie = (name) => {
+export const getCookie = (name) => {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length == 2) return parts.pop().split(';').shift();
 };
 
-const csrftoken = getCookie('csrftoken')
-
 export const customAxios = axios.create({
   baseURL: VITE_API_URL,
 });
+
+const csrftoken = getCookie('csrftoken')
+
 
 export const getHistoryPagination = async (page) => {
   const res = await customAxios.get(`api/history/?page=${page}`);

@@ -1,22 +1,28 @@
 import styled from "@emotion/styled";
 import { Column } from "../../atoms";
 import { CiStar } from 'react-icons/ci'
+import { getHistoryItem } from "../../../apis";
 
 
 const IndexRow = ({ id, date, persona, isBooked, isMobile }) => {
 
+  const onClickHandler = (e) => {
+    e.preventDefault();
+    getHistoryItem(`${id}`)
+    .then(res => console.log(res))
+    .catch(err => console.log(err))
+  }
+
   return(
-    <ColumnContainer>
-      {isMobile ?
-      null
-    :
-      <Column width="120px" height="50px">{id}</Column>
+    <ColumnContainer onClick={onClickHandler}>
+      {isMobile 
+      ? null
+      : <Column width="120px" height="50px">{id}</Column> 
       }
-        {isBooked ? (
-        <BookMarked width="24px" height="24px">
-          <CiStar/>
-        </BookMarked>
-        ) : null}
+      {isBooked 
+      ? ( <BookMarked width="24px" height="24px"><CiStar/></BookMarked>) 
+      : null
+      }
       <Column width="240px" height="50px">{date}</Column>
       <Column flex="1" height="50px">PERSONA</Column>
     </ColumnContainer>
