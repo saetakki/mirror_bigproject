@@ -88,30 +88,58 @@ def set_persona(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def convert_audio_to_text(request, history_id):
-    audio_file = request.FILES.get('audio_file') 
+    audio_file = request.FILES.get('audio_file')
+    if not audio_file:
+        return Response("No audio file provided.", status=status.HTTP_400_BAD_REQUEST)    
     try:
-        # Use delete=False to allow reopening the file
-        with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
-            for chunk in audio_file.chunks():
-                temp_audio.write(chunk)
-
-            # Reopen the temporary file as a file object
-            with open(temp_audio.name, 'rb') as file_obj:
-                transcript = openai.Audio.transcribe("whisper-1", file_obj)
-        
+        # with open(audio_file, 'rb') as audio_file:
+        #     transcript = openai.Audio.transcribe("whisper-1", audio_file)
+        transcript = openai.Audio.transcribe("whisper-1", audio_file)
         print(transcript)
+        
         message_text = transcript["text"]
         print(message_text)
-        history = History.objects.get(id=history_id, user=request.user)
-        history.chat_log.append({"role": "user", "content": message_text})
-        history.save()
-
+        # history = History.objects.get(id=history_id, user=request.user)
+        # history.chat_log.append({"role": "user", "content": message_text})
+        # history.save()
+        # voice = save_result(message_text)
+        
         return Response(message_text, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    finally:
-        # Manually delete the temporary file
-        os.remove(temp_audio.name)
+
+###########
+
+
+"""def curry(f,...f){
+   convert_audio_to_text(),    <- 프론트에서 요청
+ 실행 ->  send_text_to_chatgpt(),   <- 프론트에서 요청
+ 실행 -> send_text_and_voice_to_client() -> 프론트로 보내줌
+}
+
+
+
+
+
+def send_text_to_chatgpt(txt):
+    chatgpt한테 텍스트 요청 보냄
+    return 응답 받음
+
+def send_text_and_voice_to_client(txt):
+   txt를 음성화하고
+   return Response(프론트 요청에 담아서 보냄)"""
+
+
+
+
+
+def convert_audio_to_text_helper(audio_file):
+    try:
+        transcript = openai.Audio.transcribe("whisper-1", audio_file)
+        message_text = transcript["text"]
+        return message_text
+    except Exception as e:
+        raise Exception(str(e))
 
 
 def get_recent_messages(history_id):
@@ -128,6 +156,16 @@ def get_recent_messages(history_id):
   messages = []
 
   # Add Random Element
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 #   x = random.uniform(0, 1)
 #   if x < 0.2:
 #     learn_instruction["content"] = learn_instruction["content"] + "Your response will have some light humour. "
@@ -158,14 +196,17 @@ def get_recent_messages(history_id):
   return messages
 
 # text를 입력받아서 openai chatgpt에 넣고, 그 결과를 반환
+# audio -> 200 -> 프론트에서 변환된 텍스트를 다시 보내줌 -> get_text_respon실행
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def get_text_response(request, history_id):
+
     message_input = request.data.get('message_input')
     history = History.objects.get(id=history_id, user=request.user)
     messages = history.chat_log
     user_message = {"role": "user", "content": message_input }
     messages.append(user_message)
+
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -183,6 +224,7 @@ def get_text_response(request, history_id):
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+
     
 # Open AI - Chat GPT
 # 해결됨
@@ -208,7 +250,7 @@ def get_text_response(request, history_id):
 # 종료버튼 눌렀을 때 기능
 @permission_classes([IsAuthenticated])
 @api_view(['POST'])
-def make_report(request, history_id, filename='output.json'):
+def make_report(request, history_id):
     try:
         history = History.objects.get(id=history_id, user=request.user)
     except History.DoesNotExist:
@@ -228,10 +270,9 @@ def make_report(request, history_id, filename='output.json'):
     # json_data = history.chat_log
 	
 	# 제대로 된 chat_log있으면 이거 지우기
-    with open(filename, 'r', encoding='utf-8') as f:
-        chat_log = json.load(f) 
-    print(chat_log)
-    history.chat_log = chat_log
+
+    chat_log = history.chat_log
+ 
     try:
         response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo",
@@ -285,35 +326,80 @@ def continue_text(request, history_id):
 
 
 # 해결필요
-@api_view(['GET', 'POST'])  # GET, POST 메서드 허용
-def convert_text_to_speech(request, message):
-    if request.method == 'POST':
-        body = {
-            "text": message,
-            "model_id": "eleven_monolingual_v1",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": 0.5
-            }
+@api_view(['POST'])  # GET, POST 메서드 허용
+def convert_text_to_speech(request):
+    message = request.data.get('message')
+    
+    body = {
+        "text": message,
+        "model_id": "eleven_monolingual_v1",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.5
         }
+    }
 
-        voice_Domi = "AZnzlk1XvdvUeBnXmlld"
-        voice_rachel = "21m00Tcm4TlvDq8ikWAM"
-        voice_antoni = "ErXwobaYiN019PkySvjV"
-        voices = [voice_Domi, voice_rachel, voice_antoni]
-        headers = {"xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg"}
-        endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{random.choice(voices)}"
-        try:
-            response = requests.post(endpoint, json=body, headers=headers)
-        except Exception as e:
-            return HttpResponse(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        if response.status_code == 200:
-            return HttpResponse(response.content, content_type='audio/mpeg')
-        else:
-            return HttpResponse(status=response.status_code)
-    elif request.method == 'GET':
-        # GET 요청에 대한 처리 로직을 구현합니다.
-        return HttpResponse("GET 요청을 처리합니다.")
+    voice_Domi = "AZnzlk1XvdvUeBnXmlld"
+    voice_rachel = "21m00Tcm4TlvDq8ikWAM"
+    voice_antoni = "ErXwobaYiN019PkySvjV"
+    voices = [voice_Domi, voice_rachel, voice_antoni]
+    headers = {"xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg"}
+    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{random.choice(voices)}"
+    
+    try:
+        response = requests.post(endpoint, json=body, headers=headers)
+    except Exception as e:
+        return HttpResponse(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+    
+    if response.status_code == 200:
+        return HttpResponse(response.content, content_type='audio/mpeg')
+    else:
+        return HttpResponse(status=response.status_code)   
+
+## 찬님꺼  ###################################   
+# import requests
+# from decouple import config
+
+# ELEVEN_LABS_API_KEY = config("ELEVEN_LABS_API_KEY")
+
+# Eleven Labs
+# Convert text to speech
+# def convert_text_to_speech(message):
+#   body = {
+#     "text": message,
+#     "voice_settings": {
+#         "stability": 0,
+#         "similarity_boost": 0
+#     }
+#   }
+
+#   voice_shaun = "mTSvIrm2hmcnOvb21nW2"
+#   voice_rachel = "21m00Tcm4TlvDq8ikWAM"
+#   voice_antoni = "ErXwobaYiN019PkySvjV"
+
+#   # Construct request headers and url
+#   headers = { "xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg" }
+#   endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_rachel}"
+
+#   try:
+#     response = requests.post(endpoint, json=body, headers=headers)
+#   except Exception as e:
+#     print(e)
+#     return
+
+#   if response.status_code == 200:
+#       # with open("output.wav", "wb") as f:
+#       #     f.write(audio_data)
+#       return response.content
+#   else:
+#     return
+#############################################        
+        
+    
+
+    # elif request.method == 'GET':
+    #     # GET 요청에 대한 처리 로직을 구현합니다.
+    #     return HttpResponse("GET 요청을 처리합니다.")
 
 # Save messages for retrieval later on
 def store_messages(request_message, response_message):
@@ -356,3 +442,7 @@ def reset_messages():
   open(file_name, "w")
 
 "--------------------------------------------------------------------------------------------------------------------------------------------------------------"
+
+# 1. audio 입력받아 tts한후 db저장
+# 2. 메세이 입력받아 db 저장
+# 3. chatgpt 보내기 / 오디오파일

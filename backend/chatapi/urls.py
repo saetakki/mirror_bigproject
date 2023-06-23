@@ -1,5 +1,5 @@
-from chatapi.views import  (convert_audio_to_text, make_report, 
-                            continue_text, convert_text_to_speech, set_persona, get_text_response)
+from chatapi.views import  (convert_audio_to_text, make_report,
+                            continue_text, convert_text_to_speech, set_persona, get_text_response, )
 from django.urls import path
 
 urlpatterns = [
@@ -9,5 +9,5 @@ urlpatterns = [
     # path('get_chat_response/<int:history_id>/', get_chat_response),	     
     path('continue_text/<int:history_id>/', continue_text),
     path('convert_text_to_speech/<str:message>/', convert_text_to_speech),
-    path('get_text_response/<int:history_id>/', get_text_response)     
+    path('get_text_response/<int:history_id>/', get_text_response),
 ]	
