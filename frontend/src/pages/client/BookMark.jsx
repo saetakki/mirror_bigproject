@@ -1,8 +1,9 @@
 import styled from "@emotion/styled"
 import { Container } from "@styles"
-import { IndexRow } from "@organisms"
+import { IndexRow, PageHeader } from "@organisms"
 import { useEffect, useState } from "react"
 import { getBookMarkPagination } from "@apis"
+
 
 const BookMark = () => {
   const [isLoad, setIsLoad] = useState(false)
@@ -22,11 +23,7 @@ const BookMark = () => {
     (isLoad ?
     (<Container>
       <Head>
-        <strong>북마크 목록</strong>
-        <Quotes>
-          <span>username님의 연습기록을 모아봤어요.</span>
-          <GridLine/>
-        </Quotes>
+        <PageHeader page="북마크 목록" />
         <BoardContainer>
           <BoardHead>
             <IndexRow id="CHAT ID" isHeader={true} date="DATE" persona="PERSONA"/>
@@ -60,12 +57,6 @@ const Head = styled.div`
   strong {
     font-size: 24px;
   }
-`
-
-const Quotes = styled.div`
-  font-size: 12px;
-  color: #9a9a9a;
-  margin-bottom: 24px;
 `
 
 const GridLine = styled.div`

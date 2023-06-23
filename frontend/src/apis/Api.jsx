@@ -12,8 +12,6 @@ export const customAxios = axios.create({
   baseURL: VITE_API_URL,
 });
 
-const csrftoken = getCookie('csrftoken')
-
 
 export const getBookMarkPagination = async (page) => {
   const res = await customAxios.get(`api/history/bookmarked/?page=${page}`);
@@ -26,7 +24,7 @@ export const requestLogin = async () => {
     username : "a0000",
     password : "tjwnsgh000",
   }
-  const res = await customAxios.post('api/login/', body, {headers: {'X-CSRFToken': csrftoken}})
+  const res = await customAxios.post('api/login/', body)
   return res.data
 }
 
