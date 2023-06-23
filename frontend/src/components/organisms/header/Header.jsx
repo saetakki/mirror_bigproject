@@ -84,6 +84,7 @@ const StyledHeader = styled.nav`
 const BtnContainer = styled.div`
   width: 60vw;
   height: 60px;
+  position: relative;
 
 
   display: ${Mobile ? 'flex' : 'none'};
@@ -108,38 +109,71 @@ const MobileIconWrapper = styled.div`
 
 const MobileDropdownMenu = styled.div`
   position: absolute;
-  top: 40px;
-  right: 0;
-  width: 150px;
-  height: 150px;
   background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  top: 60px;
+  right: 0;
+  width: 100vw;
+  right: -24px;
+  height: 100vh;
 
   ul {
-    position: absolute;
-    width: 150px;
-    height: 150px;
-    right: 10px;
-    widht: 100%;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-    justify-content: space-evenly;
-
-    li {
-      padding: 10px 0;
-      cursor: pointer;
-
-      &:hover {
-        background-color: #f2f2f2;
-      }
-    }
+      top: 35px;
+      position: absolute;
+      width: 100%;
+      height: 60%;
+      margin: 0 auto;
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      justify-content: space-evenly;
   }
-`;
+
+  li {
+  padding: 10px 0;
+  font-size: 36px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    background-color: #f2f2f2;
+  }
+
+`
+
+
+// const MobileDropdownMenu = styled.div`
+//   position: absolute;
+//   z-index: 10;
+//   top: 60px;
+//   right: -12px;
+//   width: 100vw;
+//   height: 100vh;
+//   background-color: #fff;
+//   border-radius: 4px;
+//   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+
+//   ul {
+//     position: absolute;
+//     width: 100%;
+//     height: 60%;
+//     margin: 0 auto;
+//     list-style-type: none;
+//     display: flex;
+//     flex-direction: column;
+//     text-align: center;
+//     align-items: center;
+//     justify-content: space-evenly;
+
+//     li {
+//       padding: 10px 0;
+//       cursor: pointer;
+//       &:hover {
+//         background-color: #f2f2f2;
+//       }
+//     }
+//   }
+// `;
 
 export default Header;
