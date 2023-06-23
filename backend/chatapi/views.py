@@ -5,8 +5,10 @@ from django.http import JsonResponse, HttpResponse
 import openai
 from decouple import config
 import json, random
+import os
 import pickle
 import sys
+import tempfile
 from main.serializers import HistorySerializer, ChatLogReportSerializer, UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -40,47 +42,76 @@ def set_persona(request):
     )
     persona.save()
 
+    # txt = {'role' : 'user', 
+    #        'content' : f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
+    #         {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")}
+    
+    txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
+    {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")
+    learn_instruction = {"role": "system", "content": f"{txt}. user는 {request.user.userprofile.real_name}. Keep responses under 40 words. 코칭역할을 잘 할 수 있도록 프롬프트 엔지니어링을 해야해"}
+    
     # 히스토리 생성
     history = History(
         user=request.user,
         persona=persona,
+        chat_log = [learn_instruction]
     )
     history.save()
-        
-    return JsonResponse({'history_id': history.id}, status=200)
+    print(type(history.chat_log))
+    messages = history.chat_log
+    return JsonResponse({'history_id': history.id, 'text': messages }, status=200)
     
 
 
-def start_roleplay(history_id):
-    try:
-        history = History.objects.get(id=history_id)
-        if history.persona:
-            persona_name = history.persona.persona_name
-            age = history.persona.age
-            gender = history.persona.gender
-            position = history.persona.position
-            department = history.persona.department
-            state = history.persona.state
+# def start_roleplay(history_id):
+#     try:
+#         history = History.objects.get(id=history_id)
+#         if history.persona:
+#             persona_name = history.persona.persona_name
+#             age = history.persona.age
+#             gender = history.persona.gender
+#             position = history.persona.position
+#             department = history.persona.department
+#             state = history.persona.state
             
-            txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
-            {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")
-            return txt
-    except Exception as e:
-            return e
+#             txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
+#             {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")
+#             return txt
+#     except Exception as e:
+#             return e
 
 # 해결
 # Open AI - Whisper
 # Convert audio to text
+# 이 코드는 오디오 인풋을 텍스트로 변환시켜주는 코드입니다. 그대로 둬도 되지 않을까요?
+# conver_audio
 @api_view(['POST'])
-def convert_audio_to_text(request, audio_file='broadcast_00033001.wav'):
+@permission_classes([IsAuthenticated])
+def convert_audio_to_text(request, history_id):
+    audio_file = request.FILES.get('audio_file') 
     try:
-        with open(audio_file, 'rb') as audio_file:
-            transcript = openai.Audio.transcribe("whisper-1", audio_file)
+        # Use delete=False to allow reopening the file
+        with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
+            for chunk in audio_file.chunks():
+                temp_audio.write(chunk)
+
+            # Reopen the temporary file as a file object
+            with open(temp_audio.name, 'rb') as file_obj:
+                transcript = openai.Audio.transcribe("whisper-1", file_obj)
+        
         print(transcript)
         message_text = transcript["text"]
+        print(message_text)
+        history = History.objects.get(id=history_id, user=request.user)
+        history.chat_log.append({"role": "user", "content": message_text})
+        history.save()
+
         return Response(message_text, status=status.HTTP_200_OK)
     except Exception as e:
-    	return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    finally:
+        # Manually delete the temporary file
+        os.remove(temp_audio.name)
 
 
 def get_recent_messages(history_id):
@@ -91,19 +122,19 @@ def get_recent_messages(history_id):
   txt = start_roleplay(history_id)
   history = History.objects.get(id=history_id)
   learn_instruction = {"role": "system", 
-                       "content": f"{txt}. user는 {history.user.userprofile.real_name}. Keep responses under 40 words. "}
+                       "content": f"{txt}. user는 {history.user.userprofile.real_name}. Keep responses under 40 words. 코칭역할을 잘 할 수 있도록 프롬프트 엔지니어링을 해야해"}
   
   # Initialize messages
   messages = []
 
   # Add Random Element
-  x = random.uniform(0, 1)
-  if x < 0.2:
-    learn_instruction["content"] = learn_instruction["content"] + "Your response will have some light humour. "
-  elif x < 0.5:
-    learn_instruction["content"] = learn_instruction["content"] + "Your response will include an interesting new fact about English. "
-  else:
-    learn_instruction["content"] = learn_instruction["content"] + "Your response will recommend another word to learn. "
+#   x = random.uniform(0, 1)
+#   if x < 0.2:
+#     learn_instruction["content"] = learn_instruction["content"] + "Your response will have some light humour. "
+#   elif x < 0.5:
+#     learn_instruction["content"] = learn_instruction["content"] + "Your response will include an interesting new fact about English. "
+#   else:
+#     learn_instruction["content"] = learn_instruction["content"] + "Your response will recommend another word to learn. "
 
   # Append instruction to message
   messages.append(learn_instruction)
@@ -126,25 +157,52 @@ def get_recent_messages(history_id):
   # Return messages
   return messages
 
+# text를 입력받아서 openai chatgpt에 넣고, 그 결과를 반환
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def get_text_response(request, history_id):
+    message_input = request.data.get('message_input')
+    history = History.objects.get(id=history_id, user=request.user)
+    messages = history.chat_log
+    user_message = {"role": "user", "content": message_input }
+    messages.append(user_message)
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+            )
+        message_text = response["choices"][0]["message"]["content"]
+        
+        # chat_log에 append
+        output = {'role' : 'assistant', 'content':message_text}
+        
+        # history의 chat_log에 output 추가
+        history.chat_log.append(output)
+        history.save()
+        return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
 # Open AI - Chat GPT
 # 해결됨
-@api_view(["POST"])
-def get_chat_response(request, history_id):
-	message_input = request.data.get('message_input')
-	messages = get_recent_messages(history_id)
-	user_message = {"role": "user", "content": message_input }
-	messages.append(user_message)
-	print(messages)
+# @api_view(["POST"])
+# def get_chat_response(request, history_id):
+# 	message_input = request.data.get('message_input')
+# 	messages = get_recent_messages(history_id)
+# 	user_message = {"role": "user", "content": message_input }
+# 	messages.append(user_message)
+# 	print(messages)
 
-	try:
-		response = openai.ChatCompletion.create(
-		model="gpt-3.5-turbo",
-		messages=messages
-		)
-		message_text = response["choices"][0]["message"]["content"]
-		return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
-	except Exception as e:
-		return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# 	try:
+# 		response = openai.ChatCompletion.create(
+# 		model="gpt-3.5-turbo",
+# 		messages=messages
+# 		)
+# 		message_text = response["choices"][0]["message"]["content"]
+# 		return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
+# 	except Exception as e:
+# 		return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # 종료버튼 눌렀을 때 기능
