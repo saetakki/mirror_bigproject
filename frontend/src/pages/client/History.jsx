@@ -19,9 +19,7 @@ const History = () => {
   return (
     (isLoad ? 
     (<Container>
-      <Head>
         <PageHeader page='연습기록'/>
-      </Head>
         <BoardContainer>
           <BoardHead>
             <IndexRow id="CHAT ID" isHeader={true} date="DATE" persona="PERSONA"/>
@@ -49,13 +47,6 @@ const History = () => {
 }
 
 export default History
-
-const Head = styled.div`
-  margin: 24px 0;
-  strong {
-    font-size: 24px;
-  }
-`
 
 
 const GridLine = styled.div`
