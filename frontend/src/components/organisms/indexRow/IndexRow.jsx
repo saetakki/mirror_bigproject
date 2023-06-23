@@ -1,20 +1,17 @@
 import styled from "@emotion/styled";
 import { Column } from "../../atoms";
 import { CiStar } from 'react-icons/ci'
-import { getHistoryItem } from "../../../apis";
+import { useNavigate } from "react-router-dom";
 
+const IndexRow = ({ isHeader=false, id, date, persona, isBooked, isMobile }) => {
 
-const IndexRow = ({ id, date, persona, isBooked, isMobile }) => {
-
+  const navigate = useNavigate();
   const onClickHandler = (e) => {
-    e.preventDefault();
-    getHistoryItem(`${id}`)
-    .then(res => console.log(res))
-    .catch(err => console.log(err))
+    isHeader ? "" : navigate(`/history/${e}`)
   }
 
   return(
-    <ColumnContainer onClick={onClickHandler}>
+    <ColumnContainer onClick={()=> onClickHandler(id)}>
       {isMobile 
       ? null
       : <Column width="120px" height="50px">{id}</Column> 
@@ -35,6 +32,17 @@ const ColumnContainer = styled.div`
   height:100%;
   display: flex;
   flex-direction: row;
+  position:relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
 `
 
 const BookMarked = styled.div`

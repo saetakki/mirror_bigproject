@@ -1,9 +1,19 @@
 import styled from "@emotion/styled"
 import { Container } from "@styles"
 import { IndexRow } from "@organisms"
+import { useEffect, useState } from "react"
+import { getHistoryPagination } from "@apis/HistoryApi"
 
 const History = () => {
+  
+  const [pageNum, setPageNum] = useState(1)
+  const [history, setHistory] = useState([])
 
+  useEffect(()=> {
+    getHistoryPagination(pageNum)
+    .then((res)=> {
+      setHistory(res)
+    })},[pageNum])
 
   return (
     <Container>
@@ -13,20 +23,26 @@ const History = () => {
           <span>username님의 연습기록을 모아봤어요.</span>
           <GridLine/>
         </Quotes>
+      </Head>
         <BoardContainer>
           <BoardHead>
-            <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
+            <IndexRow id="CHAT ID" isHeader={true} date="DATE" persona="PERSONA"/>
           </BoardHead>
           <GridLine/>
           <ItemListContainer>
-          {[false, false, true, false, true].map((booked, idx) => (
-              <ItemContainer key={idx}>
-                <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} />
+            {}
+          {history.map((item) => (
+              <ItemContainer key={item.id}>
+                <IndexRow id={item.id} date={item.date} persona="PERSONA" isBooked={false} />
               </ItemContainer>
             ))}
           </ItemListContainer>
+          <Page>
+            <PageButton onClick={()=> setPageNum(pageNum-1)} disabled={pageNum===1}>이전</PageButton>
+            <span>{pageNum} / inf</span>
+            <PageButton onClick={()=> setPageNum(pageNum+1)} disabled={pageNum===5}>다음</PageButton>
+          </Page>
         </BoardContainer>
-      </Head>
     </Container>
   )
 }
@@ -85,5 +101,26 @@ const ItemContainer = styled.div`
     border-right: 2px solid #d9d9d9; 
     border-radius: 5px 0 0 5px;
     background-color: #f5f5f5;
+  }
+`
+
+const Page = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+`
+
+
+const PageButton = styled.button`
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+  background-color: #f5f5f5;
+  margin: 0 5px;
+  cursor: pointer;
+  &:disabled {
+    background-color: #d9d9d9;
   }
 `

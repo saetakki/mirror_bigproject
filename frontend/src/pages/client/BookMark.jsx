@@ -13,7 +13,7 @@ const BookMark = () => {
         </Quotes>
         <BoardContainer>
           <BoardHead>
-            <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
+            <IndexRow id="CHAT ID" isHeader={true} date="DATE" persona="PERSONA"/>
           </BoardHead>
           <GridLine/>
           <ItemListContainer>

@@ -1,41 +1,27 @@
-import { useState, useEffect } from 'react'
-
 import styled from '@emotion/styled'
 import Profile from '@assets/profile.png'
-import { useNavigate } from 'react-router-dom'
 import { Desktop } from "@hooks"
 import { useMediaQuery } from 'react-responsive'
 import { IndexRow } from "@organisms";
 import { Container } from "@styles"
-import { 
-  getHistoryPagination,
-  getBookMarkPagination,
-} from '@apis'
+import { initalBookmarkLoadAtom, initialHistoryLoadAtom } from '../../atoms'
+import { useRecoilValue } from 'recoil'
+import { useNavigate } from 'react-router-dom';
+
+
 const Home = () => {
-  const [history, setHistory] = useState([])
-  const [bookMark, setBookMark] = useState([])
-  const navigate = useNavigate();
+
+  const navigate = useNavigate()
   const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
-
-  useEffect(() => {
-    getHistoryPagination(1)
-    .then(res => setHistory(res))
-    .catch(err => console.log(err))
-
-    getBookMarkPagination(1)
-    .then(res => setBookMark(res))
-    .catch(err => console.log(err))
-  }, [])
-
-
-
+  const initHistory = useRecoilValue(initialHistoryLoadAtom)
+  const initBookmark = useRecoilValue(initalBookmarkLoadAtom)
 
   return(
     <Container>
       <HomeWrapper>
           <GNB>
             <Left>
-              <ImgContainer onClick={()=>navigate("/Profile")}>
+              <ImgContainer onClick={()=>navigate('/profile')}>
                 <ProfileImg src={Profile} alt="profile image"/>
               </ImgContainer>
               <TextContainer>
@@ -63,9 +49,9 @@ const Home = () => {
               : null}
               {/* 전체 메세지 기록 중 최근 5개 */}
               <BoardContainer>
-                  <ItemListContainer>
-                  {history.slice(0,5).map((data, idx) => (
-                      <ItemContainer key={idx}>
+                  <ItemListContainer >
+                  {initHistory.map((data) => (
+                      <ItemContainer key={data.id}>
                         <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
                       </ItemContainer>
                     ))}
@@ -86,7 +72,7 @@ const Home = () => {
             <BoardContainer>
                 {/* 전체 북마크 기록 중 최근 5개 */}
                 <ItemListContainer>
-                {bookMark.slice(0,5).map((data, idx) => (
+                {initBookmark.slice(0,5).map((data, idx) => (
                     <ItemContainer key={idx}>
                         <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
                     </ItemContainer>
@@ -232,7 +218,9 @@ const ItemContainer = styled.div`
   margin: 3px 0;
 
   border-radius: 5px;
-  
+
+  background-color: #123456;
+
   & > :first-of-type {
     border-right: 2px solid #d9d9d9; 
     border-radius: 5px 0 0 5px;
