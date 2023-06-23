@@ -40,3 +40,9 @@ export const initalBookmarkLoadAtom = atom({
   default: [],
   effects_UNSTABLE: [persistAtom]
 })
+
+export const userInfoAtom = atom({
+  key: 'userInfo',
+  default: {},
+  effects_UNSTABLE: [persistAtom]
+})

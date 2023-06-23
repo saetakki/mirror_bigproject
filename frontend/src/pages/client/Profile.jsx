@@ -1,54 +1,30 @@
 import styled from "@emotion/styled";
-import React, { useState, useRef, useEffect } from 'react';
+import initImage from "@assets/defaultImg.png";
+import logo from "@assets/logo.png";
+import { PageHeader } from "@organisms";
+import { useState, useRef } from 'react';
 import { useMediaQuery } from 'react-responsive'
 import { Container } from "@styles"
+import { Mobile, Desktop} from "@hooks"
+import {userInfoAtom } from '../../atoms'
+import { useRecoilValue } from "recoil";
 
 function ProfilePage() {
-  //백엔드에서 넘어온 데이터 저장
-  /*
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const response = await axios.get('/profile');
-        const data = response.data;
-        profileData.current.username = data.user.username;
-        profileData.current.email = data.user.email;
-        profileData.current.password = data.user.userpassword;
-        profileData.current.real_name = data.real_name;
-        profileImgData.current.profile_Image = data.profile_image;
-      } catch (error) {
-        console.error('Error fetching profile data:', error);
-      }
-    };
 
-    fetchProfileData();
-  }, []);
-  */
+  // 유저 정보
+  const userInfo = useRecoilValue(userInfoAtom);
+  console.log(userInfo)
 
-  //image 데이터
-  const profileImgData = useRef({
-    profile_Image: 'https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Download-Image.png'
-  });
-
-  //information 데이터
-  const profileData = useRef({
-    username: 'username',
-    password: '123456@',
-    email: 'email@example.com',
-    real_name: 'real_name',
-  });
-
-
-  //프로필 이미지의 Edit, Save 모드를 관리하는 훅
+  // 프로필 이미지의 Edit, Save 모드를 관리하는 훅
   const [isImgEditing, setIsImgEditing] = useState(false);
 
   //이미지 Edit 버튼을 눌렀을 때 동작 함수
   const handleImgEditClick = (e) => {
     if (isImgEditing) {
       // 이미지 선택 후 Save 버튼을 눌렀을 때의 동작
-      setIsImgEditing(false); //이미지 버튼을 Edit로 변경
-      e.preventDefault(); // Save를 클릭했을 때 또 파일 선택 창이 뜨지 않도록 함
-      alert('프로필 사진이 변경 되었습니다.')
+        e.preventDefault() // 이벤트 버블링 방지
+        setIsImgEditing(false); //이미지 버튼을 Edit로 변경
+        alert('프로필 사진이 변경 되었습니다.')
       //이미지를 백으로 보내는 로직...
       console.log('백으로 변경된 Profile 이미지 보내는 함수');
 
@@ -75,20 +51,25 @@ function ProfilePage() {
   // Edit 모드에서 input 태그에 입력 값이 변경될 때마다 프로필 데이터를 업데이트하는 함수
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    profileData.current = {
-      ...profileData.current,
+    userInfo.current = {
+      ...userInfo,
       [name]: value,
     };
   };
 
   //프로필 이미지 설정
-  const [profileImage, setProfileImage] = useState(profileImgData.current.profile_Image);
-  console.log(profileImgData.profile_Image)
+  const [profileImage, setProfileImage] = useState(userInfo.profile_img);
+  console.log(profileImage)
 
-  //솔직히 뭔지 잘 모르겠음
+
+  //프로필 이미지 변경
   const profileChange = e => {
+    // 파일을 읽기 위한 FileReader 인스턴스 생성
     const reader = new FileReader();
+    // 파일이 선택되었을 때 호출되는 함수
     reader.onload = () => {
+      // fileReader API의 state 2는 완료를 의미
+      // 데이터를 모두 읽었다면
       if (reader.readyState === 2) {
         setProfileImage(reader.result); // 파일 리더가 로드될 때 프로필 이미지 URL 상태 업데이트
       }
@@ -96,89 +77,121 @@ function ProfilePage() {
     reader.readAsDataURL(e.target.files[0]); // 선택한 파일을 데이터 URL로 읽기
   };
 
-  //회원탈퇴 버튼 클릭했을 때 실행 함수
-  /* const handleDelete = async () => {
-    const confirmed = window.confirm('정말로 삭제하시겠습니까?');
-    if (confirmed) {
-      try {
-        const response = await axios.delete('/delete', {
-          // 필요한 경우 요청에 대한 헤더 설정을 추가하세요
-        });
-        console.log('Delete request successful:', response.data);
-      } catch (error) {
-        console.error('Error deleting:', error);
-      }
-    }
-  }; Delete 버튼 누를시 동작하는 것*/
-
   const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
   return (
-
-    <ProfileWrapper>
-      {!isMobile
-        ? (<ProfileImgDiv>
-          <ProfileImg src={profileImage} alt="Profile" />
-          <label htmlFor="inputimgid"><EditSaveDiv>{isImgEditing ? 'Save' : 'Edit'}</EditSaveDiv></label>
-          <ImageUploadBtn id="inputimgid" type="file" onClick={handleImgEditClick} onChange={profileChange} />
-          <RealName>{profileData.current.real_name}</RealName>
-        </ProfileImgDiv>) :
-        (<MProfileImgDiv>
-          <MProfileImg src={profileImage} alt="Profile" />
-          <h1>{profileData.current.real_name}</h1>
-          <label htmlFor="inputimgid"><MEditSaveDiv>{isImgEditing ? 'Save' : 'Edit'}</MEditSaveDiv></label>
-          <MImageUploadBtn id="inputimgid" type="file" onClick={handleImgEditClick} onChange={profileChange} />
-        </MProfileImgDiv>)}
-      {!isMobile
-        ? (<Information>
-          {isEditing ? (
-            // 편집 모드인 경우에는 입력 필드를 표시
-            <>
-              <InfoText>이름 :{' '}<ChangeInfo type="text" name="real_name" defaultValue={profileData.current.real_name} onChange={handleInputChange} /></InfoText>
-              <InfoText>이메일 :{' '}<ChangeInfo type="email" name="email" defaultValue={profileData.current.email} onChange={handleInputChange} /></InfoText>
-              <InfoText>아이디 :{' '}<ChangeInfo type="text" name="username" defaultValue={profileData.current.username} onChange={handleInputChange} /></InfoText>
-              <InfoText>비밀번호 :{' '}<ChangeInfo type="text" name="password" defaultValue={profileData.current.password} onChange={handleInputChange} /></InfoText>
-            </>
-          ) : (
-            // 편집 모드가 아닌 경우에는 정보를 표시
-            <>
-              <InfoText>이름 : {profileData.current.real_name}</InfoText>
-              <InfoText>이메일 : {profileData.current.email}</InfoText>
-              <InfoText>아이디 : {profileData.current.username}</InfoText>
-              <InfoText>비밀번호 : {profileData.current.password}</InfoText>
-            </>
-          )}
-          <EditSaveBtn onClick={handleEditClick}>{isEditing ? 'Save' : 'Edit'}</EditSaveBtn>
-        </Information>) :
-        (<MInformation>
-          {isEditing ? (
-            // 편집 모드인 경우에는 입력 필드를 표시
-            <>
-              <InfoText>이름 :{' '}<ChangeInfo type="text" name="real_name" defaultValue={profileData.current.real_name} onChange={handleInputChange} /></InfoText>
-              <InfoText>이메일 :{' '}<ChangeInfo type="email" name="email" defaultValue={profileData.current.email} onChange={handleInputChange} /></InfoText>
-              <InfoText>아이디 :{' '}<ChangeInfo type="text" name="username" defaultValue={profileData.current.username} onChange={handleInputChange} /></InfoText>
-              <InfoText>비밀번호 :{' '}<ChangeInfo type="text" name="password" defaultValue={profileData.current.password} onChange={handleInputChange} /></InfoText>
-            </>
-          ) : (
-            // 편집 모드가 아닌 경우에는 정보를 표시
-            <>
-              <InfoText>이름 : {profileData.current.real_name}</InfoText>
-              <InfoText>이메일 : {profileData.current.email}</InfoText>
-              <InfoText>아이디 : {profileData.current.username}</InfoText>
-              <InfoText>비밀번호 : {profileData.current.password.slice(0, Math.floor(profileData.current.password.length / 2))}</InfoText>
-            </>
-          )}
-          <MEditSaveBtn onClick={handleEditClick}>{isEditing ? 'Save' : 'Edit'}</MEditSaveBtn>
-        </MInformation>)}
-      {!isMobile  
-      ?(<DeleteDiv>
-        <DeleteButton>회원탈퇴</DeleteButton>
-      </DeleteDiv>):(<MDeleteDiv>
-        <MDeleteButton>회원탈퇴</MDeleteButton>
-      </MDeleteDiv>)}
-    </ProfileWrapper>
+      <Container>
+        <PageHeader page="프로필 설정" />
+        <ProfileWrapper>
+          
+            {/* <ProfileImg src={profileImage} alt="Profile" />
+              <label htmlFor="inputimgid">
+                <EditSaveDiv>
+                  {isImgEditing ? 'Save' : 'Edit'}
+                  </EditSaveDiv>
+                </label>
+              <ImageUploadBtn id="inputimgid" type="file" onClick={handleImgEditClick} onChange={profileChange} /> */}
+            <ProfileImgContainer>
+              <div>
+                <img src={initImage} alt="Profile" />
+              </div>
+              <div>
+                <span>{userInfo.username}</span>
+                <span>{userInfo.real_name}</span>
+              </div>
+            </ProfileImgContainer>
+            <RealName>{userInfo.id}</RealName>
+          {!isMobile
+            ? (<Information>
+              {isEditing ? (
+                // 편집 모드인 경우에는 입력 필드를 표시
+                <>
+                  <InfoText>이름 :{' '}<ChangeInfo type="text" name="real_name" defaultValue={userInfo.real_name} onChange={handleInputChange} /></InfoText>
+                  <InfoText>이메일 :{' '}<ChangeInfo type="email" name="email" defaultValue={userInfo.email} onChange={handleInputChange} /></InfoText>
+                  <InfoText>아이디 :{' '}<ChangeInfo type="text" name="username" defaultValue={userInfo.username} onChange={handleInputChange} /></InfoText>
+                  <InfoText>비밀번호 :{' '}<ChangeInfo type="text" name="password" defaultValue={userInfo.password} onChange={handleInputChange} /></InfoText>
+                </>
+              ) : (
+                // 편집 모드가 아닌 경우에는 정보를 표시
+                <>
+                  <InfoText>이름 : {userInfo.real_name}</InfoText>
+                  <InfoText>이메일 : {userInfo.email}</InfoText>
+                  <InfoText>아이디 : {userInfo.username}</InfoText>
+                  <InfoText>비밀번호 : {userInfo.password}</InfoText>
+                </>
+              )}
+              <EditSaveBtn onClick={handleEditClick}>{isEditing ? 'Save' : 'Edit'}</EditSaveBtn>
+            </Information>) :
+            (<MInformation>
+              {isEditing ? (
+                // 편집 모드인 경우에는 입력 필드를 표시
+                <>
+                  <InfoText>이름 :{' '}<ChangeInfo type="text" name="real_name" defaultValue={userInfo.real_name} onChange={handleInputChange} /></InfoText>
+                  <InfoText>이메일 :{' '}<ChangeInfo type="email" name="email" defaultValue={userInfo.email} onChange={handleInputChange} /></InfoText>
+                  <InfoText>아이디 :{' '}<ChangeInfo type="text" name="username" defaultValue={userInfo.username} onChange={handleInputChange} /></InfoText>
+                  <InfoText>비밀번호 :{' '}<ChangeInfo type="text" name="password" defaultValue={userInfo.password} onChange={handleInputChange} /></InfoText>
+                </>
+              ) : (
+                // 편집 모드가 아닌 경우에는 정보를 표시
+                <>
+                  <InfoText>이름 : {userInfo.real_name}</InfoText>
+                  <InfoText>이메일 : {userInfo.email}</InfoText>
+                  <InfoText>아이디 : {userInfo.username}</InfoText>
+                  <InfoText>비밀번호 : {userInfo.password}</InfoText>
+                </>
+              )}
+              <MEditSaveBtn onClick={handleEditClick}>{isEditing ? 'Save' : 'Edit'}</MEditSaveBtn>
+            </MInformation>)}
+          {!isMobile  
+          ?(
+          <DeleteDiv>
+            <DeleteButton>회원탈퇴</DeleteButton>
+          </DeleteDiv>)
+          :(
+            <MDeleteDiv>
+              <MDeleteButton>회원탈퇴</MDeleteButton>
+            </MDeleteDiv>
+            )}
+        </ProfileWrapper>
+      </Container>
   );
 }
+
+
+const ProfileWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow-y : auto; 
+  overflow-x : hidden; 
+`
+const ProfileImgContainer = styled(Container)`
+  z-index: -1;
+  position: relative;
+  margin-top: 8rem;
+  height: 8rem;
+  background-color: #c8c8c8;
+  overflow-y : hidden;
+
+  div {
+    z-index: 10;
+    position: absolute;
+    width: 10rem;
+    height: 10rem;
+    background-color: black;
+    positon: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  img {
+    background-color: tan;
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+  }
+
+`
 
 
 const RealName = styled.p`
@@ -199,13 +212,6 @@ const InfoText = styled.p`
   word-break: break-all;
 `
 
-const ProfileWrapper = styled.div`
-  width: 55%;
-  overflow-y : auto; 
-  overflow-x : hidden;
-  padding: 20px;   
-  border-radius: 10px; 
-`
 
 const EditSaveDiv = styled.div`
   font-size: 12px;
@@ -312,9 +318,7 @@ const DeleteButton = styled.button`
 `
 
 const DeleteDiv = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+
 `
 // 반응형
 const MProfileImg = styled.img`
@@ -376,14 +380,13 @@ const MEditSaveBtn = styled.button`
 `
 
 const MInformation = styled.div`
-  border-bottom: 1px solid black;
-  
-  padding: 20px;
+  height: 300px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  text-align: center;
+  align-items: center;
+  border-bottom: 1px solid black;
+  
 `
 const MDeleteButton = styled.button`
   font-size: 12px;
@@ -404,14 +407,11 @@ const MDeleteButton = styled.button`
 `
 
 const MDeleteDiv = styled.div`
-  height: 15%;
-  width: 100%;
-  padding: 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  text-align: center;
+  align-items: center;
+  margin-top: 20px;
+  height: 60px;
 `
 
 export default ProfilePage;

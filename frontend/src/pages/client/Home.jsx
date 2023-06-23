@@ -4,9 +4,21 @@ import { Desktop } from "@hooks"
 import { useMediaQuery } from 'react-responsive'
 import { IndexRow } from "@organisms";
 import { Container } from "@styles"
-import { initalBookmarkLoadAtom, initialHistoryLoadAtom } from '../../atoms'
+import { initalBookmarkLoadAtom, 
+  initialHistoryLoadAtom, 
+  userInfoAtom } from '../../atoms'
 import { useRecoilValue } from 'recoil'
 import { useNavigate } from 'react-router-dom';
+
+import { 
+  changeProfileInfo, 
+  getUserInfo, 
+  changeProfileImg, 
+  signUp,
+  signOut
+ } from "@apis/UserApi"
+
+
 
 
 const Home = () => {
@@ -15,6 +27,46 @@ const Home = () => {
   const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
   const initHistory = useRecoilValue(initialHistoryLoadAtom)
   const initBookmark = useRecoilValue(initalBookmarkLoadAtom)
+
+  // //안됌
+  // changeProfileInfo("test1", "test2@gmail.com", 'test3')
+  // .then((res) => console.log(res))
+  // .catch((err) => console.log(err))
+
+  // //안됌
+  // changeProfileImg()
+  // .then((res) => console.log(res))
+  // .catch((err) => console.log(err))
+
+  // //안됌
+  // signUp({
+  //   username: 'test1',
+  //   password: 'asdfjpoijp2135',
+  //   email: 'test3@gmail.com',
+  //   real_name: '테스트'
+  // })
+  //   .then(data => {
+  //     console.log('가입 성공:', data);
+  //   })
+  //   .catch(error => {
+  //     console.error('가입 실패:', error);
+  //   });
+  
+  // //안됌
+  // signOut()
+  // .then((res) => console.log(res))
+  // .catch((err) => console.log(err))
+
+
+  getUserInfo()
+  .then((res) => console.log(res))
+  .catch((err) => console.log(err))
+
+
+
+
+
+
 
   return(
     <Container>
@@ -79,6 +131,7 @@ const Home = () => {
                   ))}
                 </ItemListContainer>
               </BoardContainer>
+              <button onClick={()=>signOut()}>로그아웃</button>
             </BackgroundContainer>
           </UserChatListContainer>
       </HomeWrapper>

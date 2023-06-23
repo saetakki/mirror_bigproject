@@ -4,16 +4,19 @@ import { useRecoilState } from "recoil";
 import { 
   isAuthAtom, 
   initialHistoryLoadAtom,
-  initalBookmarkLoadAtom } from "../../atoms";
+  initalBookmarkLoadAtom,
+  userInfoAtom } from "../../atoms";
 import { useNavigate } from "react-router-dom";
 import { Container } from "@styles";
 const LogIn = () => {
   const [, setIsAuth] = useRecoilState(isAuthAtom);
   const [, setInitalHistoryLoad] = useRecoilState(initialHistoryLoadAtom);
   const [, setInitalBookmarkLoad] = useRecoilState(initalBookmarkLoadAtom);
+  const [, setUserInfo] = useRecoilState(userInfoAtom);
   const navigate = useNavigate();
-
   const [isLogin, setIsLogin] = useState(true);
+
+
 
 
   const onClickHandler = (e) => {
@@ -21,15 +24,25 @@ const LogIn = () => {
     console.log("clicked");
     requestLogin()
     .then(res => {
+      const initUserInfo = {
+        profile_img: res.user_profile.profile_image,
+        real_name : res.user_profile.real_name,
+        id : res.user_profile.user.username,
+        email : res.user_profile.user.email,
+        username: res.user_profile.user.username,
+      }
+      console.log(res)
       const initHistory = res.history
       const initBookmark  = res.bookmarked_history
       setInitalHistoryLoad(initHistory)
       setInitalBookmarkLoad(initBookmark)
+      setUserInfo(initUserInfo)
     })
     .then(() => setIsAuth("true"))
     .then(() => navigate("/"))
     .catch(err => console.log(err))
   };
+
 
   return (
     <Container>
