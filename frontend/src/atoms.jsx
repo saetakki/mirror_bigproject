@@ -1,4 +1,8 @@
 import { atom } from 'recoil'
+import { recoilPersist } from 'recoil-persist'
+
+
+const { persistAtom } = recoilPersist()
 
 const localStorageEffect = (key) => ({ setSelf, onSet, trigger }) => {
   const loadPersisted = () => {
@@ -23,4 +27,16 @@ export const isAuthAtom = atom({
   key: 'isAuth',
   default: false,
   effects_UNSTABLE: [localStorageEffect('isAuth')]
+})
+
+export const initialHistoryLoadAtom = atom({
+  key: 'initialHistoryLoad',
+  default: [],
+  effects_UNSTABLE: [persistAtom]
+})
+
+export const initalBookmarkLoadAtom = atom({
+  key: 'initalBookmarkLoadAtom',
+  default: [],
+  effects_UNSTABLE: [persistAtom]
 })

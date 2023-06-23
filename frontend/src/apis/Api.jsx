@@ -15,11 +15,6 @@ export const customAxios = axios.create({
 const csrftoken = getCookie('csrftoken')
 
 
-export const getHistoryPagination = async (page) => {
-  const res = await customAxios.get(`api/history/?page=${page}`);
-  return res.data;
-};
-
 export const getBookMarkPagination = async (page) => {
   const res = await customAxios.get(`api/history/bookmarked/?page=${page}`);
   return res.data;

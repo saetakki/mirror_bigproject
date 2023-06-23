@@ -5,10 +5,12 @@ import { Mobile, Desktop} from "@hooks"
 import { RxHamburgerMenu } from "react-icons/rx";
 import logo from '../../../assets/logo.png'
 import { useMediaQuery } from "react-responsive";
+import { Tab } from "@organisms/tab";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useMediaQuery({query: "(max-width: 767px)"});
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isMobile) {
@@ -16,16 +18,9 @@ const Header = () => {
     }
   }, [isMobile]);
 
-
-  const navigate = useNavigate();
-  const onClickHandler = (e) => {
-    const whereTo = e.target.className
-    navigate(whereTo);
-  };
-
-  const onTouchHandler = () => {
+  const onClickDropDownHandler = () => {
     setIsMenuOpen(!isMenuOpen);
-  }
+  };
 
 
   return (
@@ -38,27 +33,17 @@ const Header = () => {
       <div>
           <BtnContainer className="BtnContainer">
           <Desktop>
-            <ul>
-              <li className={'/'}onClick={onClickHandler}>Home</li>
-              <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-              <li className={'/bookmark'} onClick={onClickHandler}>북마크</li>
-              <li className={'/profile'} onClick={onClickHandler}>Profile</li>
-            </ul>
+            <Tab />
           </Desktop>
           <Mobile>
               <MobileIconWrapper>
                 <RxHamburgerMenu
                   size={30}
-                  onClick={onTouchHandler}
+                  onClick={onClickDropDownHandler}
                 />
                 {isMenuOpen && (
                   <MobileDropdownMenu>
-                    <ul>
-                      <li className={'/'}onClick={onClickHandler}>Home</li>
-                      <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-                      <li className={'/bookmark'} onClick={onClickHandler}>북마크</li>
-                      <li className={'/profile'} onClick={onClickHandler}>Profile</li>
-                    </ul>
+                    <Tab/>
                   </MobileDropdownMenu>
                 )}
               </MobileIconWrapper>

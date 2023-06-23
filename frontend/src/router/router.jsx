@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { LogIn, Home, History, BookMark, Profile } from "@pages/client";
+import { LogIn, Home, History, BookMark, Profile, Log } from "@pages/client";
 import { PrivateRoute } from "./PrivateRoute";
 
 const routerList = [
@@ -32,7 +32,13 @@ const routerList = [
     path:'/profile',
     element: <Profile/>,
     withAuth: true
-  }
+  },
+  {
+    id:5,
+    path:'/history/:id',
+    element: <Log/>,
+    withAuth: true
+  },
 ]
 
 

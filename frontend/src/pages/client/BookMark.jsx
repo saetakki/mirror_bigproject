@@ -32,7 +32,7 @@ const BookMark = () => {
           </BoardHead>
           <GridLine/>
           <ItemListContainer>
-          {bookmark.map((booked, idx) => (
+          {bookmark.map((booked) => (
               <ItemContainer key={booked.id}>
                 <IndexRow id={booked.id} date={booked.date} persona={booked.persona} isBooked={booked} />
               </ItemContainer>

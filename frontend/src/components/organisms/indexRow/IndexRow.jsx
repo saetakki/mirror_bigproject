@@ -10,6 +10,8 @@ const IndexRow = ({ isHeader=false, id, date, persona, isBooked, isMobile }) => 
     isHeader ? "" : navigate(`/history/${e}`)
   }
 
+  console.log(persona)
+
   return(
     <ColumnContainer onClick={()=> onClickHandler(id)}>
       {isMobile 
