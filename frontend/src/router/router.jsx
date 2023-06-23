@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Layout } from "@templates";
 import { LogIn, Home, History, BookMark, Profile } from "@pages/client";
+import { PrivateRoute } from "./PrivateRoute";
 
 const routerList = [
   {
@@ -35,22 +35,12 @@ const routerList = [
   }
 ]
 
-const Auth = localStorage.getItem('Auth');
 
 export const router = createBrowserRouter(
-  routerList.map((route) => {
-    if(Auth){
-      return {
-        path:route.path,
-        element: <Layout>{route.element}</Layout>,
-      }
-    } else {
-      return {
-        path:route.path,
-        element: <LogIn />
-      }
-    }
-  }
-))
-
-export default router;
+  routerList.map((router) => {
+    return {
+      path: router.path,
+      element: <PrivateRoute withAuth={router.withAuth}>{router.element}</PrivateRoute>,
+    };
+  })
+);

@@ -1,4 +1,4 @@
-import { router } from "./router"
+import { router } from "../src/router/router"
 import { RouterProvider } from "react-router-dom"
 import { RecoilRoot } from "recoil"
 import { isAuthAtom } from "./atoms"
