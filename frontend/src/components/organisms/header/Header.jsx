@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mobile, Desktop} from "@hooks"
-import { RxHamburgerMenu } from "react-icons/rx";
+import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import logo from '../../../assets/logo.png'
 import { useMediaQuery } from "react-responsive";
 import { Tab } from "@organisms/tab";
@@ -37,12 +37,17 @@ const Header = () => {
           </Desktop>
           <Mobile>
               <MobileIconWrapper>
-                <RxHamburgerMenu
+                {isMenuOpen ? (<RxCross2
                   size={30}
                   onClick={onClickDropDownHandler}
-                />
+                  />)
+                : (<RxHamburgerMenu
+                    size={30}
+                    onClick={onClickDropDownHandler}
+                  />)
+                }
                 {isMenuOpen && (
-                  <MobileDropdownMenu>
+                  <MobileDropdownMenu onClick={onClickDropDownHandler}>
                     <Tab/>
                   </MobileDropdownMenu>
                 )}

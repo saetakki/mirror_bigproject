@@ -5,21 +5,22 @@ import { useEffect, useState } from "react"
 import { getBookMarkPagination } from "@apis"
 
 const BookMark = () => {
-
+  const [isLoad, setIsLoad] = useState(false)
   const [pageNum, setPageNum] = useState(1)
   const [bookmark, setBookmark] = useState([])
 
   useEffect(()=> {
     getBookMarkPagination(pageNum)
-    .then((res)=> {
-      setBookmark(res)
-    })},[pageNum])
+    .then((res)=> {setBookmark(res)})
+    .catch((err)=> console.log(err))
+    setIsLoad(true)
+  },[pageNum])
 
-    console.log(bookmark)
 
 
   return (
-    <Container>
+    (isLoad ?
+    (<Container>
       <Head>
         <strong>북마크 목록</strong>
         <Quotes>
@@ -45,7 +46,10 @@ const BookMark = () => {
           </Page>
         </BoardContainer>
       </Head>
-    </Container>
+    </Container>)
+    :
+    <div>loading...</div>
+    )
   )
 }
 

@@ -5,18 +5,20 @@ import { useEffect, useState } from "react"
 import { getHistoryPagination } from "@apis/HistoryApi"
 
 const History = () => {
-  
+  const [isLoad, setIsLoad] = useState(false)
   const [pageNum, setPageNum] = useState(1)
   const [history, setHistory] = useState([])
 
   useEffect(()=> {
     getHistoryPagination(pageNum)
-    .then((res)=> {
-      setHistory(res)
-    })},[pageNum])
+    .then((res)=> {setHistory(res)})
+    .catch((err)=> console.log(err))
+    setIsLoad(true)
+  },[pageNum])
 
   return (
-    <Container>
+    (isLoad ? 
+    (<Container>
       <Head>
         <strong>연습기록</strong>
         <Quotes>
@@ -45,6 +47,9 @@ const History = () => {
         </BoardContainer>
     </Container>
   )
+  :
+  <div>loading...</div>
+  ))   
 }
 
 export default History
