@@ -1,8 +1,23 @@
 import styled from "@emotion/styled"
 import { Container } from "@styles"
 import { IndexRow } from "@organisms"
+import { useEffect, useState } from "react"
+import { getBookMarkPagination } from "@apis"
 
 const BookMark = () => {
+
+  const [pageNum, setPageNum] = useState(1)
+  const [bookmark, setBookmark] = useState([])
+
+  useEffect(()=> {
+    getBookMarkPagination(pageNum)
+    .then((res)=> {
+      setBookmark(res)
+    })},[pageNum])
+
+    console.log(bookmark)
+
+
   return (
     <Container>
       <Head>
@@ -17,12 +32,17 @@ const BookMark = () => {
           </BoardHead>
           <GridLine/>
           <ItemListContainer>
-          {[false, false, true, false, true].map((booked, idx) => (
-              <ItemContainer key={idx}>
-                <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} />
+          {bookmark.map((booked, idx) => (
+              <ItemContainer key={booked.id}>
+                <IndexRow id={booked.id} date={booked.date} persona={booked.persona} isBooked={booked} />
               </ItemContainer>
             ))}
           </ItemListContainer>
+          <Page>
+            <PageButton onClick={()=> setPageNum(pageNum-1)} disabled={pageNum===1}>이전</PageButton>
+            <span>{pageNum} / inf</span>
+            <PageButton onClick={()=> setPageNum(pageNum+1)} disabled={pageNum===5}>다음</PageButton>
+          </Page>
         </BoardContainer>
       </Head>
     </Container>
@@ -83,5 +103,26 @@ const ItemContainer = styled.div`
     border-right: 2px solid #d9d9d9; 
     border-radius: 5px 0 0 5px;
     background-color: #f5f5f5;
+  }
+`
+
+const Page = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+`
+
+
+const PageButton = styled.button`
+  width: 100px;
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+  background-color: #f5f5f5;
+  margin: 0 5px;
+  cursor: pointer;
+  &:disabled {
+    background-color: #d9d9d9;
   }
 `
