@@ -120,53 +120,11 @@ def get_text1(request, history_id):
 
 
 
-"""
-준호님
-한국어 음성 api찾아야 할듯? 음성이 너무 외국어 억양입니다. 월요일까지 한번 찾아볼게요
-"""
-def text_to_speech1(gender, message):
-    CHUNK_SIZE = 1024
-    male_voices = ['ErXwobaYiN019PkySvjV', 'TxGEqnHWrfWFTfGW9XjX', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB']
-    female_voices = ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'MF3mGyEYCl7XYWbV9V6O', 'AZnzlk1XvdvUeBnXmlld']
-    if '남' in gender:
-        voice_id = random.choice(male_voices)
-    else:
-        voice_id = random.choice(female_voices)
-    
-    headers = { "xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg" }
-    body = {
-    "text": message,
-    "voice_settings": {
-        "stability": 0.5,
-        "similarity_boost": 0.5
-        }
-    }
-    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-    try:
-        response = requests.post(endpoint, json=body, headers=headers)
-        with open('output.mp3', 'wb') as f:
-            for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
-                if chunk:
-                    f.write(chunk)
-        audio_file = open('output.mp3', 'rb')
-        audio_file = open('output.mp3', 'rb')
-        res = FileResponse(audio_file, content_type='audio/mpeg')
-        res['Content-Disposition'] = 'attachment; filename="output.mp3"'
-        return response
-    except Exception as e:
-        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 # history.chat_log에서 대화를 뽑아 chatgpt에게 전달하여 반응을 받아오는 함수
 """
-준호님
-이 부분 고민해봤는데, 프론트에서 요청이 없으면, 백엔드 내부로직만을 이용해서 돌려야 하는데
-GPT한테 물어본 결과 웹소캣, 스케줄링(channels 등)을 활용해야 한다는데 
-어려워서 일단은 프론트가 사용자에게 audio/msg 로 입력 받은 후 
-백엔드로부터 200코드를 보낸 후 다시 요청을 보내는 걸로 생각해서 코드를 작성햇습니다.
-혹시 내부로직으로 구현이 가능하면, 수정해야할거같아요
 이거 제대로 작동하는지 확인하고 싶은데 api_key가 오류나서(아마 찬님꺼 다 쓴듯) 제꺼도 안되서
-어떻게 해야할지 고민입니다. 
+어떻게 해야할지 고민입니다.
 """
 # 프론트에서 받을건 없어 보임
 # 프론트에게 key:'text', audio_file로 전달
@@ -183,13 +141,50 @@ def get_ChatGPT_response1(request, history_id):
         message_text = response["choices"][0]["message"]["content"]
         history.chat_log.append({'role':'assistant', 'content':message_text})
         history.save()
-        res = text_to_speech1(history.persona.gender, message_text)
-        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False), 'audio_file' : res}, status=status.HTTP_200_OK)
+        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
-    
-@permission_classes([IsAuthenticated])
+
+"""
+준호님
+한국어 음성 api찾아야 할듯? 음성이 너무 외국어 억양입니다. 월요일까지 한번 찾아볼게요
+"""
+from django.http import StreamingHttpResponse
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def text_to_speech1(request, history_id):
+    history = History.objects.get(id=history_id, user=request.user)
+    CHUNK_SIZE = 1024
+    male_voices = ['ErXwobaYiN019PkySvjV', 'TxGEqnHWrfWFTfGW9XjX', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB']
+    female_voices = ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'MF3mGyEYCl7XYWbV9V6O', 'AZnzlk1XvdvUeBnXmlld']
+    if '남' in history.persona.gender:
+        voice_id = random.choice(male_voices)
+    else:
+        voice_id = random.choice(female_voices)
+    
+    headers = { "xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg" }
+    body = {
+    "text": history.chat_log[-1]['content'],
+    "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.5
+        }
+    }
+    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    try:
+        response = requests.post(endpoint, json=body, headers=headers)
+        def iterfile():
+            for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+                if chunk:
+                    yield chunk
+        return StreamingHttpResponse(iterfile(), content_type='audio/mp3')        
+    except Exception as e:
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def make_report1(request, history_id):
     try:
         history = History.objects.get(id=history_id, user=request.user)
