@@ -123,6 +123,9 @@ def get_text1(request, history_id):
 
 # history.chat_log에서 대화를 뽑아 chatgpt에게 전달하여 반응을 받아오는 함수
 """
+이거 논리상으로는 프론트에서 요청이 없어도 되긴 하는데
+프론트에서 request 없으면 백엔드에서 response 보내는게 어렵다고 하네요
+웹소켓이나 스케줄링 등 해야되서 프론트에서 그냥 요청 보내주는게 가장 간단할 거 같아서 이렇게 작성했습니다.
 이거 제대로 작동하는지 확인하고 싶은데 api_key가 오류나서(아마 찬님꺼 다 쓴듯) 제꺼도 안되서
 어떻게 해야할지 고민입니다.
 """
@@ -148,6 +151,9 @@ def get_ChatGPT_response1(request, history_id):
 """
 준호님
 한국어 음성 api찾아야 할듯? 음성이 너무 외국어 억양입니다. 월요일까지 한번 찾아볼게요
+이것도 마찬가지로 요청이 있는걸로 생각하고 했습니다. 
+어떻게 해도 이걸 get_ChatGPT_response1 합쳐서 json으로 보내려고 해도 안되더라고요 그래서 따로 함수를 작성했습니다.
+이함수로 요청받으면 자동으로 스트리밍이 재생됩니다
 """
 from django.http import StreamingHttpResponse
 @api_view(['POST'])
