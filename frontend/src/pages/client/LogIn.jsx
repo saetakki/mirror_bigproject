@@ -1,5 +1,13 @@
 import styled from "@emotion/styled";
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { requestLogin } from "@apis";
+import { useRecoilState } from "recoil";
+import { 
+  isAuthAtom, 
+  initialHistoryLoadAtom,
+  initalBookmarkLoadAtom,
+  userInfoAtom } from "../../atoms";
+import { useNavigate } from "react-router-dom";
 
 //테스트 회원정보
 const User = [{
@@ -19,8 +27,8 @@ const LogIn = () => {
   const [mode, setMode] = useState('Login')
 
   //현재까지 입력된 아이디, 비밀번호, 비밀번호 재확인, 이름, 이메일 관리
-  const [id, setId] = useState('');
-  const [pw, setPw] = useState('');
+  const [id, setId] = useState('a0000');
+  const [pw, setPw] = useState('tjwnsgh000');
   const [confirmPw, setConfirmPw] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -35,6 +43,17 @@ const LogIn = () => {
   //회원가입 아이디, 이메일 중복체크 관리
   const [idDuplicateValid, setIdDuplicateValid] = useState(false);
   const [emailDuplicateValid, setEmailDuplicateValid] = useState(false);
+
+
+  // 로그인 성공 시 유저 정보
+  const [, setIsAuth] = useRecoilState(isAuthAtom);
+  const [, setInitalHistoryLoad] = useRecoilState(initialHistoryLoadAtom);
+  const [, setInitalBookmarkLoad] = useRecoilState(initalBookmarkLoadAtom);
+  const [, setUserInfo] = useRecoilState(userInfoAtom);
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+
+
 
   //현재까지 입력된 모든 State 초기화
   const resetState = () => {
@@ -76,7 +95,7 @@ const LogIn = () => {
   }
   const handleEmail = (e) => {
     setEmail(e.target.value);
-    const regex = /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+    const regex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
     if (regex.test(e.target.value)) {
       setEmailValid(true);
     } else {
@@ -178,27 +197,34 @@ const LogIn = () => {
   }
 
 
+  console.log(id, pw)
+
+
   //LOGIN 버튼을 클릭했을때 ID, PW가 맞으면 로그인, 아니면 실패 메시지 출력 
   const onClickConfirmButton = (e) => {
-    let isMatched = false;
-    for (let i = 0; i < User.length; i++) {
-      if (id === User[i].username && pw === User[i].password) {
-        e.preventDefault();
-        localStorage.setItem("isAuth", true);
-        console.log("clicked");
-        window.location.href = "/";
-        location.reload();
-        alert('로그인에 성공했습니다.');
-        resetState();
-        isMatched = true;
-        break;
+    e.preventDefault();
+    console.log("clicked");
+    requestLogin(id, pw)
+    .then(res => {
+      const initUserInfo = {
+        profile_img: res.user_profile.profile_image,
+        real_name : res.user_profile.real_name,
+        id : res.user_profile.user.username,
+        email : res.user_profile.user.email,
+        username: res.user_profile.user.username,
       }
-    }
-    if (!isMatched) {
-      alert("일치하는 아이디, 비밀번호가 없습니다.");
-      resetState();
-    }
-  }
+      console.log(res)
+      const initHistory = res.history
+      const initBookmark  = res.bookmarked_history
+      setInitalHistoryLoad(initHistory)
+      setInitalBookmarkLoad(initBookmark)
+      setUserInfo(initUserInfo)
+    })
+    .then(() => setIsAuth("true"))
+    .then(() => navigate("/"))
+    .catch(err => console.log(err))
+  };
+
 
   //로그인, 비밀번호 찾기, 아이디 찾기, 회원가입 onClick에 해당하는 mode로 변경
   const setModeHandle = (mode) => {

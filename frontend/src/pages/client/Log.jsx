@@ -23,12 +23,6 @@ const Log = () => {
     .catch(err=> console.log(err))
   },[])
 
-  console.log(persona)
-  console.log(chatLog)
-  console.log(date)
-  console.log(report)
-
-
   return (
     <> 
       <div>{where} page</div>

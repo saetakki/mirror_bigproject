@@ -1,7 +1,11 @@
 html {
   font-size: 16px;
 }
-html, body, #___gatsby, #___gatsby > div:first-child, .___gatsby {
+html,
+body,
+#___gatsby,
+#___gatsby > div:first-child,
+.___gatsby {
   min-width: 100%;
   min-height: 100%;
 }
@@ -33,9 +37,9 @@ a {
 }
 * {
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 ul,
 li {

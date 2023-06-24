@@ -18,11 +18,12 @@ export const getBookMarkPagination = async (page) => {
   return res.data;
 }
 
-export const requestLogin = async () => {
-
+export const requestLogin = async (id,pw) => {
   const body = {
-    username : "a0000",
-    password : "tjwnsgh000",
+    // username : "a0000",
+    // password : "tjwnsgh000",
+    username : id,
+    password : pw,
   }
   const res = await customAxios.post('api/login/', body)
   return res.data
