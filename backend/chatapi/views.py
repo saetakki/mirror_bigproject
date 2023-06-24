@@ -156,16 +156,6 @@ def get_recent_messages(history_id):
   messages = []
 
   # Add Random Element
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 #   x = random.uniform(0, 1)
 #   if x < 0.2:
 #     learn_instruction["content"] = learn_instruction["content"] + "Your response will have some light humour. "
@@ -441,8 +431,3 @@ def reset_messages():
   # Write an empty file
   open(file_name, "w")
 
-"--------------------------------------------------------------------------------------------------------------------------------------------------------------"
-
-# 1. audio 입력받아 tts한후 db저장
-# 2. 메세이 입력받아 db 저장
-# 3. chatgpt 보내기 / 오디오파일
