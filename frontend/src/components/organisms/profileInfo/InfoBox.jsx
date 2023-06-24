@@ -16,7 +16,7 @@ const InfoBox = ( props ) => {
           </div>
           <Practice>
             <p>조금 더 연습해볼까요?</p>
-            <button className='btn'>연습하러가기</button>
+            <button className='btn'>연습시작</button>
           </Practice>
         </SummaryWrapper>
       </InfoWrapper>

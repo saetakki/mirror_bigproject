@@ -6,7 +6,7 @@ export const Mobile = ({ children }) => {
 }
 
 export const Desktop = ({ children }) => {
-  const isDesktop = useMediaQuery({query: "(min-width: 768px)"});
+  const isDesktop = useMediaQuery({query: "(min-width: 992px)"});
   return <>{isDesktop && children}</>
 }
 

@@ -4,36 +4,44 @@ import { userInfoAtom } from "../../../atoms"
 
 export const PageHeader = ({page}) => {
   const username = useRecoilValue(userInfoAtom).username
+  const isLogPage = Number(page) ? true : false
+  const newKey = `연습기록 > ${page}`
+
   const txt = {
     "연습기록" : `${username}님의 연습기록을 모아봤어요.`,
     "북마크 목록" : `${username}님의 북마크한 연습내용을 모아봤어요.`,
   }
   
+  if(isLogPage) {
+    txt[newKey] = `${username}님의 ${page}번째 연습기록을 불러왔어요.`
+  }
+  
+  
   return (
-    <HeadContainer>
-      <strong>{page}</strong>
+    <Head>
+      <strong>{isLogPage ? newKey : page}</strong>
       <Quotes>
-        <span>{txt?.[page] || null}</span>
+        <span>{txt?.[isLogPage ? newKey : page] || null}</span>
         <GridLine/>
       </Quotes>
-    </HeadContainer>
+    </Head>
   )
 }
 
 export default PageHeader
 
-const HeadContainer = styled.div`
-  margin: 24px 0;
+const Head = styled.div`
+  margin: 24px 0 0 0;
   strong {
     font-size: 24px;
   }
 `
 
+
 const Quotes = styled.div`
   margin-top: 12px;
   font-size: 12px;
   color: #9a9a9a;
-  margin-bottom: 24px;
 `
 
 const GridLine = styled.div`
@@ -41,5 +49,4 @@ const GridLine = styled.div`
   height: 1px;
   background-color: #d9d9d9;
   margin-top: 12px;
-  margin-bottom: 12px;
 `

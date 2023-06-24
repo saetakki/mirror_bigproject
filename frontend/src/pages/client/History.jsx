@@ -1,13 +1,16 @@
 import styled from "@emotion/styled"
 import { Container } from "@styles"
-import { IndexRow, PageHeader } from "@organisms"
+import { IndexItem, PageHeader } from "@organisms"
 import { useEffect, useState } from "react"
 import { getHistoryPagination } from "@apis/HistoryApi"
+import { useMediaQuery } from "react-responsive"
+import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci"
 
 const History = () => {
   const [isLoad, setIsLoad] = useState(false)
   const [pageNum, setPageNum] = useState(1)
   const [history, setHistory] = useState([])
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
 
   useEffect(()=> {
     getHistoryPagination(pageNum)
@@ -16,29 +19,33 @@ const History = () => {
     setIsLoad(true)
   },[pageNum])
 
+
+
   return (
     (isLoad ? 
     (<Container>
         <PageHeader page='연습기록'/>
-        <BoardContainer>
-          <BoardHead>
-            <IndexRow id="CHAT ID" isHeader={true} date="DATE" persona="PERSONA"/>
-          </BoardHead>
-          <GridLine/>
-          <ItemListContainer>
-            {}
+          <IndexItem isHeader={true}/>
           {history.map((item) => (
-              <ItemContainer key={item.id}>
-                <IndexRow id={item.id} date={item.date} persona="PERSONA" isBooked={false} />
-              </ItemContainer>
-            ))}
-          </ItemListContainer>
+              <IndexItem key={item.id}
+                id={item.id} 
+                date={item.date} 
+                persona={Object.values(item.persona)} 
+                isBooked={item.bookmark}
+                isMobile={isMobile}
+                />
+            ))}    
+        <Pagination>
           <Page>
-            <PageButton onClick={()=> setPageNum(pageNum-1)} disabled={pageNum===1}>이전</PageButton>
+            <PageButton onClick={()=> setPageNum(pageNum-1)} disabled={pageNum===1}>
+              <CiCircleChevLeft/>
+            </PageButton>
             <span>{pageNum} / inf</span>
-            <PageButton onClick={()=> setPageNum(pageNum+1)} disabled={pageNum===5}>다음</PageButton>
-          </Page>
-        </BoardContainer>
+            <PageButton onClick={()=> setPageNum(pageNum+1)} disabled={pageNum===5}>
+              <CiCircleChevRight/>
+            </PageButton>
+          </Page> 
+        </Pagination>
     </Container>
   )
   :
@@ -49,53 +56,18 @@ const History = () => {
 export default History
 
 
-const GridLine = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #d9d9d9;
-  margin-top: 12px;
-  margin-bottom: 12px;
-`
-
-const BoardContainer = styled.div`
-  width: 100%;
-  height: 50%;
-  margin: 0 auto 42px auto;
-`
-
-
-const BoardHead = styled.div`
-  width: 100%;
-  height:28px;
+const Pagination = styled(Container)`
+  height: 120px;
   display: flex;
-  flex-direction: row;
-  `
-
-const ItemListContainer = styled.div`
-  width: 100%;
-  `
-
-const ItemContainer = styled.div`
-  width: 100%;
-  display: flex;
-  position:relative;
-  flex-direction: row;
-  margin: 3px 0;
-
-  border-radius: 5px;
-  
-  & > :first-of-type {
-    border-right: 2px solid #d9d9d9; 
-    border-radius: 5px 0 0 5px;
-    background-color: #f5f5f5;
-  }
+  justify-content: center;
 `
 
 const Page = styled.div`
   width: 100%;
-  height: 50px;
+  height: 80px;
   display: flex;
   justify-content: center;
+  align-items: center;
 `
 
 
@@ -105,6 +77,7 @@ const PageButton = styled.button`
   border-radius: 5px;
   border: 1px solid #d9d9d9;
   background-color: #f5f5f5;
+  opacity: 0;
   margin: 0 5px;
   cursor: pointer;
   &:disabled {

@@ -24,20 +24,20 @@ const Home = () => {
       <HomeWrapper>
           <GNB>
             <Left>
-              <ImgContainer onClick={()=>navigate('/profile')}>
-                <ProfileImg src={Profile} alt="profile image"/>
-              </ImgContainer>
-              <TextContainer>
-                안녕하세요<br/>
-                <strong>{uid}님</strong>
-              </TextContainer>
-            </Left>
             <Desktop>
+                <ImgContainer onClick={()=>navigate('/profile')}>
+                  <ProfileImg src={Profile} alt="profile image"/>
+                </ImgContainer>
+              </Desktop>
+                <TextContainer>
+                  안녕하세요<br/>
+                  <strong>{uid}님</strong>
+                </TextContainer>
+            </Left>
               <Right>
                 <span>오늘도 연습을 시작해볼까요?</span>
                   <PracticeBtn onClick={()=>navigate('/history')}> 연습 시작</PracticeBtn>
               </Right>
-            </Desktop>
           </GNB>
           <UserChatListContainer>
             <BackgroundContainer>
@@ -111,7 +111,6 @@ justify-content: center;
 align-items: center;
 `
 
-
 const TextContainer = styled.div`
 height: 200px;
 width: 140px;
@@ -138,20 +137,25 @@ const BackgroundContainer = styled.section`
 `
 
 const PracticeBtn = styled.button`
-  margin-top: 10px;
-  width: 140px;
-  height: 40px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #ffffff;
-  background-color: #000000;
-  border-radius: 5px;
-  transition: all 0.3s ease-in-out;
-  onClick = {() => {console.log("hi")}}
+    maring-top: 10px;
+    width: 80%;
+    height: 40px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
   &:hover {
-    background-color: #000000;
-    color: #ffffff;
-    transform: scale(1.1);
+    background-color: #2EE59D;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
   }
 `
 
@@ -172,10 +176,11 @@ height: 300px;
 `
 
 const Right = styled.div`
+height: 80px;
 font-size: 14px;
 display: flex;
 flex-direction: column;
-justify-content: center;
+justify-content: space-between;
 align-items: center;
 
 span{

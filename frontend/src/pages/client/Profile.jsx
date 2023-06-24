@@ -58,6 +58,7 @@ const PageBody = styled.section`
   width: 100%;
   margin: 25px, auto;
   maring-bottom: 10px;
+  margin-top: 25px;
 
 `
 const CardContainer = styled.div`

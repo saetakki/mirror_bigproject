@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getHistoryItem } from "@apis";
+import { PageHeader } from "@organisms";
+import { Container } from "@styles"
+
 
 const Log = () => {
   const where = useParams().id
@@ -24,17 +27,17 @@ const Log = () => {
   },[])
 
   return (
-    <> 
-      <div>{where} page</div>
-      <div>
-        <span>persona</span>
-        {isUpload && persona.map((item,idx)=> {
-          return (
-            <div key={idx}>{item}</div>
-          )
-        })}
-      </div>
-    </>
+    <Container>
+      <PageHeader page={where}/>
+        <div>
+          <span>persona</span>
+          {isUpload && persona.map((item,idx)=> {
+            return (
+              <div key={idx}>{item}</div>
+            )
+          })}
+        </div>
+    </Container>
   ) 
 }
 

@@ -1,1 +1,1 @@
-export { default as IndexRow } from './IndexRow';
+export { default as IndexItem } from './IndexItem';
