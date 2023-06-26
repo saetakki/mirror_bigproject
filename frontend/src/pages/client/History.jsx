@@ -2,6 +2,7 @@ import styled from "@emotion/styled"
 import { Container } from "@styles"
 import { IndexItem, PageHeader } from "@organisms"
 import { useEffect, useState } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
 import { getHistoryPagination } from "@apis/HistoryApi"
 import { useMediaQuery } from "react-responsive"
 import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci"
@@ -11,6 +12,8 @@ const History = () => {
   const [pageNum, setPageNum] = useState(1)
   const [history, setHistory] = useState([])
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(()=> {
     getHistoryPagination(pageNum)
@@ -20,6 +23,10 @@ const History = () => {
   },[pageNum])
 
 
+  const onClickHandler = (e) => {
+    navigate(`${e}`)
+  }
+
 
   return (
     (isLoad ? 
@@ -27,6 +34,7 @@ const History = () => {
         <PageHeader page='연습기록'/>
           <IndexItem isHeader={true}/>
           {history.map((item) => (
+            <BtnLayer onClick={()=>onClickHandler(item.id)}>
               <IndexItem key={item.id}
                 id={item.id} 
                 date={item.date} 
@@ -34,6 +42,7 @@ const History = () => {
                 isBooked={item.bookmark}
                 isMobile={isMobile}
                 />
+            </BtnLayer>
             ))}    
         <Pagination>
           <Page>
@@ -55,6 +64,11 @@ const History = () => {
 
 export default History
 
+
+const BtnLayer = styled.div`
+  width: 100%;
+
+`
 
 const Pagination = styled(Container)`
   height: 120px;
