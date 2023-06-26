@@ -213,7 +213,7 @@ def make_report(request, history_id):
     try:
         response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo",
-			messages=[{"role": "user", "content": f' "{chat_log}" 다음의 상담내용을 user입장에서 개요, 잘한 점, 보완할 점의 3항목으로 json 형태의 보고서로 작성해줘 '}])
+			messages=[{"role": "user", "content": f' "{chat_log}" 다음의 상담내용을 user입장에서 Overview, what went well, what could be improved의 3항목으로 json 형태의 보고서로 작성해줘 '}])
         message_text = response["choices"][0]["message"]['content']      
         print(message_text)
         history.report = message_text
