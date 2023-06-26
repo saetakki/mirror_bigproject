@@ -15,10 +15,6 @@ const tabList = [
     path: '/bookmark'
   },
   {
-    name: '테스트',
-    path: '/test'
-  },
-  {
     name: 'Profile',
     path: '/profile'
   },
