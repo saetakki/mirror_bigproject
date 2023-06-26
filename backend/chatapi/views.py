@@ -16,22 +16,34 @@ from rest_framework import status
 import requests
 from django.http import JsonResponse, Http404
 from rest_framework.permissions import IsAuthenticated
+from django.http import FileResponse
 # Retrieve Enviornment Variables
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
 ELEVEN_LABS_API_KEY = config("ELEVEN_LABS_API_KEY")
 
-# Setting Persona
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 1. audio 입력받아 tts한후 db저장
+# 2. 메세이 입력받아 db 저장
+# 3. chatgpt 보내기 / 오디오파일
+
+
+# 1. 페르소나 세팅과 저장
+# 사용자가 페르소나를 만들면 
+# 프론트로부터 {'persona_name' : persona_name, 'age':age, 'gender':gender', 'position':position, 'department' : department, 'state':state}
+# 이를 persona table 저장 후 새로운 히스토리를 만들어 저장 후 프론트에게 history_id와 text전달
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def set_persona(request):
-
+	# 프론트로부터 데이터 가져오기
     persona_name = request.data.get('persona_name')
     age = request.data.get('age')
     gender = request.data.get('gender')
     position = request.data.get('position')
     department = request.data.get('department')
     state = request.data.get('state')    
+    # 페르소나 테이블에 설정 저장
     persona = Persona(
         persona_name=persona_name,
         age=age,
@@ -42,10 +54,7 @@ def set_persona(request):
     )
     persona.save()
 
-    # txt = {'role' : 'user', 
-    #        'content' : f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
-    #         {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")}
-    
+    # 프롬프터 엔지니어링    
     txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
     {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")
     learn_instruction = {"role": "system", "content": f"{txt}. user는 {request.user.userprofile.real_name}. Keep responses under 40 words. 코칭역할을 잘 할 수 있도록 프롬프트 엔지니어링을 해야해"}
@@ -57,212 +66,138 @@ def set_persona(request):
         chat_log = [learn_instruction]
     )
     history.save()
-    print(type(history.chat_log))
-    messages = history.chat_log
-    return JsonResponse({'history_id': history.id, 'text': messages }, status=200)
     
+    """
+    준호님 이거 기존에 있던 내용 바꾼 내용인데 
+    learn_instruction 이걸 프론트에게 보낼 필요 없다고 생각하여 'text' 에 아무것도 안보내거나, 
+    페르소나 설정 완료 메세지 보내는게 어떤가요? 
+    저희가 사용자에게 프롬프트 엔지니어링 한 내용을 보여주진 않을거니까라고 생각해서입니다.
+    그리고 밑에 저희가 프론트에게 문자열을 보낼 때 text로 보내는걸로 통일해서 만들었습니다. 
+    """
+    
+    # print(type(history.chat_log))
+    # messages = history.chat_log
+    return JsonResponse({'history_id': history.id, 'text': '페르소나 설정 완료되었습니다'}, status=200)
 
-
-# def start_roleplay(history_id):
-#     try:
-#         history = History.objects.get(id=history_id)
-#         if history.persona:
-#             persona_name = history.persona.persona_name
-#             age = history.persona.age
-#             gender = history.persona.gender
-#             position = history.persona.position
-#             department = history.persona.department
-#             state = history.persona.state
-            
-#             txt = f"""이제부터 상담 역할극을 할건데, 나는 상담하는 사람, 너는 상담 당하는 사람으로, {persona_name}라는 이름의 {age}살 {gender}로 
-#             {department}의 {position}이고 {state}를 원하는 역할을 해줘""".replace("\n", '').replace("    ", "")
-#             return txt
-#     except Exception as e:
-#             return e
-
-# 해결
-# Open AI - Whisper
-# Convert audio to text
-# 이 코드는 오디오 인풋을 텍스트로 변환시켜주는 코드입니다. 그대로 둬도 되지 않을까요?
-# conver_audio
+# audio -> text 변환 함수
+# 사용자가 audio 파일을 올리면, 프론트에서 이를 audio_file로 전달(프론트 헤더에 파일 형식이 명시되어야 함 
+# 	ex) Content-Type : audio/mp3 or audio/wav)
+# audio 입력받아 tts한후 db저장
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def convert_audio_to_text(request, history_id):
+def audio_to_text(request, history_id):
+    # audio 파일 받기
     audio_file = request.FILES.get('audio_file')
     if not audio_file:
         return Response("No audio file provided.", status=status.HTTP_400_BAD_REQUEST)    
-    try:
-        # with open(audio_file, 'rb') as audio_file:
-        #     transcript = openai.Audio.transcribe("whisper-1", audio_file)
-        transcript = openai.Audio.transcribe("whisper-1", audio_file)
-        print(transcript)
-        
+    try:        
+        # TTS
+        transcript = openai.Audio.transcribe("whisper-1", audio_file)                
         message_text = transcript["text"]
         print(message_text)
-        # history = History.objects.get(id=history_id, user=request.user)
-        # history.chat_log.append({"role": "user", "content": message_text})
-        # history.save()
-        # voice = save_result(message_text)
         
-        return Response(message_text, status=status.HTTP_200_OK)
+        # 히스토리 테이블에 저장
+        history = History.objects.get(id=history_id, user=request.user)
+        history.chat_log.append({"role": "user", "content": message_text})
+        history.save()        
+        # 프론트에게 결과 전달
+        return JsonResponse({'text' : message_text} , status=200)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-###########
-
-
-"""def curry(f,...f){
-   convert_audio_to_text(),    <- 프론트에서 요청
- 실행 ->  send_text_to_chatgpt(),   <- 프론트에서 요청
- 실행 -> send_text_and_voice_to_client() -> 프론트로 보내줌
-}
-
-
-
-
-
-def send_text_to_chatgpt(txt):
-    chatgpt한테 텍스트 요청 보냄
-    return 응답 받음
-
-def send_text_and_voice_to_client(txt):
-   txt를 음성화하고
-   return Response(프론트 요청에 담아서 보냄)"""
+    
+# text -> db저장
+# 프론트에서 'text'로 전달받음
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def get_text(request, history_id):
+    message_text = request.data.get('text')
+    if not message_text:
+        return Response("No text provided", status=status.HTTP_400_BAD_REQUEST)
+    history = History.objects.get(id=history_id, user = request.user)
+    history.chat_log.append({"role" : "user", "content" : message_text})
+    history.save()
+    # 프론트에게 성공 전달
+    return JsonResponse({}, status = 200)
 
 
 
 
-
-def convert_audio_to_text_helper(audio_file):
-    try:
-        transcript = openai.Audio.transcribe("whisper-1", audio_file)
-        message_text = transcript["text"]
-        return message_text
-    except Exception as e:
-        raise Exception(str(e))
-
-
-def get_recent_messages(history_id):
-  # Define the file name
-  # 실험 위해 output.json 이용
-#   file_name = "stored_data.json"
-  file_name = "output.json"
-  txt = start_roleplay(history_id)
-  history = History.objects.get(id=history_id)
-  learn_instruction = {"role": "system", 
-                       "content": f"{txt}. user는 {history.user.userprofile.real_name}. Keep responses under 40 words. 코칭역할을 잘 할 수 있도록 프롬프트 엔지니어링을 해야해"}
-  
-  # Initialize messages
-  messages = []
-
-  # Add Random Element
-#   x = random.uniform(0, 1)
-#   if x < 0.2:
-#     learn_instruction["content"] = learn_instruction["content"] + "Your response will have some light humour. "
-#   elif x < 0.5:
-#     learn_instruction["content"] = learn_instruction["content"] + "Your response will include an interesting new fact about English. "
-#   else:
-#     learn_instruction["content"] = learn_instruction["content"] + "Your response will recommend another word to learn. "
-
-  # Append instruction to message
-  messages.append(learn_instruction)
-
-  # Get last messages
-  try:
-    with open(file_name) as user_file:
-      data = json.load(user_file)
-      
-      # Append last 5 rows of data
-      if data:
-        if len(data) < 5:
-          for item in data:
-            messages.append(item)
-        else:
-          for item in data[-5:]:
-            messages.append(item)
-  except:
-    pass  
-  # Return messages
-  return messages
-
-# text를 입력받아서 openai chatgpt에 넣고, 그 결과를 반환
-# audio -> 200 -> 프론트에서 변환된 텍스트를 다시 보내줌 -> get_text_respon실행
+# history.chat_log에서 대화를 뽑아 chatgpt에게 전달하여 반응을 받아오는 함수
+"""
+이거 논리상으로는 프론트에서 요청이 없어도 되긴 하는데
+프론트에서 request 없으면 백엔드에서 response 보내는게 어렵다고 하네요
+웹소켓이나 스케줄링 등 해야되서 프론트에서 그냥 요청 보내주는게 가장 간단할 거 같아서 이렇게 작성했습니다.
+이거 제대로 작동하는지 확인하고 싶은데 api_key가 오류나서(아마 찬님꺼 다 쓴듯) 제꺼도 안되서
+어떻게 해야할지 고민입니다.
+"""
+# 프론트에서 받을건 없어 보임
+# 프론트에게 key:'text', audio_file로 전달
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
-def get_text_response(request, history_id):
-
-    message_input = request.data.get('message_input')
-    history = History.objects.get(id=history_id, user=request.user)
+def get_ChatGPT_response(request, history_id):
+    history = History.objects.get(id=history_id, user= request.user)
     messages = history.chat_log
-    user_message = {"role": "user", "content": message_input }
-    messages.append(user_message)
-
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=messages
             )
         message_text = response["choices"][0]["message"]["content"]
-        
-        # chat_log에 append
-        output = {'role' : 'assistant', 'content':message_text}
-        
-        # history의 chat_log에 output 추가
-        history.chat_log.append(output)
+        history.chat_log.append({'role':'assistant', 'content':message_text})
         history.save()
-        return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
+        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
     except Exception as e:
-        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+        return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
-    
-# Open AI - Chat GPT
-# 해결됨
-# @api_view(["POST"])
-# def get_chat_response(request, history_id):
-# 	message_input = request.data.get('message_input')
-# 	messages = get_recent_messages(history_id)
-# 	user_message = {"role": "user", "content": message_input }
-# 	messages.append(user_message)
-# 	print(messages)
-
-# 	try:
-# 		response = openai.ChatCompletion.create(
-# 		model="gpt-3.5-turbo",
-# 		messages=messages
-# 		)
-# 		message_text = response["choices"][0]["message"]["content"]
-# 		return JsonResponse({'message': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
-# 	except Exception as e:
-# 		return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# 종료버튼 눌렀을 때 기능
-@permission_classes([IsAuthenticated])
+"""
+준호님
+한국어 음성 api찾아야 할듯? 음성이 너무 외국어 억양입니다. 월요일까지 한번 찾아볼게요
+이것도 마찬가지로 요청이 있는걸로 생각하고 했습니다. 
+어떻게 해도 이걸 get_ChatGPT_response1 합쳐서 json으로 보내려고 해도 안되더라고요 그래서 따로 함수를 작성했습니다.
+이함수로 요청받으면 자동으로 스트리밍이 재생됩니다
+"""
+from django.http import StreamingHttpResponse
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def text_to_speech(request, history_id):
+    history = History.objects.get(id=history_id, user=request.user)
+    CHUNK_SIZE = 1024
+    male_voices = ['ErXwobaYiN019PkySvjV', 'TxGEqnHWrfWFTfGW9XjX', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB']
+    female_voices = ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'MF3mGyEYCl7XYWbV9V6O', 'AZnzlk1XvdvUeBnXmlld']
+    if '남' in history.persona.gender:
+        voice_id = random.choice(male_voices)
+    else:
+        voice_id = random.choice(female_voices)
+    
+    headers = { "xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg" }
+    body = {
+    "text": history.chat_log[-1]['content'],
+    "voice_settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.5
+        }
+    }
+    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    try:
+        response = requests.post(endpoint, json=body, headers=headers)
+        def iterfile():
+            for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+                if chunk:
+                    yield chunk
+        return StreamingHttpResponse(iterfile(), content_type='audio/mp3')        
+    except Exception as e:
+        return JsonResponse({'msg' : '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def make_report(request, history_id):
     try:
         history = History.objects.get(id=history_id, user=request.user)
     except History.DoesNotExist:
         raise Http404('History does not exist')
-    # stored_data.json
-    # chat log 받아오기
-    # chat_log = history.chat_log
-    # if chat_log is None:
-    #     raise Http404('대화 기록이 없습니다')
-    # if history.chat_log is None:
-    #     raise Http404('대화 기록이 없습니다')
-    
-    # if history.report:
-    #     raise Http404( "이미 보고서가 존재합니다")
-    
-    # chat log 받아오기
-    # json_data = history.chat_log
-	
-	# 제대로 된 chat_log있으면 이거 지우기
-
     chat_log = history.chat_log
- 
     try:
         response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo",
@@ -275,159 +210,4 @@ def make_report(request, history_id):
         return JsonResponse({"report" : serializer.data.get('report')}, status=status.HTTP_200_OK, safe=False)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# 작동 확인
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def continue_text(request, history_id):
-    try:
-        history = History.objects.get(id=history_id, user=request.user)
-    except History.DoesNotExist:
-        raise Http404('History does not exist')
-	
-	# questino 바디에서 받기
-    # question = request.data.get("question")
-    question = '오늘 기분은 어떻세요?'
     
-    # db와 연동시
-    # txt = history.chat_log
-    with open('output.json', 'r', encoding='utf-8') as f:
-        txt = json.load(f)
-    
-    txt = json.dumps(txt, ensure_ascii=False, indent = 4)
-    try:
-        persona_text = start_roleplay(history_id)
-        txt = f"""{persona_text}. {txt}""".replace("\n", '').replace("    ", "")
-        print(txt)
-        print()
-    except Exception as e:
-        return JsonResponse({'error': 'Persona not found'})
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-			messages=[{"role": "user", "content": f"{txt} 위의 대화에 이어서 나는 user고 너는 assistant역할로 상담역할극을 다시 시작하자. 내 질문 : {question}"}])
-        message_text = response["choices"][0]["message"]['content']
-        print(message_text)
-        return Response(message_text, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-# 해결필요
-@api_view(['POST'])  # GET, POST 메서드 허용
-def convert_text_to_speech(request):
-    message = request.data.get('message')
-    
-    body = {
-        "text": message,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.5
-        }
-    }
-
-    voice_Domi = "AZnzlk1XvdvUeBnXmlld"
-    voice_rachel = "21m00Tcm4TlvDq8ikWAM"
-    voice_antoni = "ErXwobaYiN019PkySvjV"
-    voices = [voice_Domi, voice_rachel, voice_antoni]
-    headers = {"xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg"}
-    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{random.choice(voices)}"
-    
-    try:
-        response = requests.post(endpoint, json=body, headers=headers)
-    except Exception as e:
-        return HttpResponse(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
-    
-    if response.status_code == 200:
-        return HttpResponse(response.content, content_type='audio/mpeg')
-    else:
-        return HttpResponse(status=response.status_code)   
-
-## 찬님꺼  ###################################   
-# import requests
-# from decouple import config
-
-# ELEVEN_LABS_API_KEY = config("ELEVEN_LABS_API_KEY")
-
-# Eleven Labs
-# Convert text to speech
-# def convert_text_to_speech(message):
-#   body = {
-#     "text": message,
-#     "voice_settings": {
-#         "stability": 0,
-#         "similarity_boost": 0
-#     }
-#   }
-
-#   voice_shaun = "mTSvIrm2hmcnOvb21nW2"
-#   voice_rachel = "21m00Tcm4TlvDq8ikWAM"
-#   voice_antoni = "ErXwobaYiN019PkySvjV"
-
-#   # Construct request headers and url
-#   headers = { "xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg" }
-#   endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_rachel}"
-
-#   try:
-#     response = requests.post(endpoint, json=body, headers=headers)
-#   except Exception as e:
-#     print(e)
-#     return
-
-#   if response.status_code == 200:
-#       # with open("output.wav", "wb") as f:
-#       #     f.write(audio_data)
-#       return response.content
-#   else:
-#     return
-#############################################        
-        
-    
-
-    # elif request.method == 'GET':
-    #     # GET 요청에 대한 처리 로직을 구현합니다.
-    #     return HttpResponse("GET 요청을 처리합니다.")
-
-# Save messages for retrieval later on
-def store_messages(request_message, response_message):
-
-  # Define the file name
-  file_name = "stored_data.json"
-
-  # Get recent messages
-  messages = get_recent_messages()[1:]
-
-  # Add messages to data
-  user_message = {"role": "user", "content": request_message}
-  assistant_message = {"role": "assistant", "content": response_message}
-  messages.append(user_message)
-  messages.append(assistant_message)
-
-  # Save the updated file
-  with open(file_name, "w") as f:
-    json.dump(messages, f)
-
-# 위에서 구현
-# def store_messages_to_db(history_id):
-#     file_name = 'stored_data.json'
-#     with open(file_name, 'r') as f:
-#         chat_log = json.load(f)
-#     try:
-#         history = History.objects.get(id=history_id)
-#     except History.DoesNotExist:
-#         raise Http404('History does not exist')
-#     history.chat_log = chat_log
-#     return JsonResponse({'message' : '저장 완료'}, status=200)
-
-# Save messages for retrieval later on
-def reset_messages():	
-
-  # Define the file name
-  file_name = "stored_data.json"
-
-  # Write an empty file
-  open(file_name, "w")
-
