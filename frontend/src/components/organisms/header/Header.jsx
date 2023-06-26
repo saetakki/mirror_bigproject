@@ -2,13 +2,15 @@ import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mobile, Desktop} from "@hooks"
-import { RxHamburgerMenu } from "react-icons/rx";
+import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import logo from '../../../assets/logo.png'
 import { useMediaQuery } from "react-responsive";
+import { Tab } from "@organisms/tab";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useMediaQuery({query: "(max-width: 767px)"});
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isMobile) {
@@ -16,16 +18,9 @@ const Header = () => {
     }
   }, [isMobile]);
 
-
-  const navigate = useNavigate();
-  const onClickHandler = (e) => {
-    const whereTo = e.target.className
-    navigate(whereTo);
-  };
-
-  const onTouchHandler = () => {
+  const onClickDropDownHandler = () => {
     setIsMenuOpen(!isMenuOpen);
-  }
+  };
 
 
   return (
@@ -38,27 +33,22 @@ const Header = () => {
       <div>
           <BtnContainer className="BtnContainer">
           <Desktop>
-            <ul>
-              <li className={'/'}onClick={onClickHandler}>Home</li>
-              <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-              <li className={'/bookmark'} onClick={onClickHandler}>북마크</li>
-              <li className={'/profile'} onClick={onClickHandler}>Profile</li>
-            </ul>
+            <Tab />
           </Desktop>
           <Mobile>
               <MobileIconWrapper>
-                <RxHamburgerMenu
+                {isMenuOpen ? (<RxCross2
                   size={30}
-                  onClick={onTouchHandler}
-                />
+                  onClick={onClickDropDownHandler}
+                  />)
+                : (<RxHamburgerMenu
+                    size={30}
+                    onClick={onClickDropDownHandler}
+                  />)
+                }
                 {isMenuOpen && (
-                  <MobileDropdownMenu>
-                    <ul>
-                      <li className={'/'}onClick={onClickHandler}>Home</li>
-                      <li className={'/history'} onClick={onClickHandler}>연습 기록</li>
-                      <li className={'/bookmark'} onClick={onClickHandler}>북마크</li>
-                      <li className={'/profile'} onClick={onClickHandler}>Profile</li>
-                    </ul>
+                  <MobileDropdownMenu onClick={onClickDropDownHandler}>
+                    <Tab/>
                   </MobileDropdownMenu>
                 )}
               </MobileIconWrapper>
@@ -99,6 +89,7 @@ const StyledHeader = styled.nav`
 const BtnContainer = styled.div`
   width: 60vw;
   height: 60px;
+  position: relative;
 
 
   display: ${Mobile ? 'flex' : 'none'};
@@ -123,38 +114,71 @@ const MobileIconWrapper = styled.div`
 
 const MobileDropdownMenu = styled.div`
   position: absolute;
-  top: 40px;
-  right: 0;
-  width: 150px;
-  height: 150px;
   background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  top: 60px;
+  right: 0;
+  width: 100vw;
+  right: -24px;
+  height: 100vh;
 
   ul {
-    position: absolute;
-    width: 150px;
-    height: 150px;
-    right: 10px;
-    widht: 100%;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-    justify-content: space-evenly;
-
-    li {
-      padding: 10px 0;
-      cursor: pointer;
-
-      &:hover {
-        background-color: #f2f2f2;
-      }
-    }
+      top: 35px;
+      position: absolute;
+      width: 100%;
+      height: 60%;
+      margin: 0 auto;
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      justify-content: space-evenly;
   }
-`;
+
+  li {
+  padding: 10px 0;
+  font-size: 36px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover {
+    background-color: #f2f2f2;
+  }
+
+`
+
+
+// const MobileDropdownMenu = styled.div`
+//   position: absolute;
+//   z-index: 10;
+//   top: 60px;
+//   right: -12px;
+//   width: 100vw;
+//   height: 100vh;
+//   background-color: #fff;
+//   border-radius: 4px;
+//   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+
+//   ul {
+//     position: absolute;
+//     width: 100%;
+//     height: 60%;
+//     margin: 0 auto;
+//     list-style-type: none;
+//     display: flex;
+//     flex-direction: column;
+//     text-align: center;
+//     align-items: center;
+//     justify-content: space-evenly;
+
+//     li {
+//       padding: 10px 0;
+//       cursor: pointer;
+//       &:hover {
+//         background-color: #f2f2f2;
+//       }
+//     }
+//   }
+// `;
 
 export default Header;

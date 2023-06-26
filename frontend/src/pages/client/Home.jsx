@@ -1,39 +1,34 @@
-import { useState, useEffect } from 'react'
-
 import styled from '@emotion/styled'
 import Profile from '@assets/profile.png'
-import { useNavigate } from 'react-router-dom'
 import { Desktop } from "@hooks"
 import { useMediaQuery } from 'react-responsive'
-import { IndexRow } from "@organisms";
+import { IndexItem } from "@organisms";
 import { Container } from "@styles"
-import { 
-  getHistoryPagination,
-  getBookMarkPagination,
-  requestLogin,
-} from '@apis'
+import { initalBookmarkLoadAtom, 
+  initialHistoryLoadAtom,
+  userInfoAtom } from '../../atoms'
+import { useRecoilValue } from 'recoil'
+import { useNavigate } from 'react-router-dom';
+import { requestFixProfile } from '@apis';
+
+
+
 const Home = () => {
-  const [history, setHistory] = useState([])
-  const [bookMark, setBookMark] = useState([])
-  const [isLogin, setIsLogin] = useState(false)
-  const navigate = useNavigate();
+
+  const navigate = useNavigate()
   const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
+  const initHistory = useRecoilValue(initialHistoryLoadAtom)
+  const initBookmark = useRecoilValue(initalBookmarkLoadAtom)
+  const uid = useRecoilValue(userInfoAtom).id
 
-  useEffect(() => {
-    console.log("login")
-    isLogin 
-    ? null 
-    : requestLogin().then(res => console.log(res)).catch(err => console.log(err))
-    setIsLogin(true)
 
-    getHistoryPagination(1)
-    .then(res => setHistory(res))
-    .catch(err => console.log(err))
-
-    getBookMarkPagination(1)
-    .then(res => setBookMark(res))
-    .catch(err => console.log(err))
-  }, [])
+  const active = () =>{
+    requestFixProfile()
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((err) => console.log(err))
+  }
 
 
 
@@ -42,25 +37,26 @@ const Home = () => {
     <Container>
       <HomeWrapper>
           <GNB>
+            <button onClick={active}>프로필 변경</button>
             <Left>
-              <ImgContainer onClick={()=>navigate("/Profile")}>
-                <ProfileImg src={Profile} alt="profile image"/>
-              </ImgContainer>
-              <TextContainer>
-                안녕하세요<br/>
-                <strong>username님</strong>
-              </TextContainer>
-            </Left>
             <Desktop>
+                <ImgContainer onClick={()=>navigate('/profile')}>
+                  <ProfileImg src={Profile} alt="profile image"/>
+                </ImgContainer>
+              </Desktop>
+                <TextContainer>
+                  안녕하세요<br/>
+                  <strong>{uid}님</strong>
+                </TextContainer>
+            </Left>
               <Right>
                 <span>오늘도 연습을 시작해볼까요?</span>
                   <PracticeBtn onClick={()=>navigate('/history')}> 연습 시작</PracticeBtn>
               </Right>
-            </Desktop>
           </GNB>
           <UserChatListContainer>
             <BackgroundContainer>
-              <strong>username 님의 연습 기록</strong>
+              <strong>{uid} 님의 연습 기록</strong>
               {!isMobile 
               ? (
               <Quotes>
@@ -70,20 +66,21 @@ const Home = () => {
               </Quotes>)
               : null}
               {/* 전체 메세지 기록 중 최근 5개 */}
-              <BoardContainer>
-                  <ItemListContainer>
-                  {history.slice(0,5).map((data, idx) => (
-                      <ItemContainer key={idx}>
-                        <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
-                      </ItemContainer>
+                  <ItemListContainer >
+                  {initHistory.map((data) => (
+                        <IndexItem
+                        key={data.id} 
+                        id={data.id} 
+                        date={data.date} 
+                        persona={Object.values(data.persona)} 
+                        isBooked={data.bookmark} 
+                        isMobile={isMobile} />
                     ))}
                   </ItemListContainer>
-              </BoardContainer>
-            </BackgroundContainer>
-            
+            </BackgroundContainer>           
             {/* 전체 북마크 기록 중 최근 5개 */}
             <BackgroundContainer>
-            <strong>username 님의 북마크 기록</strong>
+            <strong>{uid} 님의 북마크 기록</strong>
             {!isMobile 
             ? (<Quotes>
               <p>1만가지 방법이 효과가 없어도 실패한 게 아니다.<br/>
@@ -91,16 +88,16 @@ const Home = () => {
               <br/><br/>-토머스 에디슨</p>
             </Quotes>)
             : null}
-            <BoardContainer>
                 {/* 전체 북마크 기록 중 최근 5개 */}
-                <ItemListContainer>
-                {bookMark.slice(0,5).map((data, idx) => (
-                    <ItemContainer key={idx}>
-                        <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
-                    </ItemContainer>
+                {initBookmark.slice(0,5).map((data) => (
+                        <IndexItem 
+                          key={data.id} 
+                          id={data.id} 
+                          date={data.date} 
+                          persona={Object.values(data.persona)} 
+                          isBooked={data.bookmark} 
+                          isMobile={isMobile} />
                   ))}
-                </ItemListContainer>
-              </BoardContainer>
             </BackgroundContainer>
           </UserChatListContainer>
       </HomeWrapper>
@@ -130,7 +127,6 @@ justify-content: center;
 align-items: center;
 `
 
-
 const TextContainer = styled.div`
 height: 200px;
 width: 140px;
@@ -157,20 +153,25 @@ const BackgroundContainer = styled.section`
 `
 
 const PracticeBtn = styled.button`
-  margin-top: 10px;
-  width: 140px;
-  height: 40px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #ffffff;
-  background-color: #000000;
-  border-radius: 5px;
-  transition: all 0.3s ease-in-out;
-  onClick = {() => {console.log("hi")}}
+    maring-top: 10px;
+    width: 80%;
+    height: 40px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
   &:hover {
-    background-color: #000000;
-    color: #ffffff;
-    transform: scale(1.1);
+    background-color: #2EE59D;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
   }
 `
 
@@ -191,10 +192,11 @@ height: 300px;
 `
 
 const Right = styled.div`
+height: 80px;
 font-size: 14px;
 display: flex;
 flex-direction: column;
-justify-content: center;
+justify-content: space-between;
 align-items: center;
 
 span{
@@ -213,11 +215,7 @@ const UserChatListContainer = styled.section`
     line-height: 150%;
   }
 `
-const BoardContainer = styled.div`
-  width: 100%;
-  height: 50%;
-  margin: 0 auto 24px auto;
-`
+
 
 
 const Quotes = styled.div`
@@ -232,20 +230,5 @@ const ItemListContainer = styled.div`
   width: 100%;
   `
 
-const ItemContainer = styled.div`
-  width: 100%;
-  display: flex;
-  position:relative;
-  flex-direction: row;
-  margin: 3px 0;
-
-  border-radius: 5px;
-  
-  & > :first-of-type {
-    border-right: 2px solid #d9d9d9; 
-    border-radius: 5px 0 0 5px;
-    background-color: #f5f5f5;
-  }
-`
 
 export default Home

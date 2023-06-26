@@ -2,44 +2,50 @@ import axios from 'axios';
 
 const { VITE_API_URL } = import.meta.env;
 
-const getCookie = (name) => {
+export const getCookie = (name) => {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length == 2) return parts.pop().split(';').shift();
 };
 
-const csrftoken = getCookie('csrftoken')
-
 export const customAxios = axios.create({
   baseURL: VITE_API_URL,
 });
 
-export const getHistoryPagination = async (page) => {
-  const res = await customAxios.get(`api/history/?page=${page}`);
-  return res.data;
-};
 
 export const getBookMarkPagination = async (page) => {
-  const res = await customAxios.get(`api/history/bookmarked/?page=${page}`);
+  const res = await customAxios.get(`history/bookmarked/?page=${page}`);
   return res.data;
 }
 
-export const requestLogin = async () => {
-
+export const requestLogin = async (id,pw) => {
   const body = {
-    username : "a0000",
-    password : "tjwnsgh000",
+    username : id,
+    password : pw,
   }
-  const res = await customAxios.post('api/login/', body, {headers: {'X-CSRFToken': csrftoken}})
+  const res = await customAxios.post('login/', body)
   return res.data
 }
 
-export const requestSignIn = async (uid, pw, email, realname) => {
+export const requestSignIn = async () => {
   const res = await axios.post('http://127.0.0.1:8000/api/signup/', {
-    username : `${uid}`,
-    password : `${pw}`,
-    email : `${email}`,
-    real_name : `${realname}`,
+    username : "test1234",
+    password : "test4567",
+    email : "test@test.com",
+    real_name : "test1234",
   })
+  return res
+}
+
+export const requestFixProfile = async () => {
+
+  console.log(VITE_API_URL)
+  const header = getCookie('csrftoken')
+  const body = {
+    realname: "test1234",
+    email: "newTest2@test.com",
+    password: "test4567",
+  }
+  const res = await customAxios.post('profile/', body, {headers: {'X-CSRFToken': header}})
   return res
 }

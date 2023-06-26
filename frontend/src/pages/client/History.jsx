@@ -1,89 +1,99 @@
 import styled from "@emotion/styled"
 import { Container } from "@styles"
-import { IndexRow } from "@organisms"
+import { IndexItem, PageHeader } from "@organisms"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { getHistoryPagination } from "@apis/HistoryApi"
+import { useMediaQuery } from "react-responsive"
+import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci"
 
 const History = () => {
+  const [isLoad, setIsLoad] = useState(false)
+  const [pageNum, setPageNum] = useState(1)
+  const [history, setHistory] = useState([])
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
+  const navigate = useNavigate()
+
+  useEffect(()=> {
+    getHistoryPagination(pageNum)
+    .then((res)=> {setHistory(res)})
+    .catch((err)=> console.log(err))
+    setIsLoad(true)
+  },[pageNum])
+
+
+  const onClickHandler = (e) => {
+    navigate(`${e}`)
+  }
 
 
   return (
-    <Container>
-      <Head>
-        <strong>연습기록</strong>
-        <Quotes>
-          <span>username님의 연습기록을 모아봤어요.</span>
-          <GridLine/>
-        </Quotes>
-        <BoardContainer>
-          <BoardHead>
-            <IndexRow id="CHAT ID" date="DATE" persona="PERSONA"/>
-          </BoardHead>
-          <GridLine/>
-          <ItemListContainer>
-          {[false, false, true, false, true].map((booked, idx) => (
-              <ItemContainer key={idx}>
-                <IndexRow id="CHAT ID" date="DATE" persona="PERSONA" isBooked={booked} />
-              </ItemContainer>
-            ))}
-          </ItemListContainer>
-        </BoardContainer>
-      </Head>
+    (isLoad ? 
+    (<Container>
+        <PageHeader page='연습기록'/>
+          <IndexItem isHeader={true}/>
+          {history.map((item) => (
+            <BtnLayer key={item.id} onClick={()=>onClickHandler(item.id)}>
+              <IndexItem
+                id={item.id} 
+                date={item.date} 
+                persona={Object.values(item.persona)} 
+                isBooked={item.bookmark}
+                isMobile={isMobile}
+                />
+            </BtnLayer>
+            ))}    
+        <Pagination>
+          <Page>
+            <PageButton onClick={()=> setPageNum(pageNum-1)} disabled={pageNum===1}>
+              <CiCircleChevLeft/>
+            </PageButton>
+            <span>{pageNum} / inf</span>
+            <PageButton onClick={()=> setPageNum(pageNum+1)} disabled={pageNum===5}>
+              <CiCircleChevRight/>
+            </PageButton>
+          </Page> 
+        </Pagination>
     </Container>
   )
+  :
+  <div>loading...</div>
+  ))   
 }
 
 export default History
 
-const Head = styled.div`
-  margin: 24px 0;
-  strong {
-    font-size: 24px;
-  }
-`
 
-const Quotes = styled.div`
-  font-size: 12px;
-  color: #9a9a9a;
-  margin-bottom: 24px;
-`
-
-const GridLine = styled.div`
+const BtnLayer = styled.div`
   width: 100%;
-  height: 1px;
-  background-color: #d9d9d9;
-  margin-top: 12px;
-  margin-bottom: 12px;
+
 `
 
-const BoardContainer = styled.div`
-  width: 100%;
-  height: 50%;
-  margin: 0 auto 42px auto;
-`
-
-
-const BoardHead = styled.div`
-  width: 100%;
-  height:28px;
+const Pagination = styled(Container)`
+  height: 120px;
   display: flex;
-  flex-direction: row;
-  `
+  justify-content: center;
+`
 
-const ItemListContainer = styled.div`
+const Page = styled.div`
   width: 100%;
-  `
-
-const ItemContainer = styled.div`
-  width: 100%;
+  height: 80px;
   display: flex;
-  position:relative;
-  flex-direction: row;
-  margin: 3px 0;
+  justify-content: center;
+  align-items: center;
+`
 
+
+const PageButton = styled.button`
+  width: 100px;
+  height: 40px;
   border-radius: 5px;
-  
-  & > :first-of-type {
-    border-right: 2px solid #d9d9d9; 
-    border-radius: 5px 0 0 5px;
-    background-color: #f5f5f5;
+  border: 1px solid #d9d9d9;
+  background-color: #f5f5f5;
+  opacity: 0;
+  margin: 0 5px;
+  cursor: pointer;
+  &:disabled {
+    background-color: #d9d9d9;
   }
 `
