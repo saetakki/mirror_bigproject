@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { Container } from "@styles"
 import { IndexItem, PageHeader } from "@organisms"
 import { useEffect, useState } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, } from "react-router-dom"
 import { getHistoryPagination } from "@apis/HistoryApi"
 import { useMediaQuery } from "react-responsive"
 import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci"
@@ -13,7 +13,6 @@ const History = () => {
   const [history, setHistory] = useState([])
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
   const navigate = useNavigate()
-  const location = useLocation()
 
   useEffect(()=> {
     getHistoryPagination(pageNum)
