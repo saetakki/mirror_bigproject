@@ -20,8 +20,9 @@ from django.http import FileResponse
 # Retrieve Enviornment Variables
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
-ELEVEN_LABS_API_KEY = config("ELEVEN_LABS_API_KEY")
 
+import sys
+import urllib.request
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # 1. audio 입력받아 tts한후 db저장
@@ -162,31 +163,42 @@ from django.http import StreamingHttpResponse
 def text_to_speech(request, history_id):
     history = History.objects.get(id=history_id, user=request.user)
     CHUNK_SIZE = 1024
-    male_voices = ['ErXwobaYiN019PkySvjV', 'TxGEqnHWrfWFTfGW9XjX', 'VR6AewLTigWG4xSOukaG', 'pNInz6obpgDQGcFmaJgB']
-    female_voices = ['21m00Tcm4TlvDq8ikWAM', 'EXAVITQu4vr4xnSDxMaL', 'MF3mGyEYCl7XYWbV9V6O', 'AZnzlk1XvdvUeBnXmlld']
+    male_voices = ['jinho', 'nsinu', 'njinho', 'njihun', 'njooahn', 'nseonghoon', 'njihwan', 
+                   'nsiyoon','ntaejin','nyoungil','nseungpyo','nwontak', 'njonghyun', 'njoonyoung', 'njaewook',
+                   'nes_c_kihyo' ]
+    female_voices = ['nara', 'nminyoung', 'nyejin', 'mijin', 'njiyun', 'nsujin', 'neunyoung', 
+                     'nsunkyung','nyujin', 'nsunhee', 'nminseo', 'njiwon', 'nbora', 'nes_c_hyeri',
+                     'nes_c_sohyun', 'nes_c_mikyung','ntiffany' ]
     if '남' in history.persona.gender:
         voice_id = random.choice(male_voices)
     else:
         voice_id = random.choice(female_voices)
     
-    headers = { "xi-api-key": ELEVEN_LABS_API_KEY, "Content-Type": "application/json", "accept": "audio/mpeg" }
-    body = {
-    "text": history.chat_log[-1]['content'],
-    "voice_settings": {
-        "stability": 0.5,
-        "similarity_boost": 0.5
-        }
+    client_id = "yzkv8tab9o"
+    client_secret = "5l0ouX7wFQIBDA6zLpGyGuyYZjc9KLNToQsX0aR4"
+    speaker = voice_id
+    text = history.chat_log[-1]['content']
+    data = {
+        "speaker": speaker,
+        "volume": 0,
+        "speed": 0,
+        "pitch": 0,
+        "format": "mp3",
+        "text": text
     }
-    endpoint = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    url = "https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-NCP-APIGW-API-KEY-ID": client_id,
+        "X-NCP-APIGW-API-KEY": client_secret
+    }
+    response = requests.post(url, headers=headers, data=data, stream=True)
+
     try:
-        response = requests.post(endpoint, json=body, headers=headers)
-        def iterfile():
-            for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
-                if chunk:
-                    yield chunk
-        return StreamingHttpResponse(iterfile(), content_type='audio/mp3')        
-    except Exception as e:
-        return JsonResponse({'msg' : '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response.raise_for_status()
+        return StreamingHttpResponse(response.iter_content(chunk_size=CHUNK_SIZE), content_type='audio/mp3')
+    except requests.HTTPError as e:
+        return JsonResponse({'msg': '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 
