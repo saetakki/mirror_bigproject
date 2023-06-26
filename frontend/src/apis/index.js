@@ -1,3 +1,3 @@
 export * from './Api';
 export * from './HistoryApi';
-export * from './UserApi';
+export * from './AuthApi';
