@@ -80,7 +80,8 @@ def set_persona1(request):
     return JsonResponse({'history_id': history.id, 'text': '페르소나 설정 완료되었습니다'}, status=200)
 
 # audio -> text 변환 함수
-# 사용자가 audio 파일을 올리면, 프론트에서 이를 audio_file로 전달(프론트 헤더에 파일 형식이 명시되어야 함 ex) Content-Type : audio/mp3 or audio/wav)
+# 사용자가 audio 파일을 올리면, 프론트에서 이를 audio_file로 전달(프론트 헤더에 파일 형식이 명시되어야 함 
+# 	ex) Content-Type : audio/mp3 or audio/wav)
 # audio 입력받아 tts한후 db저장
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -143,7 +144,7 @@ def get_ChatGPT_response1(request, history_id):
         history.save()
         return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
     except Exception as e:
-        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+        return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
 """
 준호님
@@ -179,7 +180,7 @@ def text_to_speech1(request, history_id):
                     yield chunk
         return StreamingHttpResponse(iterfile(), content_type='audio/mp3')        
     except Exception as e:
-        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse({'msg' : '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 
