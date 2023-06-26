@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { LogIn } from "@pages/client";
+import { Test } from "@pages/client";
 import { Layout } from "@templates";
 
 export const PrivateRoute = ({withAuth, children}) =>{
@@ -8,11 +8,11 @@ export const PrivateRoute = ({withAuth, children}) =>{
 
   if(withAuth){
     return (isAuthenticated === null || isAuthenticated === "false") 
-    ? <Navigate to="/login" /> 
+    ? <Navigate to="/test" /> 
     : <Layout>{children}</Layout>  } 
   else {
     return (isAuthenticated === null || isAuthenticated === "false") 
-    ? <LogIn/>
+    ? <Test/>
     : <Navigate to="/" replace />
   }
 }
