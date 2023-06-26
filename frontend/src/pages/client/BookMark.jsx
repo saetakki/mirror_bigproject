@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import { Container } from "@styles"
-import { IndexRow, PageHeader } from "@organisms"
+import { IndexItem, PageHeader } from "@organisms"
 import { useEffect, useState } from "react"
 import { getBookMarkPagination } from "@apis"
 
@@ -26,13 +26,13 @@ const BookMark = () => {
         <PageHeader page="북마크 목록" />
         <BoardContainer>
           <BoardHead>
-            <IndexRow id="CHAT ID" isHeader={true} date="DATE" persona="PERSONA"/>
+            <IndexItem id="CHAT ID" isHeader={true} date="DATE" persona="PERSONA"/>
           </BoardHead>
           <GridLine/>
           <ItemListContainer>
           {bookmark.map((booked) => (
               <ItemContainer key={booked.id}>
-                <IndexRow id={booked.id} date={booked.date} persona={booked.persona} isBooked={booked} />
+                <IndexItem id={booked.id} date={booked.date} persona={booked.persona} isBooked={booked} />
               </ItemContainer>
             ))}
           </ItemListContainer>

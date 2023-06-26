@@ -11,7 +11,6 @@ const IndexItem = ({ isHeader, id, date, persona, isBooked }) => {
   const newDate = date ? date.split("T")[0] : "날짜";
 
   const newPersona = (device) => {
-
     if(device === "desktop") {
       return `${persona[0]}과(와)의 대화 - ${persona[5]}`
     } else if (device === "tablet") {

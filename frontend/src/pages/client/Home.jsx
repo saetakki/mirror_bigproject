@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import Profile from '@assets/profile.png'
 import { Desktop } from "@hooks"
 import { useMediaQuery } from 'react-responsive'
-import { IndexRow } from "@organisms";
+import { IndexItem } from "@organisms";
 import { Container } from "@styles"
 import { initalBookmarkLoadAtom, 
   initialHistoryLoadAtom,
@@ -51,17 +51,18 @@ const Home = () => {
               </Quotes>)
               : null}
               {/* 전체 메세지 기록 중 최근 5개 */}
-              <BoardContainer>
                   <ItemListContainer >
                   {initHistory.map((data) => (
-                      <ItemContainer key={data.id}>
-                        <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
-                      </ItemContainer>
+                        <IndexItem
+                        key={data.id} 
+                        id={data.id} 
+                        date={data.date} 
+                        persona={Object.values(data.persona)} 
+                        isBooked={data.bookmark} 
+                        isMobile={isMobile} />
                     ))}
                   </ItemListContainer>
-              </BoardContainer>
-            </BackgroundContainer>
-            
+            </BackgroundContainer>           
             {/* 전체 북마크 기록 중 최근 5개 */}
             <BackgroundContainer>
             <strong>{uid} 님의 북마크 기록</strong>
@@ -72,16 +73,16 @@ const Home = () => {
               <br/><br/>-토머스 에디슨</p>
             </Quotes>)
             : null}
-            <BoardContainer>
                 {/* 전체 북마크 기록 중 최근 5개 */}
-                <ItemListContainer>
-                {initBookmark.slice(0,5).map((data, idx) => (
-                    <ItemContainer key={idx}>
-                        <IndexRow id={data.id} date={data.date} persona={data.persona} isBooked={data.bookmark} isMobile={isMobile} />
-                    </ItemContainer>
+                {initBookmark.slice(0,5).map((data) => (
+                        <IndexItem 
+                          key={data.id} 
+                          id={data.id} 
+                          date={data.date} 
+                          persona={Object.values(data.persona)} 
+                          isBooked={data.bookmark} 
+                          isMobile={isMobile} />
                   ))}
-                </ItemListContainer>
-              </BoardContainer>
             </BackgroundContainer>
           </UserChatListContainer>
       </HomeWrapper>
@@ -199,11 +200,7 @@ const UserChatListContainer = styled.section`
     line-height: 150%;
   }
 `
-const BoardContainer = styled.div`
-  width: 100%;
-  height: 50%;
-  margin: 0 auto 24px auto;
-`
+
 
 
 const Quotes = styled.div`
@@ -218,22 +215,5 @@ const ItemListContainer = styled.div`
   width: 100%;
   `
 
-const ItemContainer = styled.div`
-  width: 100%;
-  display: flex;
-  position:relative;
-  flex-direction: row;
-  margin: 3px 0;
-
-  border-radius: 5px;
-
-  background-color: #123456;
-
-  & > :first-of-type {
-    border-right: 2px solid #d9d9d9; 
-    border-radius: 5px 0 0 5px;
-    background-color: #f5f5f5;
-  }
-`
 
 export default Home
