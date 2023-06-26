@@ -30,5 +30,5 @@ class History(models.Model):
     persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     bookmark = models.BooleanField(default=False)
-    chat_log = models.JSONField(null=True, blank=True)
-    report = models.JSONField(null=True, blank=True)
+    chat_log = models.JSONField()
+    report = models.JSONField()

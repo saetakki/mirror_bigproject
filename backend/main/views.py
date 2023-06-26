@@ -4,7 +4,7 @@ from django.http import JsonResponse, Http404
 from .models import History, UserProfile, Persona
 from .serializers import HistorySerializer, ChatLogReportSerializer, UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from django.contrib.auth import logout as logout_django
 from django.contrib.auth import login as login_django
@@ -12,7 +12,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password
-from rest_framework.response import Response
 import json
 import re
 
@@ -24,9 +23,9 @@ import re
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_history(request):
-    page_number = request.GET.get('page', 1)  # Default to 1
-    history_items = History.objects.filter(user=request.user).order_by('-date')  # Most recent first
-    paginator = Paginator(history_items, 10)  # Paginator object
+    page_number = request.GET.get('page', 1) # 기본값 1
+    history_items = History.objects.filter(user=request.user).order_by('-date') # 최신순
+    paginator = Paginator(history_items, 10)  # Paginator 객체
 
     try:
         items = paginator.page(page_number)
@@ -35,9 +34,12 @@ def list_history(request):
 
     serializer = HistorySerializer(items, many=True)
 
-    return Response({'results': serializer.data, 'total_pages': paginator.num_pages})
-
-
+    return JsonResponse(serializer.data, safe=False)
+    
+# 2. /history/bookmarked/
+# 북마크한 히스토리만 로드
+# 최신 순으로 10개씩 로드
+# query parameter로 page를 받아서 해당 페이지의 10개를 로드
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def list_bookmarked_history(request):
@@ -51,8 +53,8 @@ def list_bookmarked_history(request):
         raise Http404('Page not found')
 
     serializer = HistorySerializer(items, many=True)
-
-    return Response({'results': serializer.data, 'total_pages': paginator.num_pages})
+    
+    return JsonResponse(serializer.data, safe=False)
 
 # 3. /history/<int:history_id>/
 @api_view(['GET', 'DELETE'])
@@ -207,7 +209,6 @@ def signup(request):
 # 2. POST /login/
 # 로그인
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
@@ -251,7 +252,6 @@ def logout(request):
 # 4. POST /find_id/
 # 아이디 찾기
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def find_id(request):
     email = request.data.get('email')
     password = request.data.get('password')
@@ -279,7 +279,6 @@ def find_id(request):
 # 5. POST /find_password/
 # 비밀번호 찾기
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def find_password(request):
     username = request.data.get('username')
     email = request.data.get('email')

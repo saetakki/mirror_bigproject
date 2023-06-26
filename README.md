@@ -1,6 +1,3 @@
-# 실행방법
-.env 파일 만든 후 openai key와 eleven_labs api key 생성
-
 # AIVLE - Big Project 4반 16조
 
 ## 🖥️ 프로젝트 소개
