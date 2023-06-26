@@ -9,6 +9,8 @@ import { initalBookmarkLoadAtom,
   userInfoAtom } from '../../atoms'
 import { useRecoilValue } from 'recoil'
 import { useNavigate } from 'react-router-dom';
+import { requestFixProfile } from '@apis';
+
 
 
 const Home = () => {
@@ -19,10 +21,23 @@ const Home = () => {
   const initBookmark = useRecoilValue(initalBookmarkLoadAtom)
   const uid = useRecoilValue(userInfoAtom).id
 
+
+  const active = () =>{
+    requestFixProfile()
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((err) => console.log(err))
+  }
+
+
+
+
   return(
     <Container>
       <HomeWrapper>
           <GNB>
+            <button onClick={active}>프로필 변경</button>
             <Left>
             <Desktop>
                 <ImgContainer onClick={()=>navigate('/profile')}>

@@ -197,9 +197,6 @@ const LogIn = () => {
   }
 
 
-  console.log(id, pw)
-
-
   //LOGIN 버튼을 클릭했을때 ID, PW가 맞으면 로그인, 아니면 실패 메시지 출력 
   const onClickConfirmButton = (e) => {
     e.preventDefault();
@@ -213,7 +210,6 @@ const LogIn = () => {
         email : res.user_profile.user.email,
         username: res.user_profile.user.username,
       }
-      console.log(res)
       const initHistory = res.history
       const initBookmark  = res.bookmarked_history
       setInitalHistoryLoad(initHistory)
