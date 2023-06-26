@@ -13,7 +13,6 @@ const History = () => {
   const [history, setHistory] = useState([])
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
   const navigate = useNavigate()
-  const location = useLocation()
 
   useEffect(()=> {
     requestPages(true,pageNum)
