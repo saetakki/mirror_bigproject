@@ -3,7 +3,7 @@ import { Container } from "@styles"
 import { IndexItem, PageHeader } from "@organisms"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { getHistoryPagination } from "@apis/HistoryApi"
+import { requestPages } from "@apis/HistoryApi"
 import { useMediaQuery } from "react-responsive"
 import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci"
 
@@ -14,12 +14,15 @@ const History = () => {
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
   const navigate = useNavigate()
   useEffect(()=> {
-    getHistoryPagination(pageNum)
-    .then(res => console.log(res.results))
+    requestPages(true,pageNum)
     .then((res)=> {setHistory(res.results)})
+    .then(res => res.results)
     .catch((err)=> console.log(err))
     setIsLoad(true)
   },[pageNum])
+
+  console.log(history)
+
 
 
   const onClickHandler = (e) => {
