@@ -217,9 +217,8 @@ def make_report(request, history_id):
         message_text = response["choices"][0]["message"]['content']      
         print(message_text)
         history.report = message_text
-        history.save()
-        serializer = ChatLogReportSerializer(history)
-        return JsonResponse({"report" : serializer.data.get('report')}, status=status.HTTP_200_OK, safe=False)
+        history.save()        
+        return JsonResponse({"report" : json.loads(message_text)}, status=status.HTTP_200_OK, safe=False)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
