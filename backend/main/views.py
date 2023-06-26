@@ -209,6 +209,7 @@ def signup(request):
 # 2. POST /login/
 # 로그인
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
@@ -252,6 +253,7 @@ def logout(request):
 # 4. POST /find_id/
 # 아이디 찾기
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def find_id(request):
     email = request.data.get('email')
     password = request.data.get('password')
@@ -279,6 +281,7 @@ def find_id(request):
 # 5. POST /find_password/
 # 비밀번호 찾기
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def find_password(request):
     username = request.data.get('username')
     email = request.data.get('email')
