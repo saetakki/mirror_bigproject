@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getHistoryItem } from "@apis";
+import { requestPages } from "@apis";
 import { PageHeader } from "@organisms";
 import { Container } from "@styles"
 
@@ -21,14 +21,14 @@ const Log = () => {
 
   const [isOpen, setIsOpen] = useState(false)
   const { email, id, profile_img, real_name, username } = useRecoilValue(userInfoAtom)
-  const profileChangeHandler = (e) => {
+  const requestHistoryLog = (e) => {
     e.preventDefault()
     setIsOpen(!isOpen)
   }
   console.log('@@@@', typeof report)
 
   useEffect(() => {
-    getHistoryItem(where)
+    requestHistoryLog(where)
       .then(res => {
         console.log(res)
         setDate(res.date)
