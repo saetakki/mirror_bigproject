@@ -169,10 +169,22 @@ def text_to_speech(request, history_id):
     female_voices = ['nara', 'nminyoung', 'nyejin', 'mijin', 'njiyun', 'nsujin', 'neunyoung', 
                      'nsunkyung','nyujin', 'nsunhee', 'nminseo', 'njiwon', 'nbora', 'nes_c_hyeri',
                      'nes_c_sohyun', 'nes_c_mikyung','ntiffany' ]
-    if '남' in history.persona.gender:
-        voice_id = random.choice(male_voices)
+    session_voice_id = request.session.get('voice_id')
+    session_history_id = request.session.get('history_id')
+    
+    if session_history_id != history_id:
+        # history_id가 다르면 새로운 voice_id 생성
+        if '남' in history.persona.gender:
+            voice_id = random.choice(male_voices)
+        else:
+            voice_id = random.choice(female_voices)
+        
+        # 새로운 voice_id 및 history_id를 세션에 저장
+        request.session['voice_id'] = voice_id
+        request.session['history_id'] = history_id
     else:
-        voice_id = random.choice(female_voices)
+        # 기존의 voice_id 사용
+        voice_id = session_voice_id
     
     client_id = "yzkv8tab9o"
     client_secret = "5l0ouX7wFQIBDA6zLpGyGuyYZjc9KLNToQsX0aR4"
