@@ -222,3 +222,19 @@ def make_report(request, history_id):
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def make_sample_question(request, history_id):
+    history = History.objects.get(id=history_id, user=request.user)
+    state = history.persona.state
+    
+    try:
+        response = openai.ChatCompletion.create(
+			model='gpt-3.5-turbo',
+			messages = [{'role' : 'user', 'content': f'{state} 이러한 고민을 가지고 있는데, grow모델의 각 단계별 질문 예시를 구체적으로 5개씩만 G:"", R:"", O:"", W:""로 json형식으로 만들어줘'}]
+		)
+        message_text = response['choices'][0]['message']['content']
+        return JsonResponse({'sample_question' :  json.loads(message_text)}, status = status.HTTP_200_OK, safe=False)
+    except Exception as e:
+        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+     
