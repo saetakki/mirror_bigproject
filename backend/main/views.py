@@ -313,8 +313,8 @@ def find_password(request):
 def create_dummy_data(request):
     if request.method == "POST":
         for i in range(1, 151):
-            user = User.objects.get(pk=2)  
-            persona = Persona.objects.get(pk=1)  
+            user = User.objects.get(pk=9)  
+            persona = Persona.objects.get(pk=2)  
 
             bookmark = True if i % 3 == 0 else False
 
