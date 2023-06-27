@@ -163,6 +163,9 @@ const Test = () => {
   }
 
   const handleGenderSelect = () => {
+    const gender = useRef(null)
+    
+
     const selected = gender.current.value
     console.log(selected)
   }
