@@ -129,6 +129,14 @@ def profile(request):
         # password
         password = request.data.get('password')
         if password:
+            
+            # 비밀번호 형식 검사
+            if len(password) < 8 or len(password) > 16:
+                return JsonResponse({"error": "Password must be between 8 and 16 characters."}, status=400)
+
+            if not re.search('[a-z]', password) or not re.search('[0-9]', password):
+                return JsonResponse({"error": "Password must include uppercase or lowercase, and numbers."}, status=400)
+    
             user_profile.user.set_password(password)
             user_profile.user.save()
             logout_django(request) 
