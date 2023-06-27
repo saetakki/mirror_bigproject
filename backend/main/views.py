@@ -92,6 +92,50 @@ def bookmark_history(request, history_id):
         
         return JsonResponse({}, status=200)
     
+# 5. 히스토리 여러개 삭제
+# DELETE /delete_histories/
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_histories(request):
+    # 삭제할 히스토리 id 리스트
+    history_ids = request.data.get('history_ids')
+    if not history_ids:
+        return JsonResponse({"error": "history_ids not provided."}, status=400)
+    
+    # 사용자의 히스토리 중에 삭제할 히스토리가 있는지 확인
+    histories = History.objects.filter(id__in=history_ids, user=request.user)
+    if len(histories) != len(history_ids):
+        return JsonResponse({"error": "Some histories do not exist."}, status=404)
+    
+    # 삭제할 히스토리 id 리스트를 순회하면서 삭제
+    for history in histories:
+        history.delete()
+    
+    return JsonResponse({}, status=200)
+    
+# 6. 히스토리 여러개 북마크
+# POST /bookmark_histories/
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def bookmark_histories(request):
+    # 북마크할 히스토리 id 리스트
+    history_ids = request.data.get('history_ids')
+    if not history_ids:
+        return JsonResponse({"error": "history_ids not provided."}, status=400)
+    
+    # 사용자의 히스토리 중에 북마크할 히스토리가 있는지 확인
+    histories = History.objects.filter(id__in=history_ids, user=request.user)
+    if len(histories) != len(history_ids):
+        return JsonResponse({"error": "Some histories do not exist."}, status=404)
+
+    # 북마크할 히스토리 id 리스트를 순회하면서 북마크
+    for history in histories:
+        # True <-> False
+        history.bookmark = not history.bookmark
+        history.save()
+    
+    return JsonResponse({}, status=200)
+
     
 #### 프로필 페이지에서 사용되는 API ####
 
