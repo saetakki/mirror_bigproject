@@ -17,6 +17,7 @@ import requests
 from django.http import JsonResponse, Http404
 from rest_framework.permissions import IsAuthenticated
 from django.http import FileResponse
+import emotion
 # Retrieve Enviornment Variables
 openai.organization = config("OPEN_AI_ORG")
 openai.api_key = config("OPEN_AI_KEY")
@@ -146,7 +147,12 @@ def get_ChatGPT_response(request, history_id):
         message_text = response["choices"][0]["message"]["content"]
         history.chat_log.append({'role':'assistant', 'content':message_text})
         history.save()
-        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False)}, status=status.HTTP_200_OK)
+        
+        ## 감정 분류
+        emotion = load_model_and_analyze_sentiment(message_text)
+        
+        # 프론트에게 결과 전달
+        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False), 'emotion': emotion}, status=status.HTTP_200_OK)
     except Exception as e:
         return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
