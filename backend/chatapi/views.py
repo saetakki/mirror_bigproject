@@ -216,7 +216,7 @@ def make_report(request, history_id):
 			messages=[{"role": "user", "content": f' "{chat_log}" 다음의 상담내용을 user입장에서 Overview, what went well, what could be improved의 3항목으로 json 형태의 보고서로 작성해줘 '}])
         message_text = response["choices"][0]["message"]['content']      
         print(message_text)
-        history.report = message_text
+        history.report = json.loads(message_text)
         history.save()        
         return JsonResponse({"report" : json.loads(message_text)}, status=status.HTTP_200_OK, safe=False)
     except Exception as e:
