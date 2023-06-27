@@ -1,11 +1,11 @@
 from transformers import BertForSequenceClassification
-import torch
 from transformers import BertModel, BertTokenizer
 from sklearn.preprocessing import LabelEncoder
+import torch
 import pandas as pd
 
 # KoBERT 모델 로드
-model = BertModel.from_pretrained('ji-soo/my_model6-kobert')
+model = BertForSequenceClassification.from_pretrained('ji-soo/my_model6-kobert')
 
 # KoBERT 토크나이저 로드
 tokenizer = BertTokenizer.from_pretrained('ji-soo/my_model6-kobert')
@@ -18,9 +18,6 @@ def load_model_and_analyze_sentiment(text):
     # 텍스트 입력 받아 전처리 수행
     preprocessed_text = preprocess(text)
 
-    # 모델 로드
-    model = BertForSequenceClassification.from_pretrained('ji-soo/my_model6-kobert')
-    tokenizer = BertTokenizer.from_pretrained('ji-soo/my_model6-kobert')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
     model.eval()
