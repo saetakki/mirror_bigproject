@@ -33,6 +33,14 @@ const Test = () => {
   const [paginationItems,setPaginationItems] = useRecoilState(historyPaginationItemsAtom)
   const [bookmarkPaginationItems ,setBookmarkPaginationItems] = useRecoilState(bookmarkPaginationItemsAtom)
 
+  const name = useRef(null)
+  const age = useRef(null)
+  const gender = useRef(null)
+  const position = useRef(null)
+  const department = useRef(null)
+  const state = useRef(null)
+
+
 
 
   const handleSignUp = () => {
@@ -143,6 +151,22 @@ const Test = () => {
   }
 
 
+  const personaHandler = () => {
+    const name = name.current.value
+    const age = age.current.value
+    const position = position.current.value
+    const department = department.current.value
+    const state = state.current.value
+
+
+    console.log(name,age,gender,position,department,state)
+  }
+
+  const handleGenderSelect = () => {
+    const selected = gender.current.value
+    console.log(selected)
+  }
+
 
 
 
@@ -199,24 +223,25 @@ const Test = () => {
               <h3>테스트 전 쿠키를 삭제한 후 아래 로그인 버튼 누르고 시작</h3>
               <button type="button" onClick={loginDefault}>로그인</button>
               {/* 페르소나 설정 */}
-              <input type="text" placeholder="이름" ref={idRef} />
-              <input type="number" placeholder="나이" ref={passwordRef} />
+
+
+
+
+              <input type="text" placeholder="이름" ref={name} />
+              <input type="number" placeholder="나이" ref={age} />
               <label>
-                <input type="radio" name="gender" value="apple"/>man
+                <input type="radio" name="gender" value="man" ref={gender}/>man
               </label>
               <label>
-                <input type="radio" name="fruit" value="banana"/>woman
+                <input type="radio" name="fruit" value="woman" ref={gender}/>woman
               </label>
-              <input type='text' placeholder='이름' ref={real_nameRef}/>
-              {/* 북마크 불러오기 버튼 */}
-              <button type="button" onClick={handleGetBookmark}>북마크 불러오기 테스트</button>
-              {/* 히스토리 삭제 버튼 */}
-              <button type="button" onClick={()=>handleRemove(true)}>삭제 테스트</button>
-               {/* 히스토리 삭제 버튼 */}
-              {/* 히스토리 자세히 보기 버튼 */}
-              <button type="button" onClick={handleDetail}>자세히 보기 테스트</button>
-              {/* 북마크 설정/해제 테스트 버튼 */}
-              <button type="button" onClick={handleBookmarking}>북마크 설정/해제 테스트</button>
+              <input type='text' placeholder='직책' ref={position}/>
+              <input type='text' placeholder='부서' ref={department}/>
+              <input type='text' placeholder='고민' ref={state}/>
+              
+              <button onClick={personaHandler} type='button'>페르소나 설정</button>
+
+
             </Wrapper>
           </form>
     </Container>

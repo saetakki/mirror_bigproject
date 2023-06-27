@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { LogIn, Home, History, BookMark, Profile, Log, Test } from "@pages/client";
+import { LogIn, Home, History, BookMark, Profile, Log, Test, Tts } from "@pages/client";
 import { PrivateRoute } from "./PrivateRoute";
 
 const routerList = [
@@ -44,6 +44,12 @@ const routerList = [
     path:'/test',
     element: <Test/>,
     withAuth: false
+  },
+  {
+    id:6,
+    path:'/tts',
+    element: <Tts/>,
+    withAuth: true
   },
 ]
 
