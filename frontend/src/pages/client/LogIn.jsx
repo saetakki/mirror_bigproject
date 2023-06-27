@@ -217,6 +217,7 @@ const LogIn = () => {
       setUserInfo(initUserInfo)
     })
     .then(() => setIsAuth("true"))
+    .then(res => console.log(res))
     .then(() => navigate("/"))
     .catch(err => console.log(err))
   };

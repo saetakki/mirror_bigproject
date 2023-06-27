@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import Profile from '@assets/profile.png'
+import defaultImg from '@assets/defaultImg.png'
 import { Desktop } from "@hooks"
 import { useMediaQuery } from 'react-responsive'
 import { IndexItem } from "@organisms";
@@ -41,7 +41,7 @@ const Home = () => {
             <Left>
             <Desktop>
                 <ImgContainer onClick={()=>navigate('/profile')}>
-                  <ProfileImg src={Profile} alt="profile image"/>
+                  <ProfileImg src={defaultImg} alt="profile image"/>
                 </ImgContainer>
               </Desktop>
                 <TextContainer>

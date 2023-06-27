@@ -1,8 +1,7 @@
 import { customAxios, getCookie } from "./Api";
-
 const csrftoken = getCookie('csrftoken')
 
-const requestSignUp = async ({ username, password, email, real_name }) => {
+export const requestSignUp = async ({ username, password, email, real_name }) => {
   const body = {
     username: username,
     password: password,
@@ -14,7 +13,7 @@ const requestSignUp = async ({ username, password, email, real_name }) => {
   return res.data;
   }
 
-const requestLogIn = async ({ username, password }) => {
+export const requestLogIn = async ({ username, password }) => {
   const body = {
     username: username,
     password: password
@@ -23,12 +22,13 @@ const requestLogIn = async ({ username, password }) => {
   return res.data;
   }
 
-  const requestLogOut = async () => {
-    const res = await customAxios.post("logout/", {headers: {'X-CSRFToken': csrftoken}});
+export const requestLogOut = async () => {
+    console.log(csrftoken)
+    const res = await customAxios.post("logout/",{ headers: { "X-CSRFToken": csrftoken }});
     return res.data;
   }
 
-  const requestFindId = async ({ email,password }) => {
+export const requestFindId = async ({ email,password }) => {
     const body = {
       email: email,
       password: password
@@ -37,7 +37,7 @@ const requestLogIn = async ({ username, password }) => {
     return res.data;
   }
 
-  const requestFindPassword = async ({ username, email }) => {
+export const requestFindPassword = async ({ username, email }) => {
     const body = {
       username: username,
       email: email

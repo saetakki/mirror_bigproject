@@ -1,12 +1,16 @@
 import axios from 'axios';
-
-const { VITE_API_URL } = import.meta.env;
-
 export const getCookie = (name) => {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length == 2) return parts.pop().split(';').shift();
 };
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.headers.common['X-CSRFToken'] = getCookie("csrftoken");
+
+
+const { VITE_API_URL } = import.meta.env;
+
 
 export const customAxios = axios.create({
   baseURL: VITE_API_URL,

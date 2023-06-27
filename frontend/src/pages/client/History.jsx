@@ -13,12 +13,10 @@ const History = () => {
   const [history, setHistory] = useState([])
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
   const navigate = useNavigate()
-  const location = useLocation()
 
   useEffect(()=> {
     requestPages(true,pageNum)
     .then((res)=> {setHistory(res.results)})
-    .then(res => res.results)
     .catch((err)=> console.log(err))
     setIsLoad(true)
   },[pageNum])

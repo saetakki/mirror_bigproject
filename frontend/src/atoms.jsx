@@ -1,4 +1,4 @@
-import { atom } from 'recoil'
+import { atom, selector } from 'recoil'
 import { recoilPersist } from 'recoil-persist'
 
 
@@ -41,8 +41,22 @@ export const initalBookmarkLoadAtom = atom({
   effects_UNSTABLE: [persistAtom]
 })
 
-export const pagenationItemsAtom = atom({
-  key: 'item',
+export const historyPaginationItemsAtom = atom({
+  key: 'history',
+  default: [],
+  effects_UNSTABLE: [persistAtom]
+})
+
+export const historySelector = selector({
+  key: 'historySelector',
+  get: ({ get }) => {
+    const history = get(historyPaginationItemsAtom);
+    return history;
+  },
+});
+
+export const bookmarkPaginationItemsAtom = atom({
+  key: 'bookmark',
   default: [],
   effects_UNSTABLE: [persistAtom]
 })

@@ -19,8 +19,10 @@ export const requestHistoryLog = async (historyId) => {
   return res.data;
 }
 
-// export const requestBookmark = async (historyId) => {
-//   const target = 
+export const requestBookmark = async (historyId) => {
+  const res = await customAxios.post(`history/${historyId}/bookmark/`, {headers: {'X-CSRFToken': csrftoken}});
+  return res.data;
+}
 
 
 

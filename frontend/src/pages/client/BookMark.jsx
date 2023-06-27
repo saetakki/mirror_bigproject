@@ -2,7 +2,7 @@ import styled from "@emotion/styled"
 import { Container } from "@styles"
 import { IndexItem, PageHeader } from "@organisms"
 import { useEffect, useState } from "react"
-import { getBookMarkPagination } from "@apis"
+import { requestPages } from "@apis"
 
 
 const BookMark = () => {
@@ -11,8 +11,9 @@ const BookMark = () => {
   const [bookmark, setBookmark] = useState([])
 
   useEffect(()=> {
-    getBookMarkPagination(pageNum)
-    .then((res)=> {setBookmark(res)})
+    requestPages(false, pageNum)
+    // .then((res) => console.log(res))
+    .then((res)=> {setBookmark(res.results)})
     .catch((err)=> console.log(err))
     setIsLoad(true)
   },[pageNum])

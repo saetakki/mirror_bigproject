@@ -6,8 +6,6 @@ import { Desktop, Mobile, Tablet } from "@hooks";
 const IndexItem = ({ isHeader, id, date, persona, isBooked }) => {
 
   const isMobile = useMediaQuery({ query: "(max-width: 425px)" })
-  console.log(persona)
-
   const newDate = date ? date.split("T")[0] : "날짜";
 
   const newPersona = (device) => {
