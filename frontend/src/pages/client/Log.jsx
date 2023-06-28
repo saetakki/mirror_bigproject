@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { requestPages, requestHistoryLog } from "@apis";
 import { PageHeader } from "@organisms";
 import { Container } from "@styles"
-
+import { useMediaQuery } from "react-responsive"
 import { userInfoAtom } from "../../atoms"
 import { useRecoilValue } from "recoil"
 import { Thumnail, InfoBox } from "@organisms"
@@ -18,41 +18,62 @@ const Log = () => {
   const [persona, setPersona] = useState({})
   const [chatLog, setChatLog] = useState([])
   const [report, setReport] = useState({})
-
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" })
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     requestHistoryLog(where)
-    .then(res => {
-      setDate(res.date)
-      setPersona(Object.values(res.persona))
-      setChatLog(res.chat_log) 
-      setReport(res.report)
-      setIsUpload(true)
-    })
-    .catch(err => console.log(err))
-}, [])
+      .then(res => {
+        setDate(res.date)
+        setPersona(Object.values(res.persona))
+        setChatLog(res.chat_log)
+        setReport(res.report)
+        setIsUpload(true)
+      })
+      .catch(err => console.log(err))
+  }, [])
 
   const overView = report['Overview'];
   const good = report['What went well'];
   const bad = report['What could be improved'];
-
   return (
     <Container>
-      <Logwrap>
-        <PageHeader page={where} />
+      <GridContainer>
+        <GridPageHeaderWrap>
+          <PageHeader page={where} />
+        </GridPageHeaderWrap>
+        {!isMobile?
         <ProPerWrap>
           <PersonaWrap>
+            <ChatLogName>내담자 정보</ChatLogName>
             <Persona>
-              <PersonaTitle>페르소나</PersonaTitle>
               {isUpload && persona.map((item, idx) => {
+                const labels = ['이름', '나이', '성별', '직책', '부서', '상태']; // 레이블 문자열 배열
+                const labelIndex = idx % labels.length; // 레이블 인덱스 계산
+                const label = labels[labelIndex]; // 현재 항목에 대한 레이블
                 return (
-                  <div key={idx}>{item}</div>                  
-                )              
+                  <div key={idx}><span>{label} :  </span>{item}</div>
+                )
               })}
             </Persona>
           </PersonaWrap>
-        </ProPerWrap>
+        </ProPerWrap>:
+        <MProPerWrap>
+        <PersonaWrap>
+          <ChatLogName>내담자 정보</ChatLogName>
+          <Persona>
+            {isUpload && persona.map((item, idx) => {
+              const labels = ['이름', '나이', '성별', '직책', '부서', '상태']; // 레이블 문자열 배열
+              const labelIndex = idx % labels.length; // 레이블 인덱스 계산
+              const label = labels[labelIndex]; // 현재 항목에 대한 레이블
+              return (
+                <div key={idx}><span>{label} :  </span>{item}</div>
+              )
+            })}
+          </Persona>
+        </PersonaWrap>
+      </MProPerWrap>}
+        {!isMobile?
         <ChatLogWrap>
           <ChatLog>
             <ChatLogName>채팅기록</ChatLogName>
@@ -72,21 +93,71 @@ const Log = () => {
               ))}
             </ChatContainer>
           </ChatLog>
-        </ChatLogWrap>
+        </ChatLogWrap>:
+        <MChatLogWrap>
+        <ChatLog>
+          <ChatLogName>채팅기록</ChatLogName>
+          <ChatContainer>
+            {chatLog.slice(1, chatLog.length).map((chat, index) => (
+              <ChatProPerWrap key={index}>
+                {chat.role === 'user' ? (
+                  <UserBubble>
+                    <Message>{chat.content}</Message>
+                  </UserBubble>
+                ) : (
+                  <AssistantBubble>
+                    <Message>{chat.content}</Message>
+                  </AssistantBubble>
+                )}
+              </ChatProPerWrap>
+            ))}
+          </ChatContainer>
+        </ChatLog>
+      </MChatLogWrap>}
+      {!isMobile?
         <ReportWrap>
+          <ReportName>보고서</ReportName>
           <Report>
-            <ReportName>보고서</ReportName>
             <ReportList>개요 및 평가 - {overView}</ReportList>
             <ReportList>잘한 점 - {good}</ReportList>
             <ReportList>보완할 점 - {bad}</ReportList>
           </Report>
-        </ReportWrap>
-      </Logwrap>
+        </ReportWrap>:
+        <MReportWrap>
+        <ReportName>보고서</ReportName>
+        <Report>
+          <ReportList>개요 및 평가 - {overView}</ReportList>
+          <ReportList>잘한 점 - {good}</ReportList>
+          <ReportList>보완할 점 - {bad}</ReportList>
+        </Report>
+      </MReportWrap>}
+      </GridContainer>
     </Container>
   )
 }
 
 export default Log;
+
+const GridPageHeaderWrap = styled.div`
+  padding: 20px;
+  grid-column: 1 / 16;
+  grid-row: 1;
+  
+  border-radius: 30px;
+  background-color: #f9f9f9;
+  
+`
+
+const GridContainer = styled.div`
+  display: grid;
+  padding: 20px 10px;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows : repeat(12, 1fr);
+  grid-gap: 24px;
+  max-height: 100%;
+`
+
+
 
 const ChatContainer = styled.div`
   margin-top: 5px;
@@ -151,16 +222,30 @@ const ChatProPerWrap = styled.div`
   margin-top: 5px;
   display: flex;
   flex-direction: row;
+  
 `
 const ProPerWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
   border-radius : 30px;
   padding: 20px;
-  box-shadow: 0px 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  margin-top: 30px;
   display: flex;
   flex-direction: row;
+  grid-column: 1 / 9;
+  grid-row: 2;
+  background-color: #f9f9f9;
 `
+
+const MProPerWrap = styled.div`
+  border : 1px solid rgb(225, 223, 223);
+  border-radius : 30px;
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  grid-column: 1 / 16;
+  grid-row: 2;
+  background-color: #f9f9f9;
+`
+
 const PersonaTitle = styled.div`
   margin: 0px;
   font-size: 24px;
@@ -179,33 +264,69 @@ const PersonaWrap = styled.div`
 const ChatLog = styled.div`
   margin: 0px;
   width: 100%;
+  
+  
 `
 
 const Report = styled.div`
   margin: 0px;
+  overflow: scroll;
+  height: 220px;
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 `
 
 const ChatLogWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
   border-radius : 30px;
   padding: 20px;
-  box-shadow: 0px 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  background-color: #f9f9f9;
  
   margin: 0px;
-  margin-top: 30px;
   
+
+  grid-column: 9 / 16;
+  grid-row: 2 / 17;
+`
+const MChatLogWrap = styled.div`
+  border : 1px solid rgb(225, 223, 223);
+  border-radius : 30px;
+  padding: 20px;
+  background-color: #f9f9f9;
+ 
+  margin: 0px;
   
+
+  grid-column: 1 / 16;
+  grid-row: 3 / 28;
 `
 
 const ReportWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
   border-radius : 30px;
-  box-shadow: 0px 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  background-color: #f9f9f9;
   margin: 0px;
-  margin-top: 30px;
+  height: 300px;
   margin-bottom: 50px;
   padding: 20px;
+  grid-column: 1 / 9;
+  grid-row: 3 / 23;
 `
+
+const MReportWrap = styled.div`
+  border : 1px solid rgb(225, 223, 223);
+  border-radius : 30px;
+  background-color: #f9f9f9;
+  margin: 0px;
+  height: 300px;
+  margin-bottom: 50px;
+  padding: 20px;
+  grid-column: 1 / 16;
+  grid-row: 28 / 33;
+`
+
 const ChatLogName = styled.div`
   margin: 0px;
   font-size: 24px;

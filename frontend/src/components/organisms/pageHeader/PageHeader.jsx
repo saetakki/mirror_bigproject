@@ -8,8 +8,9 @@ export const PageHeader = ({page}) => {
   const newKey = `연습기록 > ${page}`
 
   const txt = {
-    "연습기록" : `${username}님의 연습기록을 모아봤어요.`,
-    "북마크 목록" : `${username}님의 북마크한 연습내용을 모아봤어요.`,
+    "HISTORY" : `${username}님의 연습기록을 모아봤어요.`,
+    "BOOKMARK" : `${username}님의 북마크한 채팅기록들을 모아봤어요.`,
+    
   }
   
   if(isLogPage) {
@@ -22,7 +23,6 @@ export const PageHeader = ({page}) => {
       <strong>{isLogPage ? newKey : page}</strong>
       <Quotes>
         <span>{txt?.[isLogPage ? newKey : page] || null}</span>
-        <GridLine/>
       </Quotes>
     </Head>
   )
@@ -31,7 +31,7 @@ export const PageHeader = ({page}) => {
 export default PageHeader
 
 const Head = styled.div`
-  margin: 24px 0 0 0;
+  margin: 5px 0 0 0;
   strong {
     font-size: 24px;
   }
