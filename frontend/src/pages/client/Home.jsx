@@ -34,7 +34,7 @@ const Home = () => {
 
 
   return(
-    <Container>
+    <HomeContainer>
       <HomeWrapper>
           <GNB>
             <button onClick={active}>프로필 변경</button>
@@ -101,9 +101,16 @@ const Home = () => {
             </BackgroundContainer>
           </UserChatListContainer>
       </HomeWrapper>
-    </Container>
+    </HomeContainer>
   )
 }
+
+
+const HomeContainer = styled(Container)`
+  height: auto;
+`
+
+
 
 
 const HomeWrapper = styled.div`

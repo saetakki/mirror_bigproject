@@ -1,17 +1,17 @@
-import { Fragment } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+
 
 const tabList = [
   {
-    name: 'Home',
+    name: 'HOME',
     path: '/'
   },
   {
-    name: '연습 기록',
+    name: 'HISTORY',
     path: '/history'
   },
   {
-    name: '북마크',
+    name: 'BOOKMARK',
     path: '/bookmark'
   },
   {
@@ -23,29 +23,38 @@ const tabList = [
     path: '/tts'
   },
   {
-    name: 'Profile',
+    name: 'PROFILE',
     path: '/profile'
   },
 ]
 
 export const Tab = () => {
+
   const navigate = useNavigate();
   const onClickHandler = (e) => {
-    const whereTo = e.target.className
+    const whereTo = e.target.id;
     navigate(whereTo);
   };
+  
+
+  const location = useLocation().pathname;
+
+
   return(
-    <ul>
-      {tabList.map((tab) => {
-        return(
-          <Fragment key={tab.path}>
-            <li className={tab.path} onClick={onClickHandler}>{tab.name}</li>
-          </Fragment>
-        )
-      })}
-    </ul>
+    <div className='flex w-[80%] justify-between items-center'>
+      {tabList.map((tab, index) => (
+        <div 
+        key={index}
+        id={tab.path} 
+        className={`font-regular ${location === tab.path ? 'font-bold text-blue-500' : 'text-[#292929]'}`}
+        onClick={onClickHandler}>{tab.name}</div>
+      ))}
+    </div>
   )
 }
+
+
+
 
 
 export default Tab;

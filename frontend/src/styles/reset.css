@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 html {
   font-size: 16px;
 }
@@ -17,6 +21,7 @@ body {
   margin: 0;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  background-color: #f1f1f1;
 }
 .__gatsby {
   position: relative;

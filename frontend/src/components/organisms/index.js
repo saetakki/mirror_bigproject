@@ -4,3 +4,4 @@ export * from './tab';
 export * from './pageHeader';
 export * from './profileInfo';
 export * from './tts';
+export * from './sideNav';
