@@ -69,7 +69,6 @@ export default History
 
 const BtnLayer = styled.div`
   width: 100%;
-
 `
 
 const Pagination = styled(Container)`

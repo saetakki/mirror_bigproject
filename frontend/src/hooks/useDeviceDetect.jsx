@@ -5,12 +5,13 @@ export const Mobile = ({ children }) => {
   return <>{isMobile && children}</>
 }
 
+export const Tablet = ({ children }) => {
+  const isTablet = useMediaQuery({query: "(min-width: 768px) and (max-width: 991px)"});
+  return <>{isTablet && children}</>
+}
+
 export const Desktop = ({ children }) => {
   const isDesktop = useMediaQuery({query: "(min-width: 992px)"});
   return <>{isDesktop && children}</>
 }
 
-export const Tablet = ({ children }) => {
-  const isTablet = useMediaQuery({query: "(min-width: 768px) and (max-width: 991px)"});
-  return <>{isTablet && children}</>
-}

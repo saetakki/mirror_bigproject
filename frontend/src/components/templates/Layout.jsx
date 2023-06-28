@@ -1,14 +1,19 @@
 import styled from '@emotion/styled';
 import { Header, SideNav } from '@organisms';import { Container } from "@styles"
+import { useMediaQuery } from 'react-responsive';
 
 const Layout = ({ children }) => {
+  const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
+
   return (
     <Main>
       <Header />
       <BodyContainer>
+        {!isMobile &&
         <SideNavContainer>
           <SideNav />
         </SideNavContainer>
+        }
         <ContentContainer>
           {children}
         </ContentContainer>
@@ -29,7 +34,7 @@ const Main = styled.main`
 `;
 
 const BodyContainer = styled(Container)`
-  padding-right: 0;
+  padding: 0;
   display: flex;
   height: 100%;
 `;
