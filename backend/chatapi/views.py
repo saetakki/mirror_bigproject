@@ -25,17 +25,9 @@ openai.api_key = config("OPEN_AI_KEY")
 
 import sys
 import urllib.request
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# 1. audio 입력받아 tts한후 db저장
-# 2. 메세이 입력받아 db 저장
-# 3. chatgpt 보내기 / 오디오파일
 
 
 # 1. 페르소나 세팅과 저장
-# 사용자가 페르소나를 만들면 
-# 프론트로부터 {'persona_name' : persona_name, 'age':age, 'gender':gender', 'position':position, 'department' : department, 'state':state}
-# 이를 persona table 저장 후 새로운 히스토리를 만들어 저장 후 프론트에게 history_id와 text전달
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def set_persona(request):
@@ -69,21 +61,9 @@ def set_persona(request):
         chat_log = [learn_instruction]
     )
     history.save()
-    
-    """
-    준호님 이거 기존에 있던 내용 바꾼 내용인데 
-    learn_instruction 이걸 프론트에게 보낼 필요 없다고 생각하여 'text' 에 아무것도 안보내거나, 
-    페르소나 설정 완료 메세지 보내는게 어떤가요? 
-    저희가 사용자에게 프롬프트 엔지니어링 한 내용을 보여주진 않을거니까라고 생각해서입니다.
-    그리고 밑에 저희가 프론트에게 문자열을 보낼 때 text로 보내는걸로 통일해서 만들었습니다. 
-    """
-    
-    # print(type(history.chat_log))
-    # messages = history.chat_log
     return JsonResponse({'history_id': history.id, 'text': '페르소나 설정 완료되었습니다'}, status=200)
 
 # audio -> text 변환 함수
-# 사용자가 audio 파일을 올리면, 프론트에서 이를 audio_file로 전달(프론트 헤더에 파일 형식이 명시되어야 함 
 # 	ex) Content-Type : audio/mp3 or audio/wav)
 # audio 입력받아 tts한후 db저장
 @api_view(['POST'])
@@ -122,19 +102,7 @@ def get_text(request, history_id):
     # 프론트에게 성공 전달
     return JsonResponse({}, status = 200)
 
-
-
-
 # history.chat_log에서 대화를 뽑아 chatgpt에게 전달하여 반응을 받아오는 함수
-"""
-이거 논리상으로는 프론트에서 요청이 없어도 되긴 하는데
-프론트에서 request 없으면 백엔드에서 response 보내는게 어렵다고 하네요
-웹소켓이나 스케줄링 등 해야되서 프론트에서 그냥 요청 보내주는게 가장 간단할 거 같아서 이렇게 작성했습니다.
-이거 제대로 작동하는지 확인하고 싶은데 api_key가 오류나서(아마 찬님꺼 다 쓴듯) 제꺼도 안되서
-어떻게 해야할지 고민입니다.
-"""
-# 프론트에서 받을건 없어 보임
-# 프론트에게 key:'text', audio_file로 전달
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def get_ChatGPT_response(request, history_id):
@@ -155,13 +123,7 @@ def get_ChatGPT_response(request, history_id):
     except Exception as e:
         return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
-"""
-준호님
-한국어 음성 api찾아야 할듯? 음성이 너무 외국어 억양입니다. 월요일까지 한번 찾아볼게요
-이것도 마찬가지로 요청이 있는걸로 생각하고 했습니다. 
-어떻게 해도 이걸 get_ChatGPT_response1 합쳐서 json으로 보내려고 해도 안되더라고요 그래서 따로 함수를 작성했습니다.
-이함수로 요청받으면 자동으로 스트리밍이 재생됩니다
-"""
+
 from django.http import StreamingHttpResponse
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
