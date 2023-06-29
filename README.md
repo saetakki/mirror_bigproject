@@ -52,3 +52,7 @@ ChatGPT 와 함께하는 리더 코칭 훈련
 #### 관리자 페이지 
 - 회원 관리
 
+## 서비스 플로우
+![flowchart](https://github.com/AIVLE-School-Third-Big-Project/AI_4_16/assets/124108656/9d5c9723-8a4a-4432-8380-0ef3769f788b)
+
+
