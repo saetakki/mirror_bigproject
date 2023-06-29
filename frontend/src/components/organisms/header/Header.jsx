@@ -29,7 +29,7 @@ const Header = () => {
 
   return (
     <HeadNavigation>
-      <LeftContainer>
+      <LeftContainer onClick={()=>navigate('/')}>
         <img className="w-10 h-8" src={logo} alt={logo}/>
       </LeftContainer>
       {!isMobile ? (

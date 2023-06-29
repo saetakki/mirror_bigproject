@@ -18,13 +18,14 @@ const tabList = [
   {
     name: 'PROFILE',
     path: '/profile'
-  }
+  },
 ]
 
 
 export const Tab = () => {
 
   const navigate = useNavigate();
+
   const onClickHandler = (e) => {
     const whereTo = e.target.id;
     navigate(whereTo);
@@ -44,6 +45,7 @@ export const Tab = () => {
         onClick={onClickHandler}>{tab.name}</div>
       ))}
       <PracticeBtn
+      id="/tts"
       onClick={onClickHandler}>연습하기</PracticeBtn>
     </div>
   )
