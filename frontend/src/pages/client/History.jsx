@@ -30,22 +30,28 @@ const History = () => {
     navigate(`${e}`)
   }
   const [content, setContent] = useState(null);
-  const onClickHandler = (e, item) => {
+  const onClickHandler = (item) => {
     //console.log(typeof e)
     //navigate(`${e}`)
     setContent(
       <>
-        <GridPersonaTitle>No.{ReactDOMServer.renderToStaticMarkup(e)}</GridPersonaTitle>
+        <GridPersonaTitle>No.{ReactDOMServer.renderToStaticMarkup(item.id)}</GridPersonaTitle>
         <GridPersonaFont>QUICK VIEW</GridPersonaFont>
-        <GridPersonaTitle>Name 페르소나</GridPersonaTitle>
-        <GridPersonaFont>{Object.values(item.persona['persona_name'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(item.persona['age'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(item.persona['gender'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(item.persona['position'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(item.persona['department'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(item.persona['state'])}</GridPersonaFont>
+        <GridPersonaTitle>페르소나</GridPersonaTitle>
+
+        {Object.values(item.persona).map((value) => (
+          <>
+            <GridPersonaFont>{value}</GridPersonaFont>
+          </>
+        ))}
         <GridPersonaTitle>SUMMARY</GridPersonaTitle>
-        {/*<GridPersonaFont>{Object.values(item.report['overall'])}</GridPersonaFont>*/}
+        {
+          Object.values(item.persona['persona_name']).includes('준') && Object.values(item.persona['persona_name']).includes('호') ? (
+            <GridPersonaFont>{Object.values(item.report['Overview'])}</GridPersonaFont>
+          ) : (
+            <GridPersonaFont>{Object.values(item.report['overall'])}</GridPersonaFont>
+          )
+        }
       </>)
   }
 
@@ -69,7 +75,7 @@ const History = () => {
             <GridHistoryList>
               <IndexItem isHeader={true} />
               {history.map((item) => (
-                <BtnLayer key={item.id} onClick={() => navigateHandler(item.id)} onMouseOver={() => onClickHandler(item.id, item)}>
+                <BtnLayer key={item.id} onClick={() => navigateHandler(item.id)} onMouseOver={() => onClickHandler(item)}>
                   <IndexItem
                     id={item.id}
                     date={item.date}

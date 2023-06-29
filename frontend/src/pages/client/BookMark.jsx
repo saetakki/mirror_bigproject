@@ -31,15 +31,20 @@ const BookMark = () => {
       <>
         <GridPersonaTitle>No.{ReactDOMServer.renderToStaticMarkup(e.id)}</GridPersonaTitle>
         <GridPersonaFont>QUICK VIEW</GridPersonaFont>
-        <GridPersonaTitle>Name 페르소나</GridPersonaTitle>
-        <GridPersonaFont>{Object.values(e.persona['persona_name'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(e.persona['age'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(e.persona['gender'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(e.persona['position'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(e.persona['department'])}</GridPersonaFont>
-        <GridPersonaFont>{Object.values(e.persona['state'])}</GridPersonaFont>
+        <GridPersonaTitle>페르소나</GridPersonaTitle>
+        {Object.values(e.persona).map((value) => (
+          <>
+            <GridPersonaFont>{value}</GridPersonaFont>
+          </>
+        ))}
         <GridPersonaTitle>SUMMARY</GridPersonaTitle>
-        <GridPersonaFont>{Object.values(e.report['summary'])}</GridPersonaFont>
+        {
+          Object.values(e.persona['persona_name']).includes('준') && Object.values(e.persona['persona_name']).includes('호') ? (
+            <GridPersonaFont>{Object.values(e.report['Overview'])}</GridPersonaFont>
+          ) : (
+            <GridPersonaFont>{Object.values(e.report['overall'])}</GridPersonaFont>
+          )
+        }
       </>)
   }
 
