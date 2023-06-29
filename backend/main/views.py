@@ -92,6 +92,50 @@ def bookmark_history(request, history_id):
         
         return JsonResponse({}, status=200)
     
+# 5. 히스토리 여러개 삭제
+# DELETE /delete_histories/
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_histories(request):
+    # 삭제할 히스토리 id 리스트
+    history_ids = request.data.get('history_ids')
+    if not history_ids:
+        return JsonResponse({"error": "history_ids not provided."}, status=400)
+    
+    # 사용자의 히스토리 중에 삭제할 히스토리가 있는지 확인
+    histories = History.objects.filter(id__in=history_ids, user=request.user)
+    if len(histories) != len(history_ids):
+        return JsonResponse({"error": "Some histories do not exist."}, status=404)
+    
+    # 삭제할 히스토리 id 리스트를 순회하면서 삭제
+    for history in histories:
+        history.delete()
+    
+    return JsonResponse({}, status=200)
+    
+# 6. 히스토리 여러개 북마크
+# POST /bookmark_histories/
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def bookmark_histories(request):
+    # 북마크할 히스토리 id 리스트
+    history_ids = request.data.get('history_ids')
+    if not history_ids:
+        return JsonResponse({"error": "history_ids not provided."}, status=400)
+    
+    # 사용자의 히스토리 중에 북마크할 히스토리가 있는지 확인
+    histories = History.objects.filter(id__in=history_ids, user=request.user)
+    if len(histories) != len(history_ids):
+        return JsonResponse({"error": "Some histories do not exist."}, status=404)
+
+    # 북마크할 히스토리 id 리스트를 순회하면서 북마크
+    for history in histories:
+        # True <-> False
+        history.bookmark = not history.bookmark
+        history.save()
+    
+    return JsonResponse({}, status=200)
+
     
 #### 프로필 페이지에서 사용되는 API ####
 
@@ -129,6 +173,14 @@ def profile(request):
         # password
         password = request.data.get('password')
         if password:
+            
+            # 비밀번호 형식 검사
+            if len(password) < 8 or len(password) > 16:
+                return JsonResponse({"error": "Password must be between 8 and 16 characters."}, status=400)
+
+            if not re.search('[a-z]', password) or not re.search('[0-9]', password):
+                return JsonResponse({"error": "Password must include uppercase or lowercase, and numbers."}, status=400)
+    
             user_profile.user.set_password(password)
             user_profile.user.save()
             logout_django(request) 
@@ -305,8 +357,8 @@ def find_password(request):
 def create_dummy_data(request):
     if request.method == "POST":
         for i in range(1, 151):
-            user = User.objects.get(pk=2)  
-            persona = Persona.objects.get(pk=1)  
+            user = User.objects.get(pk=9)  
+            persona = Persona.objects.get(pk=2)  
 
             bookmark = True if i % 3 == 0 else False
 
