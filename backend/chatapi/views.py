@@ -63,6 +63,15 @@ def set_persona(request):
     history.save()
     return JsonResponse({'history_id': history.id, 'text': '페르소나 설정 완료되었습니다'}, status=200)
 
+def step(message_text):
+    r = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages = [{"role" : "user", "content" : f"{message_text} 이 질문이 GROW 모델 중 어떤 단계에 해당하는지 그것만 알려줘. 예를 들면 답변을 'G'  이렇게 한글자로 어떠한 단계에 해당하는지만 알려줘"}
+            ])
+    # print(r["choices"][0]["message"]["content"])
+    print(r)
+    return r["choices"][0]["message"]["content"]
+
 # audio -> text 변환 함수
 # 	ex) Content-Type : audio/mp3 or audio/wav)
 # audio 입력받아 tts한후 db저장
@@ -84,7 +93,10 @@ def audio_to_text(request, history_id):
         history.chat_log.append({"role": "user", "content": message_text})
         history.save()        
         # 프론트에게 결과 전달
-        return JsonResponse({'text' : message_text} , status=200)
+        
+        
+        r = step(message_text)        
+        return JsonResponse({'text' : message_text, "step" : r} , status=200)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -100,31 +112,39 @@ def get_text(request, history_id):
     history.chat_log.append({"role" : "user", "content" : message_text})
     history.save()
     # 프론트에게 성공 전달
-    return JsonResponse({}, status = 200)
+    try:
+        r = step(message_text)
+        return JsonResponse({"step" : r}, status = 200)
+    except Exception as e:
+        return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # history.chat_log에서 대화를 뽑아 chatgpt에게 전달하여 반응을 받아오는 함수
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def get_ChatGPT_response(request, history_id):
     history = History.objects.get(id=history_id, user= request.user)
-    messages = history.chat_log
+    messages = history.chat_log    
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=messages
             )
+        
         message_text = response["choices"][0]["message"]["content"]
         history.chat_log.append({'role':'assistant', 'content':message_text})
         history.save()
         
+        
+        
         emotion = load_model_and_analyze_sentiment(message_text)
         
-        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False), 'emotion': emotion}, status=status.HTTP_200_OK)
+        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False),  'emotion': emotion}, status=status.HTTP_200_OK)
     except Exception as e:
         return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
 
 from django.http import StreamingHttpResponse
+import base64
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def text_to_speech(request, history_id):
@@ -169,7 +189,10 @@ def text_to_speech(request, history_id):
     response = requests.post(url, headers=headers, data=data, stream=True)
 
     try:
-        response.raise_for_status()
+        # response.raise_for_status()
+        # audio_data = response.content 
+        # audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+        # return JsonResponse({'audio' : audio_base64}, status = 	status.HTTP_200_OK)
         return StreamingHttpResponse(response.iter_content(chunk_size=CHUNK_SIZE), content_type='audio/mp3')
     except requests.HTTPError as e:
         return JsonResponse({'msg': '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
