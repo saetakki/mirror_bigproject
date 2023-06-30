@@ -19,9 +19,10 @@ const Home = () => {
   const initHistory = useRecoilValue(initialHistoryLoadAtom)
   const initBookmark = useRecoilValue(initalBookmarkLoadAtom)
   const uid = useRecoilValue(userInfoAtom).id
-
+  const userdata = useRecoilValue(userInfoAtom)
+  console.log('@@@',userdata)
   const onClickHandler = (e) => {
-    navigate(`${e}`)
+    navigate(`/history/${e}`)
   }
 
   const spreadTarget = isPractice ? initHistory : initBookmark
@@ -38,7 +39,7 @@ const Home = () => {
             </Left>
               <Right>
                 <span className='w-[6em] mb-2 break-normal flex text-center'>오늘도 연습을 시작해볼까요?</span>
-                <PracticeBtn className='w-[9em]' onClick={()=>navigate('/history')}> 연습 시작</PracticeBtn>
+                <PracticeBtn className='w-[9em]' onClick={()=>navigate('/tts')}> 연습 시작</PracticeBtn>
               </Right>
           </GNB>
           <MainContents isMobile={isMobile}>
@@ -241,6 +242,13 @@ const SectionRight = styled(Container)`
 
 const BtnLayer = styled.div`
   width: 100%;
+  &:hover {
+    background-color: #2EE59D;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+    border-radius: 10px;
+  }
 `
 
 export default Home

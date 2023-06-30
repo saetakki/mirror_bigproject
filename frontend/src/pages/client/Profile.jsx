@@ -7,7 +7,30 @@ import { useRecoilValue } from "recoil"
 import { userInfoAtom } from "../../atoms"
 import { Thumnail, InfoBox } from "@organisms"
 
+
+
 const Profile = () => {
+  //백엔드에서 넘어온 데이터 저장
+  /*
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get('/profile');
+        const data = response.data;
+        profileData.current.username = data.user.username;
+        profileData.current.email = data.user.email;
+        profileData.current.password = data.user.userpassword;
+        profileData.current.real_name = data.real_name;
+        profileImgData.current.profile_Image = data.profile_image;
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+  */
+
   const [isOpen, setIsOpen] = useState(false)
   const { email, id, profile_img, real_name, username } = useRecoilValue(userInfoAtom)
 
@@ -28,10 +51,20 @@ const Profile = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // 탈퇴 제출 
+  const deletehandleSubmit = (e) => {
     e.preventDefault();
   
     setIsOpen(false);
+    alert('완료되었습니다!');
+  };
+
+  // 프로필 수정 제출 e.target.editedRealName e.target.editedEmail e.target.editedPassword
+  const profilehandleSubmit = (e) => {
+    e.preventDefault();
+  
+    setIsOpen(false);
+    alert('완료되었습니다!');
   };
 
   
@@ -58,7 +91,7 @@ const Profile = () => {
   });
 
   const profileData = useRef({
-      username: 'username',
+      username: 'a0000',
       password: '123456@',
       email: 'email@example.com',
       real_name: '김애옹',
@@ -83,8 +116,7 @@ const Profile = () => {
       }
     };
 
-    //information의 Edit, Save 모드를 관리하는 훅
-  const [isEditing, setIsEditing] = useState(false);
+    
 
   //프로필 이미지 설정
   const [profileImage, setProfileImage] = useState(profileImgData.current.profile_Image);
@@ -100,7 +132,10 @@ const Profile = () => {
       reader.readAsDataURL(e.target.files[0]); // 선택한 파일을 데이터 URL로 읽기
     };
 
+  //information의 Edit, Save 모드를 관리하는 훅
+  const [isEditing, setIsEditing] = useState(false);
 
+  
 
   const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
 
@@ -111,7 +146,7 @@ const Profile = () => {
               <Head>
                 <strong>PROFILE</strong>
                 <Quotes>
-                  <span>{id}님의 프로필 설정 페이지 입니다. </span>
+                  <span>{profileData.current.username}님의 프로필 설정 페이지 입니다. </span>
                 </Quotes>
               </Head>
             </GridPageHeaderWrap>
@@ -141,34 +176,12 @@ const Profile = () => {
               <EditFormContainer>
                 <EditFormWrapper>
                   <Dtext>프로필 수정</Dtext>
-                  <form onSubmit={handleSubmit}>
-                    <Dtext2>
-                      이 름     :
-                      <input
-                        type="text"
-                        name="editedRealName"
-                        value={editedInfo.editedRealName}
-                        onChange={handleInputChange}
-                      />
-                    </Dtext2>
-                    <Dtext3>
-                      이메일    :
-                      <input
-                        type="email"
-                        name="editedEmail"
-                        value={editedInfo.editedEmail}
-                        onChange={handleInputChange}
-                      />
-                    </Dtext3>
-                    <Dtext4>
-                      비밀번호    :
-                      <input
-                        type="password"
-                        name="editedPassword"
-                        value={editedInfo.editedPassword}
-                        onChange={handleInputChange}
-                      />
-                    </Dtext4>
+                  <form onSubmit={profilehandleSubmit}>
+                      <InfoTextWrap>
+                        <InfoText>이 름 :{' '}<ChangeInfo1 type="text" name="real_name" defaultValue={profileData.current.real_name} onChange={handleInputChange} /></InfoText>
+                        <InfoText>이메일 :{' '}<ChangeInfo2 type="email" name="email" defaultValue={profileData.current.email} onChange={handleInputChange} /></InfoText>
+                        <InfoText>비밀번호 :{' '}<ChangeInfo3 type="text" name="password" defaultValue={profileData.current.password} onChange={handleInputChange} /></InfoText>
+                      </InfoTextWrap>
                     <button type="submit">저장</button>
                   </form>
                 </EditFormWrapper>
@@ -179,7 +192,7 @@ const Profile = () => {
               <EditFormContainer>
                 <DeleteFormWrapper>
                   <Dtext>회원탈퇴</Dtext>
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={deletehandleSubmit}>
                     <Dtext1>'정말로 탈퇴 하시겠습니까?'</Dtext1>
                     <button type="submit">확인</button>
                   </form>
@@ -195,16 +208,16 @@ const Profile = () => {
               </DeleteEditBtn>
             </ProfileContainer>
             <KtlogoContainer>
-              <JustText1>KT</JustText1>             
-              <JustText2>ChatGPT와 함께하는 리더 코칭 훈련 </JustText2>
-              <JustText3> - 서비스 배경 </JustText3>
-              <JustText4>1. 비용 및 시간 절감 필요 </JustText4>
-              <JustText4>2. 상담 역량 강화 필요 </JustText4>
-              <JustText4>3. 코칭 대상 확보의 어려움 </JustText4>
-              <JustText3> - 기대효과 </JustText3>
-              <JustText4> 1. 여러가지 페르소나 설정을 통해 다양한 훈련케이스 마련하여 리더 코칭 역량 강화 </JustText4>
-              <JustText4> 2. 온라인을 통한 교육으로 전문가 초빙비용 감소, 리더의 업무시간 합리적 분배 가능하여 리더 부재로 인한 팀 업무 비효율 방지, 기업 생산성을 높임 </JustText4>
-              <JustText4> 3. GROW 코칭 실습 뿐만 아니라 심리 상담 등 다양한 분야로 확장 가능 </JustText4>
+              <JustText1>GROW 모델</JustText1>             
+                <JustText2>Goal</JustText2>
+                <JustText3> 상대방이 어떤 문제를 해결하길 원하고, 어떻게 변화 되기를 바라는지 설정하도록 돕는 단계이다.</JustText3>
+                <JustText2>Reality</JustText2>
+                <JustText3> 고객이 현재 처해있는 상태를 파악하는 단계이다. 그 동안의 추진사항과 어려움, 장애물 등을 파악하는 것이 목적이다.</JustText3>
+                <JustText2>Option</JustText2>
+                <JustText3> 목표와 현재 상태의 갭을 어떻게 메울 것인가를 찾는 단계이다. 생각할 수 있는 다양한 방법들을 구상하고, 그 중에서 고객이 취할 수 있는 실행계획을 구체화 하는 것이 중심이다.</JustText3>
+                <JustText2>Will</JustText2>
+                <JustText3> 가장 적합한 옵션을 선택하고 실행하기 위한 구체적인 계획을 세우고, 일정, 자원, 동기 부여 등을 고려하여 목표 달성을 위한 행동 계획을 구체화 하는 것을 돕는 단계이다.</JustText3>
+                
             </KtlogoContainer>
         </GridContainer>
     </Container>
@@ -222,16 +235,14 @@ grid-gap: 24px;
 
 const GridPageHeaderWrap = styled.div`
   padding: 20px;
-  grid-column-start: 1;
-  grid-column-end: 16;
-  grid-row-start: 1;
-  grid-row-end: 3;
+  grid-column: 1 / 17;
+  grid-row: 1 / 2;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
   
 `
 const Head = styled.div`
-  margin-top: 20px;
+  margin-top: -7px;
   margin-left: 30px;
   strong {
     font-size: 24px;
@@ -240,7 +251,7 @@ const Head = styled.div`
 
 
 const Quotes = styled.div`
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 12px;
   color: #9a9a9a;
 `
@@ -258,7 +269,7 @@ const GridLine = styled.div`
 const ProfileContainer = styled(Container)`
   grid-column-start: 1;
   grid-column-end: 8;
-  grid-row-start: 3;
+  grid-row-start: 2;
   grid-row-end: 10;
 
 `
@@ -433,8 +444,10 @@ const DeleteFormWrapper = styled.div`
 const KtlogoContainer = styled(Container)`
   grid-column-start: 8;
   grid-column-end: 16;
-  grid-row-start: 3;
+  grid-row-start: 2;
   grid-row-end: 10;
+  
+  
 `
 
 const JustText1 = styled.div`
@@ -455,10 +468,7 @@ const JustText3 = styled.div`
   font-size: 20px;
 `;
 
-const JustText4 = styled.div`
-  margin-top: 30px;
-  margin-left: 50px;
-`;
+
 // 이미지 테스트
 const ProfileImgDiv = styled.div`
   margin-top: 30px;
@@ -538,29 +548,38 @@ const Dtext1 = styled.div`
   font-size: 18px;
 `;
 
-const Dtext2 = styled.div`
-  margin-top: 45px;
-  margin-left: 40px;
-  margin-bottom: 12px;
-  font-size: 15px;
-  font-weight: 500;
+
+
+const InfoText = styled.p`
+  margin-bottom: 30px;
+  margin-left: 22px;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  font-weight: bold;
+  word-break: break-all;
 `;
 
-const Dtext3 = styled.div`
-  margin-top: 10px;
-  margin-left: 40px;
-  margin-bottom: 12px;
-  font-size: 15px;
-  font-weight: 500;
+const ChangeInfo1 = styled.input`
+  border: 1px solid black;
+  margin-left: 36px;
+  padding: 5px;
 `;
 
-const Dtext4 = styled.div`
-  margin-top: 12px;
-  margin-left: 40px;
-  margin-bottom: 50px;
-  font-size: 15px;
-  font-weight: 500;
+const ChangeInfo2 = styled.input`
+  border: 1px solid black;
+  margin-left: 26px;
+  padding: 5px;
 `;
 
+const ChangeInfo3 = styled.input`
+  border: 1px solid black;
+  margin-left: 10px;
+  padding: 5px;
+`;
+
+const InfoTextWrap = styled.div`
+  margin-top: 50px;
+`;
 
 export default Profile

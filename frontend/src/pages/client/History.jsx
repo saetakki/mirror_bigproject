@@ -33,15 +33,18 @@ const History = () => {
   const onClickHandler = (item) => {
     //console.log(typeof e)
     //navigate(`${e}`)
+    const labels = ['이름', '나이', '성별', '직책', '부서', '상태'];
     setContent(
       <>
         <GridPersonaTitle>No.{ReactDOMServer.renderToStaticMarkup(item.id)}</GridPersonaTitle>
         <GridPersonaFont>QUICK VIEW</GridPersonaFont>
         <GridPersonaTitle>페르소나</GridPersonaTitle>
 
-        {Object.values(item.persona).map((value) => (
+        {Object.values(item.persona).map((value, idx) => (
           <>
-            <GridPersonaFont>{value}</GridPersonaFont>
+            <GridPersonaFont>
+              {labels[idx]}: {value}
+            </GridPersonaFont>
           </>
         ))}
         <GridPersonaTitle>SUMMARY</GridPersonaTitle>
@@ -75,7 +78,7 @@ const History = () => {
             <GridHistoryList>
               <IndexItem isHeader={true} />
               {history.map((item) => (
-                <BtnLayer key={item.id} onClick={() => navigateHandler(item.id)} onMouseOver={() => onClickHandler(item)}>
+                <BtnLayer className="btn" key={item.id} onClick={() => navigateHandler(item.id)} onMouseOver={() => onClickHandler(item)}>
                   <IndexItem
                     id={item.id}
                     date={item.date}
@@ -145,17 +148,18 @@ const GridPersonaFont = styled.p`
 `
 
 const GridQuickView = styled.div`
+  max-width: 500px;
   padding: 20px;
   grid-column: 1 / 4;
-  grid-row: 2 / 5;
+  grid-row: 2 / 6;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
   overflow: auto;
-    ::-webkit-scrollbar {
+  ::-webkit-scrollbar {
     width: 0;
     height: 0;
   }
-`
+`;
 
 const GridContainer = styled.div`
   display: grid;
@@ -170,7 +174,7 @@ const GridPageHeaderWrap = styled.div`
   grid-column: 1 / 16;
   grid-row: 1;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
   
 `
 
@@ -179,16 +183,16 @@ const MGridPageHeaderWrap = styled.div`
   grid-column: 1 / 16;
   grid-row: 1;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
   
 `
 
 const GridHistoryList = styled.div`
   padding: 20px 20px;
   grid-column: 4 / 16;
-  grid-row: 2 / 8;
+  grid-row: 2 / 7;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
 
 `
 
@@ -197,13 +201,13 @@ const MGridHistoryList = styled.div`
   grid-column: 1 / 16;
   grid-row: 2 / 8;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
 
 `
 
 const GridPaginationWrap = styled.div`
   grid-column: 4 / 16;
-  grid-row: 8;
+  grid-row: 7;
 `
 const MGridPaginationWrap = styled.div`
   grid-column: 1 / 16;
@@ -212,10 +216,18 @@ const MGridPaginationWrap = styled.div`
 
 const BtnLayer = styled.div`
   width: 100%;
+  &:hover {
+    background-color: #2EE59D;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+    border-radius: 10px;
+  }
+
 `
 
 const Pagination = styled(Container)`
-  height: 120px;
+  height: 80px;
   display: flex;
   justify-content: center;
 `
@@ -232,7 +244,7 @@ const Page = styled.div`
 const PageButton = styled.button`
   width: 100px;
   height: 40px;
-  border-radius: 5px;
+  border-radius: 10px;
   border: 1px solid #d9d9d9;
   background-color: #f5f5f5;
   opacity: 1;

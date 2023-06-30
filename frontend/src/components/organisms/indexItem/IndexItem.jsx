@@ -48,15 +48,19 @@ export default IndexItem;
 
 
 const HeaderContainer = styled.div`
-  margin : 10px 0;
-  background-color: ${props => props.isHeader ? "#fff" : "#e9e9e9"};
+  margin: 3px 0;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   width: 100%;
-  background-color: #e9e9e9;
-  border-radius: 10px
-`
+  background-color: ${props => props.isHeader ? "#fff" : "#e9e9e9"};
+  border-radius: 10px;
+
+  /*마우스 호버하면 백그라운드 색 제거*/
+  &:hover {
+    background-color: transparent;
+  }
+`;
 
 const Col = styled.div`
   width:100%;

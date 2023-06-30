@@ -52,9 +52,13 @@ const BookMark = () => {
     (isLoad ?
       (<Container>
         <GridContainer>
+          {!isMobile ?
           <GridPageHeaderWrap>
             <PageHeader page="BOOKMARK" />
-          </GridPageHeaderWrap>
+          </GridPageHeaderWrap>:
+          <MGridPageHeaderWrap>
+          <PageHeader page="BOOKMARK" />
+          </MGridPageHeaderWrap>}
           {!isMobile ?
             <GridQuickView>
               {content}
@@ -126,9 +130,9 @@ const GridPersonaFont = styled.p`
 const GridQuickView = styled.div`
   padding: 20px;
   grid-column: 1 / 4;
-  grid-row: 2 / 5;
+  grid-row: 2 / 6;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
   overflow: auto;
     ::-webkit-scrollbar {
     width: 0;
@@ -142,15 +146,22 @@ const GridContainer = styled.div`
   grid-template-columns: repeat(15, 1fr);
   grid-template-rows : repeat(8, 1fr);
   grid-gap: 24px;
+  border: none; /* 바깥 선 제거 */
 `
 
 const GridPageHeaderWrap = styled.div`
   padding: 20px;
-  grid-column: 1 / 16;
-  grid-row: 1;
+  grid-column: 1 / 17;
+  grid-row: 1 / 2;
   background-color: #f9f9f9;
-  border-radius: 30px;
-  
+  border-radius: 10px;
+`
+const MGridPageHeaderWrap = styled.div`
+  padding: 20px;
+  grid-column: 1 / 16;
+  grid-row: 1 / 2;
+  background-color: #f9f9f9;
+  border-radius: 10px;
 `
 
 const GridHistoryList = styled.div`
@@ -158,7 +169,7 @@ const GridHistoryList = styled.div`
   grid-column: 3 / 17;
   grid-row: 2 / 8;
   background-color: #f9f9f9;
-  border-radius: 30px;
+  border-radius: 10px;
 
 `
 
@@ -209,17 +220,15 @@ const ItemListContainer = styled.div`
 
 const ItemContainer = styled.div`
   width: 100%;
-  display: flex;
-  position:relative;
-  flex-direction: row;
-
-  border-radius: 5px;
   
-  & > :first-of-type {
-    border-right: 2px solid #d9d9d9; 
-    border-radius: 5px 0 0 5px;
-    background-color: #e9e9e9;
+  &:hover {
+    background-color: #2EE59D;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+    border-radius: 10px;
   }
+  
 `
 
 const Page = styled.div`
@@ -227,13 +236,14 @@ const Page = styled.div`
   height: 50px;
   display: flex;
   justify-content: center;
+  margin-top: 40px;
 `
 
 
 const PageButton = styled.button`
   width: 100px;
   height: 40px;
-  border-radius: 5px;
+  border-radius: 10px;
   border: 1px solid #d9d9d9;
   background-color: #f5f5f5;
   opacity: 1;
