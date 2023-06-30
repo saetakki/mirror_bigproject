@@ -118,29 +118,29 @@ def get_text(request, history_id):
     except Exception as e:
         return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# history.chat_log에서 대화를 뽑아 chatgpt에게 전달하여 반응을 받아오는 함수
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def get_ChatGPT_response(request, history_id):
-    history = History.objects.get(id=history_id, user= request.user)
-    messages = history.chat_log    
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages
-            )
+# # history.chat_log에서 대화를 뽑아 chatgpt에게 전달하여 반응을 받아오는 함수
+# @api_view(["POST"])
+# @permission_classes([IsAuthenticated])
+# def get_ChatGPT_response(request, history_id):
+#     history = History.objects.get(id=history_id, user= request.user)
+#     messages = history.chat_log    
+#     try:
+#         response = openai.ChatCompletion.create(
+#             model="gpt-3.5-turbo",
+#             messages=messages
+#             )
         
-        message_text = response["choices"][0]["message"]["content"]
-        history.chat_log.append({'role':'assistant', 'content':message_text})
-        history.save()
+#         message_text = response["choices"][0]["message"]["content"]
+#         history.chat_log.append({'role':'assistant', 'content':message_text})
+#         history.save()
         
         
         
-        emotion = load_model_and_analyze_sentiment(message_text)
+#         emotion = load_model_and_analyze_sentiment(message_text)
         
-        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False),  'emotion': emotion}, status=status.HTTP_200_OK)
-    except Exception as e:
-        return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+#         return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False),  'emotion': emotion}, status=status.HTTP_200_OK)
+#     except Exception as e:
+#         return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
 
 
 from django.http import StreamingHttpResponse
@@ -150,7 +150,7 @@ from django.core.files.storage import default_storage
 import io
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def text_to_speech(request, history_id):
+def get_ChatGPT_response(request, history_id):
     history = History.objects.get(id=history_id, user=request.user)
     
     messages = history.chat_log    
