@@ -144,11 +144,30 @@ def get_ChatGPT_response(request, history_id):
 
 
 from django.http import StreamingHttpResponse
-import base64
+from django.core import serializers
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+import io
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def text_to_speech(request, history_id):
     history = History.objects.get(id=history_id, user=request.user)
+    
+    messages = history.chat_log    
+    try:
+        # GPT 답변 생성
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+            )        
+        message_text = response["choices"][0]["message"]["content"]
+        history.chat_log.append({'role':'assistant', 'content':message_text})
+        history.save()        
+        emotion = load_model_and_analyze_sentiment(message_text)
+        print('GPT 답변 \n', message_text)
+    except:
+        return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     CHUNK_SIZE = 1024
     male_voices = ['jinho', 'nsinu', 'njinho', 'njihun', 'njooahn', 'nseonghoon', 'njihwan', 
                    'nsiyoon','ntaejin','nyoungil','nseungpyo','nwontak', 'njonghyun', 'njoonyoung', 'njaewook',
@@ -189,16 +208,26 @@ def text_to_speech(request, history_id):
     response = requests.post(url, headers=headers, data=data, stream=True)
 
     try:
-        # response.raise_for_status()
-        # audio_data = response.content 
-        # audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-        # return JsonResponse({'audio' : audio_base64}, status = 	status.HTTP_200_OK)
-        return StreamingHttpResponse(response.iter_content(chunk_size=CHUNK_SIZE), content_type='audio/mp3')
+        response.raise_for_status()
+        buffer = io.BytesIO()
+        for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+            buffer.write(chunk)
+        
+        # 오디오 데이터를 ContentFile로 변환
+        audio_content = ContentFile(buffer.getvalue())
+
+        # Blob URL 생성 및 저장
+        audio_path = default_storage.save('audio.mp3', audio_content)
+        blob_url = default_storage.url(audio_path)
+
+        return JsonResponse({'text': json.dumps(message_text, ensure_ascii=False),  'emotion': emotion, 'blob_url': blob_url},  status=status.HTTP_200_OK)
+        # return StreamingHttpResponse(response.iter_content(chunk_size=CHUNK_SIZE), content_type='audio/mp3')
+        
     except requests.HTTPError as e:
         return JsonResponse({'msg': '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
-
+from glob import glob
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_report(request, history_id):
@@ -207,6 +236,8 @@ def make_report(request, history_id):
     except History.DoesNotExist:
         raise Http404('History does not exist')
     chat_log = history.chat_log
+    audio_list = glob('media/*.mp3')
+    [os.remove(file_path) for file_path in audio_list]
     try:
         response = openai.ChatCompletion.create(
 			model="gpt-3.5-turbo",
@@ -219,6 +250,7 @@ def make_report(request, history_id):
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_sample_question(request, history_id):
@@ -231,6 +263,7 @@ def make_sample_question(request, history_id):
 			messages = [{'role' : 'user', 'content': f'{state} 이러한 고민을 가지고 있는데, grow모델의 각 단계별 질문 예시를 구체적으로 5개씩만 G:"", R:"", O:"", W:""로 json형식으로 만들어줘'}]
 		)
         message_text = response['choices'][0]['message']['content']
+        
         return JsonResponse({'sample_question' :  json.loads(message_text)}, status = status.HTTP_200_OK, safe=False)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
