@@ -255,13 +255,17 @@ def make_report(request, history_id):
 @permission_classes([IsAuthenticated])
 def make_sample_question(request, history_id):
     history = History.objects.get(id=history_id, user=request.user)
-    state = history.persona.state
+    # 히스토리 chat_log 최근 5개만 가져오기
+    chat_log = history.chat_log[-5:]
     
     try:
         response = openai.ChatCompletion.create(
 			model='gpt-3.5-turbo',
-			messages = [{'role' : 'user', 'content': f'{state} 이러한 고민을 가지고 있는데, grow모델의 각 단계별 질문 예시를 구체적으로 5개씩만 G:"", R:"", O:"", W:""로 json형식으로 만들어줘'}]
-		)
+			messages = [
+                {'role' : 'system', 'content': 'grow모델의 각 단계별 질문 예시를 구체적으로 5개씩 G:["quetion1", "quetion2","quetion3","quetion4","quetion5"], R:["quetion1", "quetion2","quetion3","quetion4","quetion5"], O:["quetion1", "quetion2","quetion3","quetion4","quetion5"], W:["quetion1", "quetion2","quetion3","quetion4","quetion5"]로 json형식으로 만들어줘'},
+                {'role' : 'user', 'content': f'{chat_log} 다음 질문을 추천해줘'}
+            ]
+        )
         message_text = response['choices'][0]['message']['content']
         
         return JsonResponse({'sample_question' :  json.loads(message_text)}, status = status.HTTP_200_OK, safe=False)
