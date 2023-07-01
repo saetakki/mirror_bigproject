@@ -66,11 +66,12 @@ def set_persona(request):
 def step(message_text):
     r = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages = [{"role" : "user", "content" : f"{message_text} 이 질문이 GROW 모델 중 어떤 단계에 해당하는지 그것만 알려줘. 예를 들면 답변을 'G'  이렇게 한글자로 어떠한 단계에 해당하는지만 알려줘"}
-            ])
-    # print(r["choices"][0]["message"]["content"])
-    print(r)
-    return r["choices"][0]["message"]["content"]
+            messages = [
+                {"role" : "user", "content" : f"{message_text} 위 질문이 GROW 코칭 모델에서 어떤 단계인지 알려줘, json 형식으로 부탁해 key값은 'step', value 값은 'G', 'R', 'O', 'W' 중 하나" }
+            ]
+            )
+
+    return json.loads(r["choices"][0]["message"]["content"]).values()
 
 # audio -> text 변환 함수
 # 	ex) Content-Type : audio/mp3 or audio/wav)
@@ -96,7 +97,8 @@ def audio_to_text(request, history_id):
         
         
         r = step(message_text)        
-        return JsonResponse({'text' : message_text, "step" : r} , status=200)
+        
+        return JsonResponse({'text' : message_text, "step" : list(r)[0]} , status=200)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -114,7 +116,7 @@ def get_text(request, history_id):
     # 프론트에게 성공 전달
     try:
         r = step(message_text)
-        return JsonResponse({"step" : r}, status = 200)
+        return JsonResponse({"step" : list(r)[0]}, status = 200)
     except Exception as e:
         return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -255,13 +257,17 @@ def make_report(request, history_id):
 @permission_classes([IsAuthenticated])
 def make_sample_question(request, history_id):
     history = History.objects.get(id=history_id, user=request.user)
-    state = history.persona.state
+    # 히스토리 chat_log 최근 5개만 가져오기
+    chat_log = history.chat_log[-5:]
     
     try:
         response = openai.ChatCompletion.create(
 			model='gpt-3.5-turbo',
-			messages = [{'role' : 'user', 'content': f'{state} 이러한 고민을 가지고 있는데, grow모델의 각 단계별 질문 예시를 구체적으로 5개씩만 G:"", R:"", O:"", W:""로 json형식으로 만들어줘'}]
-		)
+			messages = [
+                {'role' : 'system', 'content': 'grow모델의 각 단계별 질문 예시를 구체적으로 5개씩 G:["quetion1", "quetion2","quetion3","quetion4","quetion5"], R:["quetion1", "quetion2","quetion3","quetion4","quetion5"], O:["quetion1", "quetion2","quetion3","quetion4","quetion5"], W:["quetion1", "quetion2","quetion3","quetion4","quetion5"]로 json형식으로 만들어줘'},
+                {'role' : 'user', 'content': f'{chat_log} 다음 질문을 추천해줘'}
+            ]
+        )
         message_text = response['choices'][0]['message']['content']
         
         return JsonResponse({'sample_question' :  json.loads(message_text)}, status = status.HTTP_200_OK, safe=False)
