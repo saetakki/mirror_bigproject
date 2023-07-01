@@ -264,7 +264,7 @@ def make_sample_question(request, history_id):
         response = openai.ChatCompletion.create(
 			model='gpt-3.5-turbo',
 			messages = [
-                {'role' : 'system', 'content': 'grow모델의 각 단계별 질문 예시를 구체적으로 5개씩 G:["quetion1", "quetion2","quetion3","quetion4","quetion5"], R:["quetion1", "quetion2","quetion3","quetion4","quetion5"], O:["quetion1", "quetion2","quetion3","quetion4","quetion5"], W:["quetion1", "quetion2","quetion3","quetion4","quetion5"]로 json형식으로 만들어줘'},
+                {'role' : 'system', 'content': 'grow모델(Goal, Reality, Options, Wil)의 각 단계별 질문 예시를 구체적으로 GROW가 중복되지 않게 5개씩 G:["quetion1", "quetion2","quetion3","quetion4","quetion5"], R:["quetion1", "quetion2","quetion3","quetion4","quetion5"], O:["quetion1", "quetion2","quetion3","quetion4","quetion5"], W:["quetion1", "quetion2","quetion3","quetion4","quetion5"]로 json형식으로 만들어줘'},
                 {'role' : 'user', 'content': f'{chat_log} 다음 질문을 추천해줘'}
             ]
         )
