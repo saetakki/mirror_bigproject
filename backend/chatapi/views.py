@@ -254,15 +254,16 @@ def make_report(request, history_id):
            1. 구체적으로 role : user 입장에서 what went well 작성해줘.  what went well : {{"1" : , "2" : , }} 이러한 형태로 부탁해
            2. 구체적으로 role : user 입장에서 what could be improved 작성해줘. what could be improved : {{"1" : , "2" : , }} 이러한 형태로 부탁해
            3. role : user 입장에서 각 grow를 5점 만점으로 평가하고, 왜 그렇게 점수를 매겼는지 각 단계에 review point로 작성해줘. GROW model evaluation": {{Goal : {{ score : , review_point:}}, Reality : {{score : , review_point :}}, Options : {{score : , review_point :}}, Way Forwad : {{score : , review_point :}}}} 이러한 형태로 부탁해.
-           4. best_dialogue에 상담사로서 user가 했었던 content 중에, 상담시 가장 좋았던 user의 content를 최대 3개까지 뽑아서 content의 내용만 나타내줘. feedback_best_dialogue로 뽑은 대화를 system에서 () 안의 내용처럼  피드백을 작성해줘. best_dialogue : [{{dialouge : , feedback_best_dialogue}} 이러한 형태로 부탁해
-           5. worst_dialogue에 상담사로서 user가 했었던 content 중에, 상담시 가장 부족했던 user의 content를 최대 3개까지 뽑아서 content의 내용만 나타내줘. feedback_worst_dialogue로 뽑은 각 대화를 system에서 () 안의 내용처럼  피드백을 작성해줘. worst_dialogue : [{{dialouge : , feedback_worst_dialogue로}} 이러한 형태로 부탁해
+           4. best_dialogue에 상담사로서 user가 했었던 content 중에, 상담시 가장 좋았던 user의 content를 최대 3개까지 뽑아서 content의 내용만 나타내줘 assistant가 했던 content는 나오면 안되. feedback_best_dialogue로 뽑은 대화를 system에서 () 안의 내용처럼  피드백을 작성해줘. best_dialogue : [{{dialouge : , feedback_best_dialogue}} 이러한 형태로 부탁해
+           5. worst_dialogue에 상담사로서 user가 했었던 content 중에, 상담시 가장 부족했던 user의 content를 최대 3개까지 뽑아서 content의 내용만 나타내줘 assistant가 했던 content는 나오면 안되. feedback_worst_dialogue로 뽑은 각 대화를 system에서 () 안의 내용처럼  피드백을 작성해줘. worst_dialogue : [{{dialouge : , feedback_worst_dialogue로}} 이러한 형태로 부탁해
            위 5개의 고려사항을 json형태의 한국어 보고서로 작성해줘'''}])
         message_text = response["choices"][0]["message"]['content'] 
-        message_text.replace('role: user', request.user.userprofile.real_name).replace("User", request.user.userprofile.real_name).replace("user", request.user.userprofile.real_name)       
-        print(message_text)
+        # 해도 바뀌지가 않음
+        # message_text.replace('role: user', request.user.userprofile.real_name).replace("User", request.user.userprofile.real_name).replace("user", request.user.userprofile.real_name)       
+        print(message_text.replace('role: user', request.user.userprofile.real_name).replace("User", request.user.userprofile.real_name).replace("user", request.user.userprofile.real_name))
         history.report = json.loads(message_text)
         history.save()        
-        return JsonResponse({"report" : json.loads(message_text)}, status=status.HTTP_200_OK, safe=False)
+        return JsonResponse({"report" : json.loads(message_text.replace('role: user', request.user.userprofile.real_name).replace("User", request.user.userprofile.real_name).replace("user", request.user.userprofile.real_name))}, status=status.HTTP_200_OK, safe=False)
     except Exception as e:
         return JsonResponse({'msg' : '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
