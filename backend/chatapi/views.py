@@ -66,11 +66,12 @@ def set_persona(request):
 def step(message_text):
     r = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages = [{"role" : "user", "content" : f"{message_text} 이 질문이 GROW 모델 중 어떤 단계에 해당하는지 그것만 알려줘. 예를 들면 답변을 'G'  이렇게 한글자로 어떠한 단계에 해당하는지만 알려줘"}
-            ])
-    # print(r["choices"][0]["message"]["content"])
-    print(r)
-    return r["choices"][0]["message"]["content"]
+            messages = [
+                {"role" : "user", "content" : f"{message_text} 위 질문이 GROW 코칭 모델에서 어떤 단계인지 알려줘, json 형식으로 부탁해 key값은 'step', value 값은 'G', 'R', 'O', 'W' 중 하나" }
+            ]
+            )
+
+    return json.loads(r["choices"][0]["message"]["content"]).values()
 
 # audio -> text 변환 함수
 # 	ex) Content-Type : audio/mp3 or audio/wav)
@@ -96,7 +97,8 @@ def audio_to_text(request, history_id):
         
         
         r = step(message_text)        
-        return JsonResponse({'text' : message_text, "step" : r} , status=200)
+        
+        return JsonResponse({'text' : message_text, "step" : list(r)[0]} , status=200)
     except Exception as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -114,7 +116,7 @@ def get_text(request, history_id):
     # 프론트에게 성공 전달
     try:
         r = step(message_text)
-        return JsonResponse({"step" : r}, status = 200)
+        return JsonResponse({"step" : list(r)[0]}, status = 200)
     except Exception as e:
         return JsonResponse({'msg' : "001"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
