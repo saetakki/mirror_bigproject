@@ -229,6 +229,8 @@ def get_ChatGPT_response(request, history_id):
         return JsonResponse({'msg': '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
+# 문제점 1. user, assistant 등 출력
+# 		2. 잘했던 대화와 못했던 대화에 자꾸 assistant 내용이 나옴
 from glob import glob
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -241,16 +243,28 @@ def make_report(request, history_id):
     audio_list = glob('media/*.mp3')
     [os.remove(file_path) for file_path in audio_list]
     try:
+        with open('../backend/media/text/sys_msg.txt', 'r', encoding='utf-8') as f:
+            sys_msg = f.read()        
         response = openai.ChatCompletion.create(
-			model="gpt-3.5-turbo",
-			messages=[{"role": "user", "content": f' "{chat_log}" 다음의 상담내용을 user입장에서 Overview, what went well, what could be improved의 3항목으로 json 형태의 보고서로 작성해줘 '}])
-        message_text = response["choices"][0]["message"]['content']      
+			model="gpt-3.5-turbo-16k",
+			messages=[
+				{"role" : 'system', 'content' : sys_msg},
+       			{"role": "user", "content": f''' "{chat_log[1:]}" 위 대화 내용들을 바탕으로 GROW 대화 모델에 따라 role : user의 상담 코칭 실습을 평가해서 보고서를 작성할거야. 
+           이때 고려 해야할 것을 알려줄게. 
+           1. 구체적으로 role : user 입장에서 what went well 작성해줘.  what went well : {{"1" : , "2" : , }} 이러한 형태로 부탁해
+           2. 구체적으로 role : user 입장에서 what could be improved 작성해줘. what could be improved : {{"1" : , "2" : , }} 이러한 형태로 부탁해
+           3. role : user 입장에서 각 grow를 5점 만점으로 평가하고, 왜 그렇게 점수를 매겼는지 각 단계에 review point로 작성해줘. GROW model evaluation": {{Goal : {{ score : , review_point:}}, Reality : {{score : , review_point :}}, Options : {{score : , review_point :}}, Way Forwad : {{score : , review_point :}}}} 이러한 형태로 부탁해.
+           4. best_dialogue에 상담사로서 user가 했었던 content 중에, 상담시 가장 좋았던 user의 content를 최대 3개까지 뽑아서 content의 내용만 나타내줘. feedback_best_dialogue로 뽑은 대화를 system에서 () 안의 내용처럼  피드백을 작성해줘. best_dialogue : [{{dialouge : , feedback_best_dialogue}} 이러한 형태로 부탁해
+           5. worst_dialogue에 상담사로서 user가 했었던 content 중에, 상담시 가장 부족했던 user의 content를 최대 3개까지 뽑아서 content의 내용만 나타내줘. feedback_worst_dialogue로 뽑은 각 대화를 system에서 () 안의 내용처럼  피드백을 작성해줘. worst_dialogue : [{{dialouge : , feedback_worst_dialogue로}} 이러한 형태로 부탁해
+           위 5개의 고려사항을 json형태의 한국어 보고서로 작성해줘'''}])
+        message_text = response["choices"][0]["message"]['content'] 
+        message_text.replace('role: user', request.user.userprofile.real_name).replace("User", request.user.userprofile.real_name).replace("user", request.user.userprofile.real_name)       
         print(message_text)
         history.report = json.loads(message_text)
         history.save()        
         return JsonResponse({"report" : json.loads(message_text)}, status=status.HTTP_200_OK, safe=False)
     except Exception as e:
-        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JsonResponse({'msg' : '002'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 @api_view(['POST'])
