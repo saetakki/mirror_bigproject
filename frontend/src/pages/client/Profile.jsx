@@ -34,7 +34,7 @@ const Profile = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { email, id, profile_img, real_name, username } = useRecoilValue(userInfoAtom)
 
-  console.log(email, id, profile_img, real_name, username )
+  console.log(email, id, profile_img, real_name, username)
   const [mode, setMode] = useState('Profile')
 
   const [editedInfo, setEditedInfo] = useState({
@@ -54,7 +54,7 @@ const Profile = () => {
   // 탈퇴 제출 
   const deletehandleSubmit = (e) => {
     e.preventDefault();
-  
+
     setIsOpen(false);
     alert('완료되었습니다!');
   };
@@ -62,12 +62,12 @@ const Profile = () => {
   // 프로필 수정 제출 e.target.editedRealName e.target.editedEmail e.target.editedPassword
   const profilehandleSubmit = (e) => {
     e.preventDefault();
-  
+
     setIsOpen(false);
     alert('완료되었습니다!');
   };
 
-  
+
   const profileChangeHandler = (e) => {
     e.preventDefault();
     setMode('Profile');
@@ -79,7 +79,7 @@ const Profile = () => {
     setMode('Delete');
     setIsOpen(!isOpen);
   }
-  
+
   const imageChangeHandler = (e) => {
     e.preventDefault();
     // 이미지 수정 로직을 추가하세요.
@@ -91,32 +91,37 @@ const Profile = () => {
   });
 
   const profileData = useRef({
-      username: 'a0000',
-      password: '123456@',
-      email: 'email@example.com',
-      real_name: '김애옹',
-    });
+    username: 'a0000',
+    password: '123456@',
+    email: 'email@example.com',
+    real_name: '김애옹',
+  });
+
+  //로그아웃
+  const LogOutHandler = () =>{
+    alert('로그아웃 되었습니다.')
+  }
 
   //프로필 이미지의 Edit, Save 모드를 관리하는 훅
   const [isImgEditing, setIsImgEditing] = useState(false);
-    
+
   //이미지 Edit 버튼을 눌렀을 때 동작 함수
   const handleImgEditClick = (e) => {
     if (isImgEditing) {
-  // 이미지 선택 후 Save 버튼을 눌렀을 때의 동작
-    setIsImgEditing(false); //이미지 버튼을 Edit로 변경
-    e.preventDefault(); // Save를 클릭했을 때 또 파일 선택 창이 뜨지 않도록 함
-    alert('프로필 사진이 변경 되었습니다.')
-  //이미지를 백으로 보내는 로직...
-    console.log('백으로 변경된 Profile 이미지 보내는 함수');
+      // 이미지 선택 후 Save 버튼을 눌렀을 때의 동작
+      setIsImgEditing(false); //이미지 버튼을 Edit로 변경
+      e.preventDefault(); // Save를 클릭했을 때 또 파일 선택 창이 뜨지 않도록 함
+      alert('프로필 사진이 변경 되었습니다.')
+      //이미지를 백으로 보내는 로직...
+      console.log('백으로 변경된 Profile 이미지 보내는 함수');
 
     } else {
-    //이미지 Edit 버튼을 눌렀을 때의 동작
+      //이미지 Edit 버튼을 눌렀을 때의 동작
       setIsImgEditing(true); //이미지 버튼을 Save로 변경
-      }
-    };
+    }
+  };
 
-    
+
 
   //프로필 이미지 설정
   const [profileImage, setProfileImage] = useState(profileImgData.current.profile_Image);
@@ -125,104 +130,158 @@ const Profile = () => {
   const profileChange = e => {
     const reader = new FileReader();
     reader.onload = () => {
-    if (reader.readyState === 2) {
+      if (reader.readyState === 2) {
         setProfileImage(reader.result); // 파일 리더가 로드될 때 프로필 이미지 URL 상태 업데이트
       }
     };
-      reader.readAsDataURL(e.target.files[0]); // 선택한 파일을 데이터 URL로 읽기
-    };
+    reader.readAsDataURL(e.target.files[0]); // 선택한 파일을 데이터 URL로 읽기
+  };
 
   //information의 Edit, Save 모드를 관리하는 훅
   const [isEditing, setIsEditing] = useState(false);
 
-  
 
-  const isMobile = useMediaQuery({query: "(max-width: 767px)"}); 
+
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
+
+  const ProfileContent = (
+    <>
+      <PageHeader page="프로필 설정" />
+      <PageBody>
+        <CardContainer className="card-container">
+          <CardWrapper>
+            <ProfileImgDiv>
+              <ProfileImg src={profileImage} alt="Profile" />
+              <ImageEditBtnlabel htmlFor="inputimgid"><EditSaveDiv>{isImgEditing ? '저장' : '이미지 수정'}</EditSaveDiv></ImageEditBtnlabel>
+              <ImageUploadBtn id="inputimgid" type="file" onClick={handleImgEditClick} onChange={profileChange} />
+              <RealName>{profileData.current.real_name}</RealName>
+            </ProfileImgDiv>
+          </CardWrapper>
+        </CardContainer>
+      </PageBody>
+      <ProfileEditBtn onClick={profileChangeHandler}>
+        <button className='btn'>프로필 수정</button>
+      </ProfileEditBtn>
+      {isOpen && mode === 'Profile' && (
+        <EditFormContainer>
+          <EditFormWrapper>
+            <Dtext>프로필 수정</Dtext>
+            <form onSubmit={profilehandleSubmit}>
+              <InfoTextWrap>
+                <InfoText>이 름 :{' '}<ChangeInfo1 type="text" name="real_name" defaultValue={profileData.current.real_name} onChange={handleInputChange} /></InfoText>
+                <InfoText>이메일 :{' '}<ChangeInfo2 type="email" name="email" defaultValue={profileData.current.email} onChange={handleInputChange} /></InfoText>
+                <InfoText>비밀번호 :{' '}<ChangeInfo3 type="text" name="password" defaultValue={profileData.current.password} onChange={handleInputChange} /></InfoText>
+              </InfoTextWrap>
+              <button type="submit">저장</button>
+            </form>
+          </EditFormWrapper>
+        </EditFormContainer>
+      )}
+      {isOpen && mode === 'Delete' && (
+        <EditFormContainer>
+          <DeleteFormWrapper>
+            <Dtext>회원탈퇴</Dtext>
+            <form onSubmit={deletehandleSubmit}>
+              <Dtext1>'정말로 탈퇴 하시겠습니까?'</Dtext1>
+              <button type="submit">확인</button>
+            </form>
+          </DeleteFormWrapper>
+        </EditFormContainer>
+      )}
+      <DeleteEditBtn onClick={LogOutHandler}>
+        <button className='btn'>로그아웃</button>
+      </DeleteEditBtn>
+      <DeleteEditBtn onClick={DeleteChangeHandler}>
+        <button className='btn'>회원탈퇴</button>
+      </DeleteEditBtn>
+    </>
+  );
+
+  const AskGrowContent = (
+    <>
+      <JustText1>Ask Me Anything!</JustText1>
+      <AskInput />
+      <AskSendDiv>
+        <SendBtn>보내기</SendBtn>
+      </AskSendDiv>
+      <JustText1>GROW 모델</JustText1>
+      <JustText2>G : Goal</JustText2>
+      <JustText3>
+        상대방이 어떤 문제를 해결하길 원하고, 어떻게 변화 되기를 바라는지 설정하도록 돕는 단계이다.
+      </JustText3>
+      <JustText2>R : Reality</JustText2>
+      <JustText3>
+        고객이 현재 처해있는 상태를 파악하는 단계이다. 그 동안의 추진사항과 어려움, 장애물 등을 파악하는 것이 목적이다.
+      </JustText3>
+      <JustText2>O : Option</JustText2>
+      <JustText3>
+        목표와 현재 상태의 갭을 어떻게 메울 것인가를 찾는 단계이다. 생각할 수 있는 다양한 방법들을 구상하고, 그 중에서 고객이 취할 수 있는 실행계획을 구체화하는 것이 중심이다.
+      </JustText3>
+      <JustText2>W : Will</JustText2>
+      <JustText3>
+        가장 적합한 옵션을 선택하고 실행하기 위한 구체적인 계획을 세우고, 일정, 자원, 동기 부여 등을 고려하여 목표 달성을 위한 행동 계획을 구체화하는 것을 돕는 단계이다.
+      </JustText3>
+    </>
+  );
 
   return (
     <Container>
-        <GridContainer>
-            <GridPageHeaderWrap>
-              <Head>
-                <strong>PROFILE</strong>
-                <Quotes>
-                  <span>{profileData.current.username}님의 프로필 설정 페이지 입니다. </span>
-                </Quotes>
-              </Head>
-            </GridPageHeaderWrap>
-            
-            <ProfileContainer>
-              <PageHeader page="프로필 설정" />
-              <PageBody>
-                <CardContainer className="card-container">
-                  <CardWrapper>
-                    
-                    <ProfileImgDiv>
-                    <ProfileImg src={profileImage} alt="Profile" />
-                    <label htmlFor="inputimgid"><EditSaveDiv>{isImgEditing ? '저장' : '이미지 수정'}</EditSaveDiv></label>
-                    <ImageUploadBtn id="inputimgid" type="file" onClick={handleImgEditClick} onChange={profileChange} />
-                    <RealName>{profileData.current.real_name}</RealName>
-                    </ProfileImgDiv>                     
-                  </CardWrapper>                  
-                </CardContainer>               
-              </PageBody>
-
-
-              <ProfileEditBtn onClick={profileChangeHandler}>
-                <button className='btn'>프로필 수정</button>
-              </ProfileEditBtn>
-              
-              {isOpen && mode === 'Profile' && (
-              <EditFormContainer>
-                <EditFormWrapper>
-                  <Dtext>프로필 수정</Dtext>
-                  <form onSubmit={profilehandleSubmit}>
-                      <InfoTextWrap>
-                        <InfoText>이 름 :{' '}<ChangeInfo1 type="text" name="real_name" defaultValue={profileData.current.real_name} onChange={handleInputChange} /></InfoText>
-                        <InfoText>이메일 :{' '}<ChangeInfo2 type="email" name="email" defaultValue={profileData.current.email} onChange={handleInputChange} /></InfoText>
-                        <InfoText>비밀번호 :{' '}<ChangeInfo3 type="text" name="password" defaultValue={profileData.current.password} onChange={handleInputChange} /></InfoText>
-                      </InfoTextWrap>
-                    <button type="submit">저장</button>
-                  </form>
-                </EditFormWrapper>
-              </EditFormContainer>
-              )}
-              
-              {isOpen && mode === 'Delete' && (
-              <EditFormContainer>
-                <DeleteFormWrapper>
-                  <Dtext>회원탈퇴</Dtext>
-                  <form onSubmit={deletehandleSubmit}>
-                    <Dtext1>'정말로 탈퇴 하시겠습니까?'</Dtext1>
-                    <button type="submit">확인</button>
-                  </form>
-                </DeleteFormWrapper>
-
-                
-
-              </EditFormContainer>
-              )}
-
-              <DeleteEditBtn onClick={DeleteChangeHandler}>
-                <button className='btn'>회원 탈퇴</button>
-              </DeleteEditBtn>
-            </ProfileContainer>
-            <KtlogoContainer>
-              <JustText1>GROW 모델</JustText1>             
-                <JustText2>Goal</JustText2>
-                <JustText3> 상대방이 어떤 문제를 해결하길 원하고, 어떻게 변화 되기를 바라는지 설정하도록 돕는 단계이다.</JustText3>
-                <JustText2>Reality</JustText2>
-                <JustText3> 고객이 현재 처해있는 상태를 파악하는 단계이다. 그 동안의 추진사항과 어려움, 장애물 등을 파악하는 것이 목적이다.</JustText3>
-                <JustText2>Option</JustText2>
-                <JustText3> 목표와 현재 상태의 갭을 어떻게 메울 것인가를 찾는 단계이다. 생각할 수 있는 다양한 방법들을 구상하고, 그 중에서 고객이 취할 수 있는 실행계획을 구체화 하는 것이 중심이다.</JustText3>
-                <JustText2>Will</JustText2>
-                <JustText3> 가장 적합한 옵션을 선택하고 실행하기 위한 구체적인 계획을 세우고, 일정, 자원, 동기 부여 등을 고려하여 목표 달성을 위한 행동 계획을 구체화 하는 것을 돕는 단계이다.</JustText3>
-                
-            </KtlogoContainer>
-        </GridContainer>
+      <GridContainer>
+        <GridPageHeaderWrap>
+          <Head>
+            <strong>PROFILE</strong>
+            <Quotes>
+              <span>{profileData.current.username}님의 프로필 설정 페이지 입니다. </span>
+            </Quotes>
+          </Head>
+        </GridPageHeaderWrap>
+        {!isMobile ? (
+          <ProfileContainer>{ProfileContent}</ProfileContainer>
+        ) : (
+          <MProfileContainer>{ProfileContent}</MProfileContainer>
+        )}
+        {!isMobile ? (
+          <KtlogoContainer>{AskGrowContent}</KtlogoContainer>
+        ) : (
+          <MKtlogoContainer>{AskGrowContent}</MKtlogoContainer>
+        )}
+      </GridContainer>
     </Container>
   )
 }
+
+const ImageEditBtnlabel = styled.label`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const SendBtn = styled.button`
+  margin-top: 5px;
+  border: 1px solid #b3b3b3;
+  border-radius: 10px;
+  font-size: 15px;
+  padding: 3px;
+  :hover {
+    background-color: #2EE59D;
+    box-shadow: 0px 10px 10px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+`
+
+const AskSendDiv = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 55px;
+`
+
+const AskInput = styled.input`
+  border: 1px solid #b3b3b3;
+  border-radius: 10px; 
+  width: 100%;
+  height: 20%;;
+`
 
 const GridContainer = styled.div`
 display: grid;
@@ -232,23 +291,21 @@ grid-template-rows : repeat(12, 10%);
 grid-gap: 24px;
 `
 
-
 const GridPageHeaderWrap = styled.div`
   padding: 20px;
-  grid-column: 1 / 17;
+  grid-column: 1 / 16;
   grid-row: 1 / 2;
   background-color: #f9f9f9;
   border-radius: 10px;
-  
+  display: flex;
+  align-items: center;
 `
 const Head = styled.div`
   margin-top: -7px;
-  margin-left: 30px;
   strong {
     font-size: 24px;
   }
 `
-
 
 const Quotes = styled.div`
   margin-top: 10px;
@@ -263,15 +320,24 @@ const GridLine = styled.div`
   margin-top: 12px;
 `
 
-
-
-
 const ProfileContainer = styled(Container)`
   grid-column-start: 1;
   grid-column-end: 8;
   grid-row-start: 2;
-  grid-row-end: 10;
+  grid-row-end: 9;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+`
 
+const MProfileContainer = styled(Container)`
+  grid-column-start: 1;
+  grid-column-end: 16;
+  grid-row-start: 2;
+  grid-row-end: 6;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
 `
 
 const PageBody = styled.section`
@@ -287,9 +353,7 @@ const CardContainer = styled.div`
   margin: 0 auto;
   height: 25em;
   border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  
+  overflow: hidden; 
 `
 
 const CardWrapper = styled.div`
@@ -326,14 +390,14 @@ const ProfileEditBtn = styled.div`
     background-color: #fff;
     border: none;
     border-radius: 45px;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease 0s;
     cursor: pointer;
     outline: none;
   }
   .btn:hover {
     background-color: #2EE59D;
-    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    box-shadow: 0px 15px 15px rgba(46, 229, 157, 0.4);
     color: #fff;
     transform: translateY(-7px);
   }
@@ -361,14 +425,14 @@ const DeleteEditBtn = styled.div`
     background-color: #fff;
     border: none;
     border-radius: 45px;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease 0s;
     cursor: pointer;
     outline: none;
   }
   .btn:hover {
     background-color: #2EE59D;
-    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    box-shadow: 0px 15px 15px rgba(46, 229, 157, 0.4);
     color: #fff;
     transform: translateY(-7px);
   }
@@ -445,27 +509,35 @@ const KtlogoContainer = styled(Container)`
   grid-column-start: 8;
   grid-column-end: 16;
   grid-row-start: 2;
-  grid-row-end: 10;
-  
-  
+  grid-row-end: 9;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+`
+const MKtlogoContainer = styled(Container)`
+  grid-column-start: 1;
+  grid-column-end: 16;
+  grid-row-start: 6;
+  grid-row-end: 11;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
 `
 
 const JustText1 = styled.div`
-  margin-top: 10px;
-  margin-left: 10px;
-  font-size: 34px;
+  font-size: 25px;
+  margin-bottom: 10px;
 `;
 
 const JustText2 = styled.div`
-  margin-top: 30px;
+  margin-top: 5px;
   margin-left: 20px;
-  font-size: 24px;
+  font-size: 20px;
 `;
 
 const JustText3 = styled.div`
-  margin-top: 30px;
   margin-left: 30px;
-  font-size: 20px;
+  font-size: 15px;
 `;
 
 
@@ -504,8 +576,6 @@ const EditSaveDiv = styled.div`
   font-size: 12px;
   position: absolute;
   bottom: -40px; 
-  left: 37%; 
-  transform: translateX(-50%) 
 
   cursor: pointer;
   width: 100px;
