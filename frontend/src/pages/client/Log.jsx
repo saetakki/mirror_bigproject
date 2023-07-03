@@ -32,10 +32,9 @@ const Log = () => {
       })
       .catch(err => console.log(err))
   }, [])
-
-  const overView = report['Overview'];
-  const good = report['What went well'];
-  const bad = report['What could be improved'];
+  const overView = report && report['Overview'];
+  const good = report && report['What went well'];
+  const bad = report && report['What could be improved'];
   return (
     <Container>
       <GridContainer>
@@ -142,8 +141,8 @@ const GridPageHeaderWrap = styled.div`
   padding: 20px;
   grid-column: 1 / 16;
   grid-row: 1;
-  
-  border-radius: 30px;
+  border : 1px solid rgb(225, 223, 223);
+  border-radius: 10px;
   background-color: #f9f9f9;
   
 `
@@ -156,8 +155,6 @@ const GridContainer = styled.div`
   grid-gap: 24px;
   max-height: 100%;
 `
-
-
 
 const ChatContainer = styled.div`
   margin-top: 5px;
@@ -196,28 +193,6 @@ const Message = styled.div`
   text-align: ${({ align }) => align};
 `;
 
-const Logwrap = styled.div`
-  margin-top: 50px;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  max-width: 100%;
-  padding: 0 10%;
-
-  left: 50%;
-  transform: translate(-50%, 0);
-
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-  ::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-  `
-
 const ChatProPerWrap = styled.div`
   margin-top: 5px;
   display: flex;
@@ -226,7 +201,7 @@ const ChatProPerWrap = styled.div`
 `
 const ProPerWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
-  border-radius : 30px;
+  border-radius : 10px;
   padding: 20px;
   display: flex;
   flex-direction: row;
@@ -237,19 +212,13 @@ const ProPerWrap = styled.div`
 
 const MProPerWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
-  border-radius : 30px;
+  border-radius : 10px;
   padding: 20px;
   display: flex;
   flex-direction: row;
   grid-column: 1 / 16;
   grid-row: 2;
   background-color: #f9f9f9;
-`
-
-const PersonaTitle = styled.div`
-  margin: 0px;
-  font-size: 24px;
-  font-weight: bold;
 `
 
 const Persona = styled.div`
@@ -264,8 +233,6 @@ const PersonaWrap = styled.div`
 const ChatLog = styled.div`
   margin: 0px;
   width: 100%;
-  
-  
 `
 
 const Report = styled.div`
@@ -280,35 +247,29 @@ const Report = styled.div`
 
 const ChatLogWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
-  border-radius : 30px;
+  border-radius : 10px;
   padding: 20px;
   background-color: #f9f9f9;
- 
   margin: 0px;
-  
-
   grid-column: 9 / 16;
   grid-row: 2 / 17;
 `
 const MChatLogWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
-  border-radius : 30px;
+  border-radius : 10px;
   padding: 20px;
   background-color: #f9f9f9;
- 
   margin: 0px;
-  
-
   grid-column: 1 / 16;
   grid-row: 3 / 28;
 `
 
 const ReportWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
-  border-radius : 30px;
+  border-radius : 10px;
   background-color: #f9f9f9;
   margin: 0px;
-  height: 300px;
+  height: 313px;
   margin-bottom: 50px;
   padding: 20px;
   grid-column: 1 / 9;
@@ -317,7 +278,7 @@ const ReportWrap = styled.div`
 
 const MReportWrap = styled.div`
   border : 1px solid rgb(225, 223, 223);
-  border-radius : 30px;
+  border-radius : 10px;
   background-color: #f9f9f9;
   margin: 0px;
   height: 300px;
@@ -340,5 +301,4 @@ const ReportName = styled.div`
 const ReportList = styled.div`
   margin: 0px;
   margin-top: 20px;
-
 `

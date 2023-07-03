@@ -24,22 +24,18 @@ const History = () => {
     setIsLoad(true)
   }, [pageNum])
 
-  //console.log('@@@', history)
-
   const navigateHandler = (e) => {
     navigate(`${e}`)
   }
   const [content, setContent] = useState(null);
   const onClickHandler = (item) => {
-    //console.log(typeof e)
-    //navigate(`${e}`)
     const labels = ['이름', '나이', '성별', '직책', '부서', '상태'];
     setContent(
       <>
         <GridPersonaTitle>No.{ReactDOMServer.renderToStaticMarkup(item.id)}</GridPersonaTitle>
         <GridPersonaFont>QUICK VIEW</GridPersonaFont>
-        <GridPersonaTitle>페르소나</GridPersonaTitle>
-
+        <br/>
+        <GridPersonaTitle>PERSONA</GridPersonaTitle>
         {Object.values(item.persona).map((value, idx) => (
           <>
             <GridPersonaFont>
@@ -47,15 +43,16 @@ const History = () => {
             </GridPersonaFont>
           </>
         ))}
+        <br/>
         <GridPersonaTitle>SUMMARY</GridPersonaTitle>
-        {
-          Object.values(item.persona['persona_name']).includes('준') && Object.values(item.persona['persona_name']).includes('호') ? (
-            <GridPersonaFont>{Object.values(item.report['Overview'])}</GridPersonaFont>
-          ) : (
-            <GridPersonaFont>{Object.values(item.report['overall'])}</GridPersonaFont>
-          )
-        }
-      </>)
+        {Object.values(item.persona['persona_name']).includes('준') && Object.values(item.persona['persona_name']).includes('호') ? (
+          <GridPersonaFont>{item.report && item.report['Overview']}</GridPersonaFont>
+        ) : (
+          <GridPersonaFont>{item.report && item.report['overall']}</GridPersonaFont>
+        )}
+        <br/><hr/><br/>
+      </>
+    )
   }
 
   return (
@@ -72,6 +69,14 @@ const History = () => {
           {!isMobile ?
             (<GridQuickView>
               {content}
+              <GridQuickViewTitle>Chatgpt와 함께하는 리더 코칭 훈련</GridQuickViewTitle>
+              <ul>
+                <GridQuickViewLi> - 코칭 사전 훈련</GridQuickViewLi>
+                <GridQuickViewLi> - 코칭 숙련 대상 확보</GridQuickViewLi>
+                <GridQuickViewLi> - 리더들의 코칭역량 향상</GridQuickViewLi>
+              </ul>
+              <br/>
+              <GridQuickViewTitle>지금까지 진행한 코칭 연습기록을 다시 확인해보세요!</GridQuickViewTitle>
             </GridQuickView>)
             : null}
           {!isMobile ?
@@ -139,8 +144,16 @@ const History = () => {
 }
 
 export default History
-const GridPersonaTitle = styled.p`
-  font-size : 14px;
+
+const GridQuickViewTitle = styled.strong`
+
+`
+
+const GridQuickViewLi = styled.li`
+  font-size:14px;
+`
+
+const GridPersonaTitle = styled.strong`
   font-weight: bold; 
 `
 const GridPersonaFont = styled.p`
@@ -148,10 +161,13 @@ const GridPersonaFont = styled.p`
 `
 
 const GridQuickView = styled.div`
-  max-width: 500px;
+  min-width: 300px;
+  max-width: 300px;
+  height: calc(100vh - 131px);
   padding: 20px;
-  grid-column: 1 / 4;
-  grid-row: 2 / 6;
+  position: fixed;
+  left: 128px;
+  top: 116px;
   background-color: #f9f9f9;
   border-radius: 10px;
   overflow: auto;
@@ -159,19 +175,30 @@ const GridQuickView = styled.div`
     width: 0;
     height: 0;
   }
-`;
+
+  @media (max-width: 1630px) {
+    left: 128px;
+    min-width: 200px;
+    max-width: 200px;
+  }
+  @media (max-width: 1163px) {
+    left: 128px;
+    min-width: 120px;
+    max-width: 120px;
+  }
+  `;
 
 const GridContainer = styled.div`
   display: grid;
   padding: 20px 10px;
   grid-template-columns: repeat(15, 1fr);
-  grid-template-rows : repeat(8, 1fr);
+  grid-template-rows : repeat(7, 1fr);
   grid-gap: 24px;
 `
 
 const GridPageHeaderWrap = styled.div`
   padding: 20px;
-  grid-column: 1 / 16;
+  grid-column: 4 / 16;
   grid-row: 1;
   background-color: #f9f9f9;
   border-radius: 10px;

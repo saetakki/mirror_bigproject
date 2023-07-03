@@ -31,12 +31,14 @@ const BookMark = () => {
       <>
         <GridPersonaTitle>No.{ReactDOMServer.renderToStaticMarkup(e.id)}</GridPersonaTitle>
         <GridPersonaFont>QUICK VIEW</GridPersonaFont>
-        <GridPersonaTitle>페르소나</GridPersonaTitle>
+        <br/>
+        <GridPersonaTitle>PERSONA</GridPersonaTitle>
         {Object.values(e.persona).map((value) => (
           <>
             <GridPersonaFont>{value}</GridPersonaFont>
           </>
         ))}
+        <br/>
         <GridPersonaTitle>SUMMARY</GridPersonaTitle>
         {
           Object.values(e.persona['persona_name']).includes('준') && Object.values(e.persona['persona_name']).includes('호') ? (
@@ -45,6 +47,7 @@ const BookMark = () => {
             <GridPersonaFont>{Object.values(e.report['overall'])}</GridPersonaFont>
           )
         }
+        <br/><hr/><br/>
       </>)
   }
 
@@ -62,6 +65,14 @@ const BookMark = () => {
           {!isMobile ?
             <GridQuickView>
               {content}
+              <strong>Chatgpt와 함께하는 리더 코칭 훈련</strong>
+              <ul>
+                <GridQuickViewLi> - 코칭 사전 훈련</GridQuickViewLi>
+                <GridQuickViewLi> - 코칭 숙련 대상 확보</GridQuickViewLi>
+                <GridQuickViewLi> - 리더들의 코칭역량 향상</GridQuickViewLi>
+              </ul>
+              <br/>
+              <strong>지금까지 진행한 코칭 연습기록을 다시 확인해보세요!</strong>
             </GridQuickView> : null}
           {!isMobile ?
             <BoardContainer>
@@ -119,26 +130,47 @@ const BookMark = () => {
 }
 
 export default BookMark
-const GridPersonaTitle = styled.p`
-  font-size : 14px;
-  font-weight: bold; 
+
+const GridQuickViewLi = styled.li`
+  font-size:14px;
 `
+
+const GridPersonaTitle = styled.strong`
+  font-weight: bold; 
+ `
+
 const GridPersonaFont = styled.p`
   font-size : 12px; 
 `
 
 const GridQuickView = styled.div`
-  padding: 20px;
-  grid-column: 1 / 4;
-  grid-row: 2 / 6;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  overflow: auto;
-    ::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
-`
+min-width: 300px;
+max-width: 300px;
+height: calc(100vh - 131px);
+padding: 20px;
+position: fixed;
+left: 128px;
+top: 116px;
+background-color: #f9f9f9;
+border-radius: 10px;
+overflow: auto;
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+@media (max-width: 1630px) {
+  left: 128px;
+  min-width: 200px;
+  max-width: 200px;
+}
+@media (max-width: 1163px) {
+  left: 128px;
+  min-width: 120px;
+  max-width: 120px;
+}
+`;
+
 
 const GridContainer = styled.div`
   display: grid;
@@ -151,7 +183,7 @@ const GridContainer = styled.div`
 
 const GridPageHeaderWrap = styled.div`
   padding: 20px;
-  grid-column: 1 / 17;
+  grid-column: 4 / 17;
   grid-row: 1 / 2;
   background-color: #f9f9f9;
   border-radius: 10px;
@@ -177,20 +209,6 @@ const GridPaginationWrap = styled.div`
   grid-column: 5 / 16;
   grid-row: 8;
 `
-const Head = styled.div`
-  margin: 24px 0;
-  strong {
-    font-size: 24px;
-  }
-`
-
-const GridLine = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #d9d9d9;
-  margin-top: 12px;
-  margin-bottom: 12px;
-`
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -204,15 +222,6 @@ const MBoardContainer = styled.div`
   grid-column: 1 / 16;
   grid-row: 2 / 9;
 `
-
-
-const BoardHead = styled.div`
-  width: 100%;
-  height:80px;
-  display: flex;
-  flex-direction: row;
-
-  `
 
 const ItemListContainer = styled.div`
   width: 100%;
