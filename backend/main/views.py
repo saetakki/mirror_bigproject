@@ -217,6 +217,7 @@ def update_profile_image(request):
 # 1. POST /signup/
 # 회원가입
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def signup(request):
     username = request.data.get('username')
     password = request.data.get('password')
