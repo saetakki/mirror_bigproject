@@ -32,107 +32,122 @@ const Log = () => {
       })
       .catch(err => console.log(err))
   }, [])
-  const overView = report && report['Overview'];
-  const good = report && report['What went well'];
-  const bad = report && report['What could be improved'];
+  // 페르소나
+  const personaContent = (
+    <>
+      <PersonaWrap>
+        <ChatLogName>내담자 정보</ChatLogName>
+        <Persona>
+          {isUpload && persona.map((item, idx) => {
+            const labels = ['이름', '나이', '성별', '직책', '부서', '상태']; // 레이블 문자열 배열
+            const labelIndex = idx % labels.length; // 레이블 인덱스 계산
+            const label = labels[labelIndex]; // 현재 항목에 대한 레이블
+            return (
+              <div key={idx}><span>{label} :  </span>{item}</div>
+            )
+          })}
+        </Persona>
+      </PersonaWrap>
+    </>
+  );
+
+  //채팅기록
+  const chatLogContent = (
+    <>
+      <ChatLog>
+        <ChatLogName>채팅기록</ChatLogName>
+        <ChatContainer>
+          {chatLog.slice(1, chatLog.length).map((chat, index) => (
+            <ChatProPerWrap key={index}>
+              {chat.role === 'user' ? (
+                <UserBubble>
+                  <Message>{chat.content}</Message>
+                </UserBubble>
+              ) : (
+                <AssistantBubble>
+                  <Message>{chat.content}</Message>
+                </AssistantBubble>
+              )}
+            </ChatProPerWrap>
+          ))}
+        </ChatContainer>
+      </ChatLog>
+    </>
+  );
+
+  //보고서
+  const evaluationData = report['GROW model evaluation'];
+  const sections = ['Goal', 'Reality', 'Options', 'Will'];
+  const reportContent = (
+    <>
+      <ReportName>보고서</ReportName>
+      <Report>
+        <ReportTitle>What Went Well</ReportTitle>
+        {report['what went well'] && Object.entries(report['what went well']).map(([key, value]) => (
+          <ReportList key={key}>- {value}</ReportList>
+        ))}<br/>
+        <ReportTitle>What Could Be Improved</ReportTitle>
+        {report['what could be improved'] && Object.entries(report['what could be improved']).map(([key, value]) => (
+          <ReportList key={key}>- {value}</ReportList>
+        ))}<br/>
+        <ReportTitle>GROW model evaluation</ReportTitle><br />
+        {evaluationData && (
+          sections.map((section) => (
+            <div key={section}>
+              <strong>{section.charAt(0)} : {section}</strong>
+              {Object.entries(evaluationData[section]).map(([key, value]) => (
+                <ReportList key={key}>- {key} : {value}</ReportList>
+              ))}
+            </div>
+          ))
+              )}<br/>
+        <ReportTitle>Best Dialogue</ReportTitle>
+        {report['best_dialogue'] && report['best_dialogue'].map((item) => (
+          Object.entries(item).map(([key, value]) => (
+            <ReportList key={key}> {key} - {value}</ReportList>
+          ))
+        ))}<br/>
+        <ReportTitle>Worst Dialogue</ReportTitle>
+        {report['worst_dialogue'] && report['worst_dialogue'].map((item) => (
+          Object.entries(item).map(([key, value]) => (
+            <ReportList key={key}> {key} - {value}</ReportList>
+          ))
+        ))}
+      </Report>
+    </>
+  );
+
+  //전체적인 화면 구성은 위에서 정의하고 return에서 PC, Mobile 여부 확인
   return (
     <Container>
       <GridContainer>
         <GridPageHeaderWrap>
           <PageHeader page={where} />
         </GridPageHeaderWrap>
-        {!isMobile?
-        <ProPerWrap>
-          <PersonaWrap>
-            <ChatLogName>내담자 정보</ChatLogName>
-            <Persona>
-              {isUpload && persona.map((item, idx) => {
-                const labels = ['이름', '나이', '성별', '직책', '부서', '상태']; // 레이블 문자열 배열
-                const labelIndex = idx % labels.length; // 레이블 인덱스 계산
-                const label = labels[labelIndex]; // 현재 항목에 대한 레이블
-                return (
-                  <div key={idx}><span>{label} :  </span>{item}</div>
-                )
-              })}
-            </Persona>
-          </PersonaWrap>
-        </ProPerWrap>:
-        <MProPerWrap>
-        <PersonaWrap>
-          <ChatLogName>내담자 정보</ChatLogName>
-          <Persona>
-            {isUpload && persona.map((item, idx) => {
-              const labels = ['이름', '나이', '성별', '직책', '부서', '상태']; // 레이블 문자열 배열
-              const labelIndex = idx % labels.length; // 레이블 인덱스 계산
-              const label = labels[labelIndex]; // 현재 항목에 대한 레이블
-              return (
-                <div key={idx}><span>{label} :  </span>{item}</div>
-              )
-            })}
-          </Persona>
-        </PersonaWrap>
-      </MProPerWrap>}
-        {!isMobile?
-        <ChatLogWrap>
-          <ChatLog>
-            <ChatLogName>채팅기록</ChatLogName>
-            <ChatContainer>
-              {chatLog.slice(1, chatLog.length).map((chat, index) => (
-                <ChatProPerWrap key={index}>
-                  {chat.role === 'user' ? (
-                    <UserBubble>
-                      <Message>{chat.content}</Message>
-                    </UserBubble>
-                  ) : (
-                    <AssistantBubble>
-                      <Message>{chat.content}</Message>
-                    </AssistantBubble>
-                  )}
-                </ChatProPerWrap>
-              ))}
-            </ChatContainer>
-          </ChatLog>
-        </ChatLogWrap>:
-        <MChatLogWrap>
-        <ChatLog>
-          <ChatLogName>채팅기록</ChatLogName>
-          <ChatContainer>
-            {chatLog.slice(1, chatLog.length).map((chat, index) => (
-              <ChatProPerWrap key={index}>
-                {chat.role === 'user' ? (
-                  <UserBubble>
-                    <Message>{chat.content}</Message>
-                  </UserBubble>
-                ) : (
-                  <AssistantBubble>
-                    <Message>{chat.content}</Message>
-                  </AssistantBubble>
-                )}
-              </ChatProPerWrap>
-            ))}
-          </ChatContainer>
-        </ChatLog>
-      </MChatLogWrap>}
-      {!isMobile?
-        <ReportWrap>
-          <ReportName>보고서</ReportName>
-          <Report>
-            <ReportList>개요 및 평가 - {overView}</ReportList>
-            <ReportList>잘한 점 - {good}</ReportList>
-            <ReportList>보완할 점 - {bad}</ReportList>
-          </Report>
-        </ReportWrap>:
-        <MReportWrap>
-        <ReportName>보고서</ReportName>
-        <Report>
-          <ReportList>개요 및 평가 - {overView}</ReportList>
-          <ReportList>잘한 점 - {good}</ReportList>
-          <ReportList>보완할 점 - {bad}</ReportList>
-        </Report>
-      </MReportWrap>}
+        {!isMobile ?
+          <ProPerWrap>
+            {personaContent}
+          </ProPerWrap> :
+          <MProPerWrap>
+            {personaContent}
+          </MProPerWrap>}
+        {!isMobile ?
+          <ChatLogWrap>
+            {chatLogContent}
+          </ChatLogWrap> :
+          <MChatLogWrap>
+            {chatLogContent}
+          </MChatLogWrap>}
+        {!isMobile ?
+          <ReportWrap>
+            {reportContent}
+          </ReportWrap> :
+          <MReportWrap>
+            {reportContent}
+          </MReportWrap>}
       </GridContainer>
     </Container>
-  )
+  );
 }
 
 export default Log;
@@ -300,5 +315,8 @@ const ReportName = styled.div`
 `
 const ReportList = styled.div`
   margin: 0px;
-  margin-top: 20px;
+`
+
+const ReportTitle = styled.strong`
+  font-size: 18px;
 `

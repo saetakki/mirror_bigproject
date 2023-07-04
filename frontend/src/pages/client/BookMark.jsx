@@ -26,42 +26,46 @@ const BookMark = () => {
     navigate(`/history/${e.id}`)
   }
   const [content, setContent] = useState(null);
-  const onClickHandler = (e) => {
+  const onClickHandler = (item) => {
+    const labels = ['이름', '나이', '성별', '직책', '부서', '상태'];
     setContent(
       <>
-        <GridPersonaTitle>No.{ReactDOMServer.renderToStaticMarkup(e.id)}</GridPersonaTitle>
+        <GridPersonaTitle>
+          No.{ReactDOMServer.renderToStaticMarkup(item.id)}
+        </GridPersonaTitle>
         <GridPersonaFont>QUICK VIEW</GridPersonaFont>
-        <br/>
+        <br />
         <GridPersonaTitle>PERSONA</GridPersonaTitle>
-        {Object.values(e.persona).map((value) => (
+        {Object.values(item.persona).map((value, idx) => (
           <>
-            <GridPersonaFont>{value}</GridPersonaFont>
+            <GridPersonaFont key={idx}>
+              {labels[idx]}: {value}
+            </GridPersonaFont>
           </>
         ))}
-        <br/>
+        <br />
         <GridPersonaTitle>SUMMARY</GridPersonaTitle>
-        {
-          Object.values(e.persona['persona_name']).includes('준') && Object.values(e.persona['persona_name']).includes('호') ? (
-            <GridPersonaFont>{Object.values(e.report['Overview'])}</GridPersonaFont>
-          ) : (
-            <GridPersonaFont>{Object.values(e.report['overall'])}</GridPersonaFont>
-          )
-        }
-        <br/><hr/><br/>
-      </>)
-  }
+        <GridPersonaFont>
+          {item.report['what went well'] && Object.values(item.report['what went well'])}
+        </GridPersonaFont>
+        <br />
+        <hr />
+        <br />
+      </>
+    );
+  };
 
   return (
     (isLoad ?
       (<Container>
         <GridContainer>
           {!isMobile ?
-          <GridPageHeaderWrap>
-            <PageHeader page="BOOKMARK" />
-          </GridPageHeaderWrap>:
-          <MGridPageHeaderWrap>
-          <PageHeader page="BOOKMARK" />
-          </MGridPageHeaderWrap>}
+            <GridPageHeaderWrap>
+              <PageHeader page="BOOKMARK" />
+            </GridPageHeaderWrap> :
+            <MGridPageHeaderWrap>
+              <PageHeader page="BOOKMARK" />
+            </MGridPageHeaderWrap>}
           {!isMobile ?
             <GridQuickView>
               {content}
@@ -71,7 +75,7 @@ const BookMark = () => {
                 <GridQuickViewLi> - 코칭 숙련 대상 확보</GridQuickViewLi>
                 <GridQuickViewLi> - 리더들의 코칭역량 향상</GridQuickViewLi>
               </ul>
-              <br/>
+              <br />
               <strong>지금까지 진행한 코칭 연습기록을 다시 확인해보세요!</strong>
             </GridQuickView> : null}
           {!isMobile ?

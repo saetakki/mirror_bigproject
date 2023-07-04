@@ -48,16 +48,9 @@ const History = () => {
         ))}
         <br />
         <GridPersonaTitle>SUMMARY</GridPersonaTitle>
-        {Object.values(item.persona['persona_name']).includes('준') &&
-        Object.values(item.persona['persona_name']).includes('호') ? (
-          <GridPersonaFont>
-            {item.report && item.report['Overview']}
-          </GridPersonaFont>
-        ) : (
-          <GridPersonaFont>
-            {item.report && item.report['overall']}
-          </GridPersonaFont>
-        )}
+        <GridPersonaFont>
+          {item.report['what went well'] && Object.values(item.report['what went well'])}
+        </GridPersonaFont>
         <br />
         <hr />
         <br />

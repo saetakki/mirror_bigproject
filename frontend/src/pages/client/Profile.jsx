@@ -34,7 +34,6 @@ const Profile = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { email, id, profile_img, real_name, username } = useRecoilValue(userInfoAtom)
 
-  console.log(email, id, profile_img, real_name, username)
   const [mode, setMode] = useState('Profile')
 
   const [editedInfo, setEditedInfo] = useState({
@@ -50,6 +49,15 @@ const Profile = () => {
       [name]: value,
     }));
   };
+
+  // Ask Me Anything 제출 
+  const AskAnythingHandler = (e) => {
+    e.preventDefault();
+
+    
+    alert('완료되었습니다!');
+  };
+
 
   // 탈퇴 제출 
   const deletehandleSubmit = (e) => {
@@ -125,7 +133,6 @@ const Profile = () => {
 
   //프로필 이미지 설정
   const [profileImage, setProfileImage] = useState(profileImgData.current.profile_Image);
-  console.log(profileImgData.profile_Image)
 
   const profileChange = e => {
     const reader = new FileReader();
@@ -202,7 +209,7 @@ const Profile = () => {
       <JustText1>Ask Me Anything!</JustText1>
       <AskInput />
       <AskSendDiv>
-        <SendBtn>보내기</SendBtn>
+        <SendBtn onClick={AskAnythingHandler}>보내기</SendBtn>
       </AskSendDiv>
       <JustText1>GROW 모델</JustText1>
       <JustText2>G : Goal</JustText2>
@@ -276,11 +283,12 @@ const AskSendDiv = styled.div`
   margin-bottom: 55px;
 `
 
-const AskInput = styled.input`
+const AskInput = styled.textarea`
   border: 1px solid #b3b3b3;
   border-radius: 10px; 
   width: 100%;
-  height: 20%;;
+  height: 20%;
+  padding: 10px;
 `
 
 const GridContainer = styled.div`
