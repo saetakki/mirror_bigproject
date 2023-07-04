@@ -18,6 +18,7 @@ const Chatting = () => {
   const [isRecording, setRecording] = useState(false);
   const [saveMessage, setSaveMessages] = useState([]);
 
+  // 채팅 메세지가 새로 등록되어 y값이 바뀔 경우 스크롤 제일 아래로 이동시키는 코드
   const scrollToBottom = () => {
     if (ChattingLogContainerRef.current) {
       const chatContainer = ChattingLogContainerRef.current;
@@ -25,6 +26,7 @@ const Chatting = () => {
     }
   };
 
+  // 채팅 메세지가 새로 등록되는지를 감지하여 새로 등록됨이 감지될 경우 스크롤을 제일 아래로 이동시키는 함수 실행
   useEffect(() => {
     scrollToBottom();
   }, [saveMessage]);
