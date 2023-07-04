@@ -56,11 +56,11 @@ li {
   padding: 0;
   margin: 0;
 }
-input {
+/* input {
   border: none;
   background: transparent;
   outline: none;
-}
+} */
 textarea {
   resize: none;
   border: none;
@@ -71,12 +71,12 @@ textarea {
 img {
   pointer-events: none;
 }
-input::-ms-clear,
+/* input::-ms-clear,
 input::-ms-reveal {
   display: none;
   width: 0;
   height: 0;
-}
+} */
 
 svg {
   display: block;

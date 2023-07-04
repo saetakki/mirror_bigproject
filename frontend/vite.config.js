@@ -9,6 +9,10 @@ const PATH_DATA = [
     url: './src',
   },
   {
+    find: '@components',
+    url: './src/components',
+  },
+  {
     find: '@atoms',
     url: './src/components/atoms',
   },
@@ -23,10 +27,6 @@ const PATH_DATA = [
   {
     find: '@pages',
     url: './src/pages',
-  },
-  {
-    find: '@organisms',
-    url: './src/components/organisms',
   },
   {
     find: '@assets',

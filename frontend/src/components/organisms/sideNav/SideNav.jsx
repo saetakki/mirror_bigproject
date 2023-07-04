@@ -86,7 +86,8 @@ export default SideNav;
 
 const SideNavContainer = styled.div`
   width: 5em;
-  height: calc(100vh - 112px);margin-left: 1rem;
+  height: calc(100vh - 112px);
+  margin-left: 1rem;
   background-color: #fff;
   border-radius: 10px;
   display: flex;

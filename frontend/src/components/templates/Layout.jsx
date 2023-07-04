@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
-import { Header, SideNav } from '@organisms';import { Container } from "@styles"
+import { Header, SideNav } from '@organisms';
+import { Container } from "@styles"
 import { useMediaQuery } from 'react-responsive';
 
 const Layout = ({ children }) => {

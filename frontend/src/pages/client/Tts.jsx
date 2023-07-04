@@ -1,16 +1,7 @@
-import { useState } from 'react';
-import { Controller } from '@organisms';
-import { Container } from '@styles'
+import Controller from '../../components/organisms/tts/Controller';
 
 const Tts = () => {
-  const [count, setCount] = useState(0)
-  return (
-    <Container>
-      <div>
-        <Controller />
-      </div>
-    </Container>
-  );
-}
+  return <Controller />;
+};
 
-export default Tts
+export default Tts;
