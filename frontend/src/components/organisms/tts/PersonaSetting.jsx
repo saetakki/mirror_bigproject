@@ -3,12 +3,12 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from '@emotion/styled';
 import { Container, GNB } from '@styles';
 import { requestSetPersona } from '@apis/ChatApi';
-import { personaAtom } from '../../../atoms';
+import { personaAtom, currentHistoryIdAtom } from '../../../atoms';
 import { useNavigate } from 'react-router-dom';
 
 const PersonaSetting = () => {
-  const setPersonaData = useSetRecoilState(personaAtom);
   const [, setPersonaInfo] = useRecoilState(personaAtom);
+  const [, setCurrentHistoryIdAtom] = useRecoilState(currentHistoryIdAtom);
   const [personaGender, setPersonaGender] = useState(null);
   const nameInput = useRef('');
   const ageInput = useRef('');
@@ -35,7 +35,10 @@ const PersonaSetting = () => {
     };
 
     requestSetPersona(personaSetup)
-      .then((res) => console.log(res))
+      .then((res) => {
+        console.log(res);
+        setCurrentHistoryIdAtom(res.history_id);
+      })
       .then(() => setPersonaInfo(personaSetup))
       .then(navigate('/chatting'))
       .catch((err) => console.log(err));

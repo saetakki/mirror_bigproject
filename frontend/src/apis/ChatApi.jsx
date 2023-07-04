@@ -35,18 +35,37 @@ export const requestSetPersona = async ({
   return res.data;
 };
 
-export const sendUserVoice = async (voice) => {
-  const header = { headers: { 'Contetn-Type': 'audio/wav' } };
-  const res = await customAxios.post('persona/voice/', voice, header);
+export const sendUserVoice = async (id, voice) => {
+  const header = {
+    headers: {
+      'Content-Type': 'audio/mp3',
+      'X-CSRFToken': csrftoken,
+      Authorization: `Token ${localStorage.getItem('sessionId')}`,
+    },
+  };
+
+  const res = await axios.post(
+    `http://localhost:8000/chatapi/audio_to_text/${id}/`,
+    { audio_file: voice },
+    { withCredentials: true },
+    header
+  );
   return res.data;
 };
 
-export const sendUserText = async (text) => {
-  const res = await customAxios.post('persona/text/', text, {
-    headers: {
-      'X-CSRFToken': csrftoken,
-    },
-  });
+export const sendUserText = async (id, text) => {
+  const res = await axios.post(
+    `http://localhost:8000/chatapi/get_text/${id}/`,
+    { text: text },
+    { withCredentials: true },
+    {
+      headers: {
+        'X-CSRFToken': csrftoken,
+        Authorization: `Token ${localStorage.getItem('sessionId')}`,
+      },
+    }
+  );
+
   return res.data;
 };
 

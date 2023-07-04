@@ -1,17 +1,22 @@
 import styled from '@emotion/styled';
 import { useState, useRef, useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
-import { personaAtom } from '../../atoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { personaAtom, currentHistoryIdAtom } from '../../atoms';
 import { Container } from '@styles';
 import RecordMessage from '@organisms/tts/RecordMessage';
+import { sendUserText, sendUserVoice } from '@apis/ChatApi';
 
 const Chatting = () => {
   const { persona_name, age, gender, position, department, state } =
     useRecoilValue(personaAtom);
 
+  const currentId = useRecoilState(currentHistoryIdAtom)[0];
+
+  console.log(currentId);
+
   const chatInputRef = useRef(null);
   const ChattingLogContainerRef = useRef(null);
-
+  const [chunks, setChunks] = useState([]);
   const [stream, setStream] = useState(null);
   const [recorder, setRecorder] = useState(null);
   const [audioPreview, setAudioPreview] = useState(null);
@@ -35,6 +40,9 @@ const Chatting = () => {
     const msg = chatInputRef.current.value;
     if (!msg) return;
     setSaveMessages((prevMessages) => [...prevMessages, { blob: false, msg }]);
+    sendUserText(currentId, msg)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
     chatInputRef.current.value = '';
   };
 
@@ -49,20 +57,28 @@ const Chatting = () => {
       const mediaRecorder = new MediaRecorder(userMediaStream);
       setRecorder(mediaRecorder);
 
-      const chunks = [];
+      const recordedChunks = [];
 
       mediaRecorder.addEventListener('dataavailable', (event) => {
-        chunks.push(event.data);
+        recordedChunks.push(event.data);
       });
 
       mediaRecorder.addEventListener('stop', () => {
-        const audioBlob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+        const audioBlob = new Blob(recordedChunks, {
+          type: 'audio/mp3; codecs=opus',
+        });
         const audioURL = URL.createObjectURL(audioBlob);
         setAudioPreview(audioURL);
+
+        sendUserVoice(currentId, audioBlob)
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
+
         setSaveMessages((prevMessages) => [
           ...prevMessages,
           { blob: true, audioURL },
         ]);
+        setChunks(recordedChunks);
       });
 
       mediaRecorder.start();
@@ -111,7 +127,7 @@ const Chatting = () => {
             </RecordBtn>
           ) : (
             <RecordBtn onClick={handleStopClick} disabled={!stream}>
-              녹음 중지
+              하이
             </RecordBtn>
           )}
           <ChatInput

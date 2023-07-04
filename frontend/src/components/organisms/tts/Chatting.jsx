@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { personaAtom } from '../../../atoms';
 import { Container } from '@styles';
+import { sendUserVoice } from '@apis/ChatApi';
 import RecordMessage from './RecordMessage';
 
 const Chatting = () => {
@@ -17,6 +18,8 @@ const Chatting = () => {
   const [audioPreview, setAudioPreview] = useState(null);
   const [isRecording, setRecording] = useState(false);
   const [saveMessage, setSaveMessages] = useState([]);
+
+  console.log(saveMessage);
 
   // 채팅 메세지가 새로 등록되어 y값이 바뀔 경우 스크롤 제일 아래로 이동시키는 코드
   const scrollToBottom = () => {
@@ -74,7 +77,6 @@ const Chatting = () => {
   const handleStopClick = () => {
     recorder.stop();
     stream.getTracks().forEach((track) => track.stop());
-
     setRecorder(null);
     setStream(null);
     setRecording(false);
@@ -111,12 +113,9 @@ const Chatting = () => {
             </RecordBtn>
           ) : (
             <RecordBtn onClick={handleStopClick} disabled={!stream}>
-              녹음 중지
+              하이
             </RecordBtn>
           )}
-          {/* <RecordBtn onClick={onRecordClickHandler}>
-            {isRecording ? '녹음 종료' : '녹음 시작'}
-          </RecordBtn> */}
           <ChatInput
             style={{ backgroundColor: isRecording ? '#CCCCCC' : '' }}
             type='text'

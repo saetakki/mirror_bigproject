@@ -72,3 +72,9 @@ export const personaAtom = atom({
   default: {},
   effects_UNSTABLE: [persistAtom],
 });
+
+export const currentHistoryIdAtom = atom({
+  key: 'histoty_id',
+  default: null,
+  effects_UNSTABLE: [persistAtom],
+});
