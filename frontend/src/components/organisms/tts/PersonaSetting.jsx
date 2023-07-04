@@ -1,13 +1,13 @@
 import { useState, useRef } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from '@emotion/styled';
 import { Container, GNB } from '@styles';
 import { requestSetPersona } from '@apis/ChatApi';
 import { personaAtom } from '../../../atoms';
+import { useNavigate } from 'react-router-dom';
 
-const PersonaSetting = (props) => {
-  const setPracticePersona = props.setPracticePersona;
-
+const PersonaSetting = () => {
+  const setPersonaData = useSetRecoilState(personaAtom);
   const [, setPersonaInfo] = useRecoilState(personaAtom);
   const [personaGender, setPersonaGender] = useState(null);
   const nameInput = useRef('');
@@ -15,6 +15,8 @@ const PersonaSetting = (props) => {
   const departmentInput = useRef('');
   const positionInput = useRef('');
   const stateInput = useRef('');
+
+  const navigate = useNavigate('/');
 
   const onButtonClickHandler = (e) => {
     e.preventDefault();
@@ -32,11 +34,10 @@ const PersonaSetting = (props) => {
       state: stateInput.current.value,
     };
 
-    setPracticePersona(personaSetup);
-
     requestSetPersona(personaSetup)
       .then((res) => console.log(res))
       .then(() => setPersonaInfo(personaSetup))
+      .then(navigate('/chatting'))
       .catch((err) => console.log(err));
   };
 

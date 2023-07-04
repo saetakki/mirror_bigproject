@@ -1,6 +1,5 @@
-import { ReactMediaRecorder } from "react-media-recorder";
-import RecordIcon from "./RecordIcon";
-
+import { ReactMediaRecorder } from 'react-media-recorder';
+import RecordIcon from './RecordIcon';
 
 const RecordMessage = ({ handleStop }) => {
   return (
@@ -8,21 +7,21 @@ const RecordMessage = ({ handleStop }) => {
       audio
       onStop={handleStop}
       render={({ status, startRecording, stopRecording }) => (
-        <div className="mt-2">
+        <div className='mt-2'>
           <button
             onMouseDown={startRecording}
             onMouseUp={stopRecording}
-            className="bg-white p-4 rounded-full"
+            className='bg-white p-4 rounded-full'
           >
             <RecordIcon
               classText={
-                status === "recording"
-                  ? "animate-pulse text-red-500"
-                  : "text-sky-500"
+                status === 'recording'
+                  ? 'animate-pulse text-red-500'
+                  : 'text-sky-500'
               }
             />
           </button>
-          <p className="mt-2 text-white font-light">{status}</p>
+          <p className='mt-2 text-white font-light'>{status}</p>
         </div>
       )}
     />

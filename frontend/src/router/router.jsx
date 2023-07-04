@@ -1,64 +1,81 @@
-import { createBrowserRouter } from "react-router-dom";
-import { LogIn, Home, History, BookMark, Profile, Log, Test, Tts } from "@pages/client";
-import { PrivateRoute } from "./PrivateRoute";
+import { createBrowserRouter } from 'react-router-dom';
+import {
+  LogIn,
+  Home,
+  History,
+  BookMark,
+  Profile,
+  Log,
+  Test,
+  Tts,
+  Chatting,
+} from '@pages/client';
+import { PrivateRoute } from './PrivateRoute';
 
 const routerList = [
   {
-    id:0,
-    path:'/login',
-    element: <LogIn/>,
+    id: 0,
+    path: '/login',
+    element: <LogIn />,
     widhAuth: false,
   },
   {
-    id:1,
-    path:'/',
-    element: <Home/>,
-    withAuth: true
+    id: 1,
+    path: '/',
+    element: <Home />,
+    withAuth: true,
   },
   {
     id: 2,
     path: '/history',
-    element: <History/>,
-    withAuth: true
+    element: <History />,
+    withAuth: true,
   },
   {
-    id:3,
-    path:'/bookmark',
-    element: <BookMark/>,
-    withAuth: true
+    id: 3,
+    path: '/bookmark',
+    element: <BookMark />,
+    withAuth: true,
   },
   {
-    id:4,
-    path:'/profile',
-    element: <Profile/>,
-    withAuth: true
+    id: 4,
+    path: '/profile',
+    element: <Profile />,
+    withAuth: true,
   },
   {
-    id:5,
-    path:'/history/:id',
-    element: <Log/>,
-    withAuth: true
+    id: 5,
+    path: '/history/:id',
+    element: <Log />,
+    withAuth: true,
   },
   {
-    id:6,
-    path:'/test',
-    element: <Test/>,
-    withAuth: false
+    id: 6,
+    path: '/test',
+    element: <Test />,
+    withAuth: false,
   },
   {
-    id:6,
-    path:'/tts',
-    element: <Tts/>,
-    withAuth: true
+    id: 6,
+    path: '/tts',
+    element: <Tts />,
+    withAuth: true,
   },
-]
-
+  {
+    id: 6,
+    path: '/chatting',
+    element: <Chatting />,
+    withAuth: true,
+  },
+];
 
 export const router = createBrowserRouter(
   routerList.map((router) => {
     return {
       path: router.path,
-      element: <PrivateRoute withAuth={router.withAuth}>{router.element}</PrivateRoute>,
+      element: (
+        <PrivateRoute withAuth={router.withAuth}>{router.element}</PrivateRoute>
+      ),
     };
   })
 );

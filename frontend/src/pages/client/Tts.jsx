@@ -1,7 +1,11 @@
-import Controller from '../../components/organisms/tts/Controller';
+import { useSetRecoilState } from 'recoil';
+import { personaAtom } from '../../atoms';
+import { PersonaSetting } from '@organisms';
 
 const Tts = () => {
-  return <Controller />;
+  const setPersonaData = useSetRecoilState(personaAtom);
+
+  return <PersonaSetting setPersonaData={setPersonaData} />;
 };
 
 export default Tts;

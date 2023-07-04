@@ -6,6 +6,7 @@ export { default as LogIn } from './LogIn';
 export { default as Log } from './Log';
 export { default as Test } from './Test';
 export { default as Tts } from './Tts';
+export { default as Chatting } from './Chatting';
 
 export * from './Home';
 export * from './History';
@@ -14,3 +15,4 @@ export * from './Profile';
 export * from './LogIn';
 export * from './Test';
 export * from './Tts';
+export * from './Chatting';

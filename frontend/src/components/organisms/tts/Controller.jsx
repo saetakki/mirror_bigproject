@@ -1,24 +1,15 @@
 import PersonaSetting from './PersonaSetting';
 import { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { personaAtom } from '../../../atoms';
 import { Chatting } from '@organisms';
 
 const Controller = () => {
-  const [practicePersona, setPracticePersona] = useState(null);
-  const StagingValue = useRecoilValue(personaAtom);
+  const [personaSetup, setPersonaSetup] = useRecoilState(personaAtom);
 
-  useEffect(() => {
-    if (StagingValue && practicePersona === null) {
-      setPracticePersona(StagingValue);
-    }
-  }, [StagingValue, practicePersona]);
+  console.log(personaSetup);
 
-  return practicePersona === null ? (
-    <PersonaSetting setPracticePersona={setPracticePersona} />
-  ) : (
-    <Chatting />
-  );
+  return personaSetup ? <Chatting /> : <PersonaSetting />;
 };
 
 export default Controller;
