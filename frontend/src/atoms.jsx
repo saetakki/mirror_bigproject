@@ -81,6 +81,6 @@ export const currentHistoryIdAtom = atom({
 
 export const sampleQuestionAtom = atom({
   key: 'sampleQuestion',
-  default: [],
+  default: null,
   effects_UNSTABLE: [persistAtom],
 });

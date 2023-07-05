@@ -24,14 +24,12 @@ const Chatting = () => {
 
   const [isSuggestionClicked, setIsSuggestionClicked] = useState(false);
   const [isClickedTab, setIsClickedTab] = useState('G');
-
+  const [isDisable, setIsDisable] = useState(true);
   const [isSampleQuestion, setIsSampleQuestion] =
     useRecoilState(sampleQuestionAtom);
 
   const currentId = useRecoilState(currentHistoryIdAtom)[0];
   const navigate = useNavigate();
-
-  console.log(currentId);
 
   const chatInputRef = useRef(null);
   const ChattingLogContainerRef = useRef(null);
@@ -53,7 +51,10 @@ const Chatting = () => {
   // 채팅 메세지가 새로 등록되는지를 감지하여 새로 등록됨이 감지될 경우 스크롤을 제일 아래로 이동시키는 함수 실행
   useEffect(() => {
     scrollToBottom();
-  }, [saveMessage, isSampleQuestion]);
+    if (isDisable && isSampleQuestion) {
+      setIsDisable(false);
+    }
+  }, [saveMessage, isDisable, isSampleQuestion]);
 
   const onSendButtonClickHandler = () => {
     const msg = chatInputRef.current.value;
@@ -61,10 +62,30 @@ const Chatting = () => {
     setSaveMessages((prevMessages) => [...prevMessages, { blob: false, msg }]);
     sendUserText(currentId, msg)
       .then((res) => console.log(res, 'sendUserText'))
-      .then(() => requestGetAnswerToGpt(currentId))
+      .then(() => requestAnswerHandler(currentId))
       .catch((err) => console.log(err));
     chatInputRef.current.value = '';
-    // requestGetAnswerToGpt(currentId);
+  };
+
+  const requestAnswerHandler = (id) => {
+    requestGetAnswerToGpt(id)
+      .then((res) => {
+        console.log('chatgpt', res);
+        const chatAnswer = res.text;
+        const emotion = res.emotion;
+        const blobURL = res.blob_url;
+
+        setSaveMessages((prevMessages) => [
+          ...prevMessages,
+          { blob: true, msg: chatAnswer, emotion: emotion, audioURL: blobURL },
+        ]);
+        // const answer = res;
+        // setSaveMessages((prevMessages) => [
+        //   ...prevMessages,
+        //   { blob: false, msg: answer },
+        // ]);
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleRecordClick = async () => {
@@ -126,15 +147,23 @@ const Chatting = () => {
       .catch((err) => console.log(err));
   };
 
-  const onSuggestionButtonClickHandler = () => {
+  const onSuggestionButtonClickHandler = async () => {
     console.log('click');
     setIsSuggestionClicked(!isSuggestionClicked);
-    requestSuggestion(currentId)
-      .then((res) => setIsSampleQuestion(res))
-      .catch((err) => console.log(err));
+    try {
+      const res = await requestSuggestion(currentId);
+      setIsSampleQuestion(res);
+      setIsDisable(false); // isSampleQuestion 값이 업데이트되면 버튼 활성화
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  console.log(useRecoilValue(sampleQuestionAtom));
+  const onSuggestionChooseHandler = (e) => {
+    console.log(e.target.innerText);
+    chatInputRef.current.value = e.target.innerText;
+    setIsSuggestionClicked(false);
+  };
 
   return (
     <MainContainer>
@@ -157,6 +186,7 @@ const Chatting = () => {
           {saveMessage.map((msg, index) =>
             msg.blob ? (
               <AudioWrap key={index}>
+                {/* {console.log(msg)} */}
                 <Audio id='audioPreview' src={msg.audioURL} controls />
               </AudioWrap>
             ) : (
@@ -170,6 +200,7 @@ const Chatting = () => {
           <SuggestionBtn
             className='h-[58px] w-[5%] rounded-[8px] mr-1'
             onClick={onSuggestionButtonClickHandler}
+            disabled={isSampleQuestion === null}
           >
             ?
           </SuggestionBtn>
@@ -195,8 +226,18 @@ const Chatting = () => {
                   );
                 })}
               </ul>
-              {isSampleQuestion ? (
-                <div className='h-full mx-4 mb-[40px] bg-yellow-200'>hello</div>
+              {isSampleQuestion !== null ? (
+                <div className='h-full mx-4 mb-[40px] bg-yellow-200'>
+                  {isSampleQuestion.sample_question[isClickedTab].map(
+                    (item, idx) => {
+                      return (
+                        <div key={idx} onClick={onSuggestionChooseHandler}>
+                          {item}
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
               ) : (
                 <div>Loading</div>
               )}

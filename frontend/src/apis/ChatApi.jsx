@@ -73,14 +73,8 @@ export const sendUserText = async (id, text) => {
 
 export const requestGetAnswerToGpt = async (id) => {
   const URL = `http://localhost:8000/chatapi/get_ChatGPT_response/${id}/`;
-
-  const headers = {
-    'X-CSRFToken': csrftoken,
-  };
-
   const config = {
     withCredentials: true,
-    headers: headers,
   };
 
   try {
