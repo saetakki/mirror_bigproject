@@ -78,3 +78,9 @@ export const currentHistoryIdAtom = atom({
   default: null,
   effects_UNSTABLE: [persistAtom],
 });
+
+export const sampleQuestionAtom = atom({
+  key: 'sampleQuestion',
+  default: [],
+  effects_UNSTABLE: [persistAtom],
+});

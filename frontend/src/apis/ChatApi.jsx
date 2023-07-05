@@ -1,5 +1,8 @@
 import { customAxios, getCookie } from './Api';
 import axios from 'axios';
+import audio from './audio.mp3';
+import test3 from './test3.mp3';
+import test2 from './test2.mp3';
 
 const csrftoken = getCookie('csrftoken');
 
@@ -24,68 +27,93 @@ export const requestSetPersona = async ({
   const res = await axios.post(
     'http://localhost:8000/chatapi/set_persona/',
     persona,
-    { withCredentials: true },
-    {
-      headers: {
-        'X-CSRFToken': token,
-        Authorization: `Token ${localStorage.getItem('sessionId')}`,
-      },
-    }
+    { withCredentials: true }
   );
   return res.data;
 };
 
-export const sendUserVoice = async (id, voice) => {
-  const header = {
-    headers: {
-      'Content-Type': 'audio/mp3',
-      'X-CSRFToken': csrftoken,
-      Authorization: `Token ${localStorage.getItem('sessionId')}`,
-    },
-  };
+/* voice 입력 받고 서버로 보내는 함수*/
 
-  const res = await axios.post(
-    `http://localhost:8000/chatapi/audio_to_text/${id}/`,
-    { audio_file: voice },
-    { withCredentials: true },
-    header
-  );
-  return res.data;
+export const sendUserVoice = async (id) => {
+  const URL = `http://localhost:8000/chatapi/audio_to_text/${id}/`;
+
+  // 오디오 파일 불러오기
+  const fileURL = test3;
+
+  try {
+    const response = await fetch(fileURL);
+    const fileBlob = await response.blob();
+
+    const formData = new FormData();
+    formData.append('audio_file', fileBlob, 'audio.mp3');
+
+    const config = {
+      withCredentials: true,
+    };
+
+    const res = await axios.post(URL, formData, config);
+
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
+/* text 입력 받고 서버로 보내는 함수 */
 export const sendUserText = async (id, text) => {
   const res = await axios.post(
     `http://localhost:8000/chatapi/get_text/${id}/`,
     { text: text },
-    { withCredentials: true },
-    {
-      headers: {
-        'X-CSRFToken': csrftoken,
-        Authorization: `Token ${localStorage.getItem('sessionId')}`,
-      },
-    }
+    { withCredentials: true }
   );
 
   return res.data;
 };
 
-export const requestGetAnswerToGpt = () => {
-  const res = customAxios.post('chatapi/get_ChatGPT_resopnse/606/', {
-    headers: { 'X-CSRFToken': csrftoken },
-  });
-  return res.data;
+export const requestGetAnswerToGpt = async (id) => {
+  const URL = `http://localhost:8000/chatapi/get_ChatGPT_response/${id}/`;
+
+  const headers = {
+    'X-CSRFToken': csrftoken,
+  };
+
+  const config = {
+    withCredentials: true,
+    headers: headers,
+  };
+
+  try {
+    const res = await axios.post(URL, {}, config);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const requestGenerateVoiceAnswer = () => {
-  const res = customAxios.post('chatapi/get_ChatGPT_resopnse/625/', {
+  const res = customAxios.post('chatapi/get_ChatGPT_response/625/', {
     headers: { 'X-CSRFToken': csrftoken },
   });
   return res.data;
 };
 
-export const requestGenerateReport = () => {
-  const res = customAxios.post('chatapi/get_ChatGPT_resopnse/606/', {
-    headers: { 'X-CSRFToken': csrftoken },
-  });
+export const requestGenerateReport = async (id) => {
+  const URL = `http://localhost:8000/chatapi/make_report/${id}/`;
+
+  const config = {
+    withCredentials: true,
+  };
+
+  const res = await axios.post(URL, {}, config);
+  return res.data;
+};
+
+export const requestSuggestion = async (id) => {
+  const URL = `http://localhost:8000/chatapi/make_sample_question/${id}/`;
+  const config = {
+    withCredentials: true,
+  };
+  const res = await axios.post(URL, {}, config);
   return res.data;
 };

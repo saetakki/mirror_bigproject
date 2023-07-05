@@ -1,16 +1,35 @@
 import styled from '@emotion/styled';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { personaAtom, currentHistoryIdAtom } from '../../atoms';
+import {
+  personaAtom,
+  currentHistoryIdAtom,
+  sampleQuestionAtom,
+} from '../../atoms';
 import { Container } from '@styles';
 import RecordMessage from '@organisms/tts/RecordMessage';
-import { sendUserText, sendUserVoice } from '@apis/ChatApi';
+// import test2 from '../../assets/test2.wav';
+import {
+  sendUserText,
+  sendUserVoice,
+  requestGetAnswerToGpt,
+  requestGenerateReport,
+  requestSuggestion,
+} from '@apis/ChatApi';
 
 const Chatting = () => {
   const { persona_name, age, gender, position, department, state } =
     useRecoilValue(personaAtom);
 
+  const [isSuggestionClicked, setIsSuggestionClicked] = useState(false);
+  const [isClickedTab, setIsClickedTab] = useState('G');
+
+  const [isSampleQuestion, setIsSampleQuestion] =
+    useRecoilState(sampleQuestionAtom);
+
   const currentId = useRecoilState(currentHistoryIdAtom)[0];
+  const navigate = useNavigate();
 
   console.log(currentId);
 
@@ -34,16 +53,18 @@ const Chatting = () => {
   // 채팅 메세지가 새로 등록되는지를 감지하여 새로 등록됨이 감지될 경우 스크롤을 제일 아래로 이동시키는 함수 실행
   useEffect(() => {
     scrollToBottom();
-  }, [saveMessage]);
+  }, [saveMessage, isSampleQuestion]);
 
   const onSendButtonClickHandler = () => {
     const msg = chatInputRef.current.value;
     if (!msg) return;
     setSaveMessages((prevMessages) => [...prevMessages, { blob: false, msg }]);
     sendUserText(currentId, msg)
-      .then((res) => console.log(res))
+      .then((res) => console.log(res, 'sendUserText'))
+      .then(() => requestGetAnswerToGpt(currentId))
       .catch((err) => console.log(err));
     chatInputRef.current.value = '';
+    // requestGetAnswerToGpt(currentId);
   };
 
   const handleRecordClick = async () => {
@@ -67,12 +88,9 @@ const Chatting = () => {
         const audioBlob = new Blob(recordedChunks, {
           type: 'audio/mp3; codecs=opus',
         });
+        console.log('audioBlob', audioBlob);
         const audioURL = URL.createObjectURL(audioBlob);
         setAudioPreview(audioURL);
-
-        sendUserVoice(currentId, audioBlob)
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err));
 
         setSaveMessages((prevMessages) => [
           ...prevMessages,
@@ -91,21 +109,49 @@ const Chatting = () => {
     recorder.stop();
     stream.getTracks().forEach((track) => track.stop());
 
+    sendUserVoice(currentId)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+
     setRecorder(null);
     setStream(null);
     setRecording(false);
   };
 
+  // 종료버튼 클릭시 보고서 생성 기능 실행
+  const onExitButtonClickHandler = () => {
+    requestGenerateReport(currentId)
+      .then((res) => console.log(res))
+      .then(() => navigate('/'))
+      .catch((err) => console.log(err));
+  };
+
+  const onSuggestionButtonClickHandler = () => {
+    console.log('click');
+    setIsSuggestionClicked(!isSuggestionClicked);
+    requestSuggestion(currentId)
+      .then((res) => setIsSampleQuestion(res))
+      .catch((err) => console.log(err));
+  };
+
+  console.log(useRecoilValue(sampleQuestionAtom));
+
   return (
     <MainContainer>
       <ChattingContainer>
-        <div className='w-full h-[10%] bg-blue-300 flex flex-col mb-4 sticky'>
+        <div className='h-[10%] bg-blue-300 flex flex-col mb-4 relative'>
           <strong>
             {persona_name} {age} {gender}
           </strong>
           <span>
             {position} {department} {state}
           </span>
+          <button
+            className='w-24 h-8 rounded-[10px] absolute z-10 right-5 top-[25%] bg-slate-300'
+            onClick={onExitButtonClickHandler}
+          >
+            종료
+          </button>
         </div>
         <ChattingLogContainer ref={ChattingLogContainerRef}>
           {saveMessage.map((msg, index) =>
@@ -120,14 +166,49 @@ const Chatting = () => {
             )
           )}
         </ChattingLogContainer>
-        <ChattingControlPanel>
+        <ChattingControlPanel className='flex items-center'>
+          <SuggestionBtn
+            className='h-[58px] w-[5%] rounded-[8px] mr-1'
+            onClick={onSuggestionButtonClickHandler}
+          >
+            ?
+          </SuggestionBtn>
+          {isSuggestionClicked && (
+            <OpenUpTab className={isSuggestionClicked ? 'open' : ''}>
+              <div className='px-[1rem] py-[20px] text-[20px]'>
+                G R O W 상황 별 추천 질문을 골라보세요.
+              </div>
+              <ul className='py-4'>
+                {['G', 'R', 'O', 'W'].map((char, index) => {
+                  return (
+                    <li
+                      className={`px-4 py-2 font-bold text-lg  ${
+                        isClickedTab === char
+                          ? 'border-b-4 border-blue-400'
+                          : ''
+                      }`}
+                      key={index}
+                      onClick={() => setIsClickedTab(char)}
+                    >
+                      {char.toUpperCase()}
+                    </li>
+                  );
+                })}
+              </ul>
+              {isSampleQuestion ? (
+                <div className='h-full mx-4 mb-[40px] bg-yellow-200'>hello</div>
+              ) : (
+                <div>Loading</div>
+              )}
+            </OpenUpTab>
+          )}
           {isRecording === false ? (
             <RecordBtn onClick={handleRecordClick} disabled={!!stream}>
-              녹음 시작
+              녹음
             </RecordBtn>
           ) : (
             <RecordBtn onClick={handleStopClick} disabled={!stream}>
-              하이
+              중지
             </RecordBtn>
           )}
           <ChatInput
@@ -184,7 +265,7 @@ const ChattingControlPanel = styled.div`
 `;
 
 const RecordBtn = styled.button`
-  width: 20%;
+  width: 15%;
   border-radius: 8px;
   padding: 16px;
   background-color: white;
@@ -201,6 +282,12 @@ const ChatInput = styled.input`
   &:focus-within {
     background-color: ivory;
   }
+`;
+
+const SuggestionBtn = styled(RecordBtn)`
+  display: flex;
+  justify-content: center;
+  width: 5%;
 `;
 
 const SendBtn = styled.button`
@@ -233,6 +320,29 @@ const MessageWrap = styled.div`
   background-color: white;
   border: 1px solid #e2e0e0;
   margin-left: 50%;
+`;
+
+const OpenUpTab = styled.div`
+  position: absolute;
+  z-index: 10;
+  width: calc(100% - 130px);
+  bottom: 100px;
+  right: 16px;
+  background-color: #fff;
+  transition: all 0.5s ease-in-out;
+  height: 0;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+
+  &.open {
+    height: 60%;
+  }
+
+  ul {
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem;
+  }
 `;
 
 export default Chatting;

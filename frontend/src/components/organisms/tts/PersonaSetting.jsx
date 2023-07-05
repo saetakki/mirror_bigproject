@@ -2,11 +2,16 @@ import { useState, useRef } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from '@emotion/styled';
 import { Container, GNB } from '@styles';
-import { requestSetPersona } from '@apis/ChatApi';
-import { personaAtom, currentHistoryIdAtom } from '../../../atoms';
+import { requestSetPersona, requestSuggestion } from '@apis/ChatApi';
+import {
+  personaAtom,
+  currentHistoryIdAtom,
+  sampleQuestionAtom,
+} from '../../../atoms';
 import { useNavigate } from 'react-router-dom';
 
 const PersonaSetting = () => {
+  const [, setIsSampleQuestion] = useRecoilState(sampleQuestionAtom);
   const [, setPersonaInfo] = useRecoilState(personaAtom);
   const [, setCurrentHistoryIdAtom] = useRecoilState(currentHistoryIdAtom);
   const [personaGender, setPersonaGender] = useState(null);
@@ -38,6 +43,12 @@ const PersonaSetting = () => {
       .then((res) => {
         console.log(res);
         setCurrentHistoryIdAtom(res.history_id);
+        requestSuggestion(res.history_id)
+          .then((res) => {
+            console.log('requestSuggestion', res);
+            setIsSampleQuestion(res);
+          })
+          .catch((err) => console.log(err));
       })
       .then(() => setPersonaInfo(personaSetup))
       .then(navigate('/chatting'))
